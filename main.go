@@ -29,39 +29,32 @@ func main() {
 	// A wait group for synchronizing routines
 	wg := sync.WaitGroup{}
 
-	errChan := make(chan error)
-
 	// Sidebar ticker routine
 	wg.Add(1)
-	go func(client *reddit.Client) {
+	go func() {
 		defer wg.Done()
-		ticker := time.Tick(1 * time.Minute)
-		for next := range ticker {
-			subSettings, _, err := client.Subreddit.GetSettings(context.Background(), "valcompbottest")
-			if err != nil {
-				errChan <- err
-				return
-			}
 
-			sidebarFmt := `## hello this is cool
-next update: %+v`
+		ticker := time.NewTicker(1 * time.Minute)
+		defer ticker.Stop()
 
-			sidebar := fmt.Sprintf(sidebarFmt, next)
-
-			subSettings.Sidebar = &sidebar
-
-			resp, err := client.Subreddit.Edit(context.Background(), subSettings.ID, subSettings)
-			if err != nil {
-				errChan <- err
-				return
-			}
-
-			fmt.Printf("%+v\n", resp)
+		subSettings, _, err := client.Subreddit.GetSettings(context.Background(), "valcompbottest")
+		if err != nil {
+			fmt.Println(err)
+			return
 		}
-	}(client)
+
+		if err := BuildSidebar(client, subSettings); err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		for range ticker.C {
+			if err := BuildSidebar(client, subSettings); err != nil {
+				fmt.Println(err)
+				return
+			}
+		}
+	}()
 
 	wg.Wait()
-	for err := range errChan {
-		fmt.Println(err)
-	}
 }
