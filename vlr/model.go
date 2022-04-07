@@ -36,6 +36,25 @@ type UpcomingMatch struct {
 	WinnerID     *string   `json:"winner_id"`
 	Forfeit      string    `json:"forfeit"`
 	Teams        []Team    `json:"teams"`
+	Match        *Match
+}
+
+type Match struct {
+	Info struct {
+		ID        string `json:"id"`
+		EventID   string `json:"event_id"`
+		Completed string `json:"completed"`
+		Patch     string `json:"patch"`
+		Link      string `json:"link"`
+	} `json:"info"`
+	Streams []struct {
+		Provider    string `json:"provider"`
+		Name        string `json:"name"`
+		Country     string `json:"country"`
+		ViewerCount string `json:"viewer_count"`
+		Live        string `json:"live"`
+		Link        string `json:"link"`
+	} `json:"streams"`
 }
 
 type Team struct {

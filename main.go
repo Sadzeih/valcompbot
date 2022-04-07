@@ -43,12 +43,20 @@ func main() {
 			return
 		}
 
-		if err := BuildSidebar(client, subSettings); err != nil {
+		matches, err := vlr.GetUpcomingMatches()
+		if err != nil {
+			fmt.Println(err)
+		}
+		if err := BuildSidebar(client, subSettings, matches); err != nil {
 			fmt.Println(err)
 		}
 
 		for range ticker.C {
-			if err := BuildSidebar(client, subSettings); err != nil {
+			matches, err = vlr.GetUpcomingMatches()
+			if err != nil {
+				fmt.Println(err)
+			}
+			if err := BuildSidebar(client, subSettings, matches); err != nil {
 				fmt.Println(err)
 			}
 		}

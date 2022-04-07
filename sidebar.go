@@ -2,17 +2,17 @@ package main
 
 import (
 	"context"
+	"fmt"
+	"github.com/Sadzeih/valcompbot/config"
 	"github.com/Sadzeih/valcompbot/vlr"
 	"github.com/vartanbeno/go-reddit/v2/reddit"
 )
 
-func BuildSidebar(client *reddit.Client, subSettings *reddit.SubredditSettings) error {
-	matches, err := vlr.GetUpcomingMatches()
+func BuildSidebar(client *reddit.Client, subSettings *reddit.SubredditSettings, matches []vlr.UpcomingMatch) error {
+	sidebarMd, err := format(true, matches)
 	if err != nil {
 		return err
 	}
-
-	sidebarMd := Format(matches)
 	subSettings.Sidebar = &sidebarMd
 
 	_, err = client.Subreddit.Edit(context.Background(), subSettings.ID, subSettings)
