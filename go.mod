@@ -16,3 +16,5 @@ require (
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d // indirect
 	google.golang.org/appengine v1.4.0 // indirect
 )
+
+replace github.com/vartanbeno/go-reddit/v2 v2.0.1 => github.com/Sadzeih/go-reddit/v2 v2.1.0

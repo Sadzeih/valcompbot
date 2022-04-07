@@ -1,12 +1,12 @@
-FROM golang:1.18-rc-alpine AS build
+FROM golang AS build
 
-WORKDIR /go/src/api
-ADD . /go/src/api
+WORKDIR /go/src/bot
+ADD . /go/src/bot
 
-RUN go build -o api
+RUN go build -o bot
 
 FROM gcr.io/distroless/base-debian11
 
-COPY --from=build /go/bin/api /
+COPY --from=build /go/src/bot/bot /
 
-CMD ["/api"]
+CMD ["/bot"]
