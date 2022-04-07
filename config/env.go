@@ -7,6 +7,7 @@ import (
 
 type Config struct {
 	Port               string `env:"PORT"`
+	RedditSubreddit    string `env:"REDDIT_SUBREDDIT"`
 	RedditClientID     string `env:"REDDIT_CLIENT_ID"`
 	RedditClientSecret string `env:"REDDIT_CLIENT_SECRET"`
 	RedditUsername     string `env:"REDDIT_USERNAME"`

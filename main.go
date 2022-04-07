@@ -28,16 +28,16 @@ func main() {
 
 	// A wait group for synchronizing routines
 	wg := sync.WaitGroup{}
+	wg.Add(1)
 
 	// Sidebar ticker routine
-	wg.Add(1)
 	go func() {
 		defer wg.Done()
 
 		ticker := time.NewTicker(1 * time.Minute)
 		defer ticker.Stop()
 
-		subSettings, _, err := client.Subreddit.GetSettings(context.Background(), "valcompbottest")
+		subSettings, _, err := client.Subreddit.GetSettings(context.Background(), config.Get().RedditSubreddit)
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -45,13 +45,11 @@ func main() {
 
 		if err := BuildSidebar(client, subSettings); err != nil {
 			fmt.Println(err)
-			return
 		}
 
 		for range ticker.C {
 			if err := BuildSidebar(client, subSettings); err != nil {
 				fmt.Println(err)
-				return
 			}
 		}
 	}()
