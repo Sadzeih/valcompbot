@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/Sadzeih/valcompbot/vlr"
 	"log"
 	"sync"
 	"time"
@@ -50,6 +51,9 @@ func main() {
 		if err := BuildSidebar(client, subSettings, matches); err != nil {
 			fmt.Println(err)
 		}
+		if err := BuildWidget(client, matches); err != nil {
+			fmt.Println(err)
+		}
 
 		for range ticker.C {
 			matches, err = vlr.GetUpcomingMatches()
@@ -57,6 +61,9 @@ func main() {
 				fmt.Println(err)
 			}
 			if err := BuildSidebar(client, subSettings, matches); err != nil {
+				fmt.Println(err)
+			}
+			if err := BuildWidget(client, matches); err != nil {
 				fmt.Println(err)
 			}
 		}
