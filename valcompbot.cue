@@ -28,7 +28,7 @@ dagger.#Plan & {
 
                         auth: {
                                 username: client.env.GITHUB_ACTOR
-                                password: client.env.GITHUB_TOKEN
+                                secret: client.env.GITHUB_TOKEN
                         }
                 }
         }
