@@ -8,7 +8,6 @@ Thanks to [VLR](https://vlr.gg) for the access to their API, and facilitating by
 
 You must provide these environment variables
 ```env
-PORT="8080"
 REDDIT_SUBREDDIT="SUBREDDIT"
 REDDIT_CLIENT_ID="CLIENT_ID"
 REDDIT_CLIENT_SECRET="CLIENT_SECRET"
