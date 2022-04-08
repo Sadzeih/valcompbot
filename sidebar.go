@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+
 	"github.com/Sadzeih/valcompbot/config"
 	"github.com/Sadzeih/valcompbot/vlr"
 	"github.com/vartanbeno/go-reddit/v2/reddit"
@@ -40,6 +41,10 @@ func BuildWidget(client *reddit.Client, matches []vlr.UpcomingMatch) error {
 			tickerWidget = w
 			break
 		}
+	}
+
+	if tickerWidget == nil {
+		return fmt.Errorf("BuildWidget: could not find ticker widget")
 	}
 
 	widgetReq := reddit.TextAreaWidgetRequest{
