@@ -16,7 +16,6 @@ const (
 
 ---
 `
-	sidebarMd  = "## Upcoming matches\n\n" + tickerMd
 	matchMdFmt = "| [%s vs %s](%s) | %s |\n"
 )
 
