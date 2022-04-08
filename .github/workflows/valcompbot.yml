@@ -5,6 +5,7 @@ on:
     # Trigger this workflow only on commits pushed to the main branch
     branches:
       - main
+      - 'releases/**'
 
 # Dagger plan gets configured via client environment variables
 env:
