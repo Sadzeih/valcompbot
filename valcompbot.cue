@@ -24,7 +24,7 @@ dagger.#Plan & {
 
                 push:  docker.#Push & {
                         image: build.output
-                        dest:  "ghcr.io/Sadzeih/valcompbot:\(client.env.TAG)"
+                        dest:  "ghcr.io/sadzeih/valcompbot:\(client.env.TAG)"
 
                         auth: {
                                 username: client.env.GITHUB_ACTOR
