@@ -56,5 +56,5 @@ const (
 
 ## Upcoming matches
 
-` + tickerMd
+%s`
 )

@@ -13,7 +13,7 @@ const (
 	apiURL              = "https://api.vlr.gg"
 	upcomingMatchesPath = "/matches/upcoming"
 	matchPath           = "/match/%s"
-	tokenFmt            = "?token=%s"
+	tokenFmt            = "?token=%s&tier=riot"
 )
 
 func GetUpcomingMatches() ([]UpcomingMatch, error) {
