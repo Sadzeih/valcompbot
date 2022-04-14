@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/Sadzeih/valcompbot/config"
 )
@@ -42,14 +41,11 @@ func GetUpcomingMatches() ([]UpcomingMatch, error) {
 	}
 
 	for idx, match := range upcomingMatches.Matches {
-		matchTime := time.Time(match.Timestamp)
-		if matchTime.Before(time.Now()) {
-			matchRes, err := GetMatch(match.ID)
-			if err != nil {
-				return nil, err
-			}
-			upcomingMatches.Matches[idx].Match = matchRes
+		matchRes, err := GetMatch(match.ID)
+		if err != nil {
+			return nil, err
 		}
+		upcomingMatches.Matches[idx].Match = matchRes
 	}
 
 	return upcomingMatches.Matches, nil

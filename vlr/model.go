@@ -45,6 +45,8 @@ type Match struct {
 		EventID   string `json:"event_id"`
 		Completed string `json:"completed"`
 		Patch     string `json:"patch"`
+		Series    string `json:"series"`
+		Subseries string `json:"subseries"`
 		Link      string `json:"link"`
 	} `json:"info"`
 	Streams []struct {

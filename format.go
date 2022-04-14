@@ -66,8 +66,7 @@ func format(sidebar bool, matches []vlr.UpcomingMatch) (string, error) {
 
 			matchStr := fmt.Sprintf("%s vs %s", match.Teams[0].Name, match.Teams[1].Name)
 			if match.Teams[0].Name == "" || match.Teams[1].Name == "" {
-				// TODO: replace with eventual match name
-				matchStr = "TBD"
+				matchStr = fmt.Sprintf("%s: %s", match.Match.Info.Series, match.Match.Info.Subseries)
 			}
 
 			matchesMd += fmt.Sprintf(matchMdFmt,
