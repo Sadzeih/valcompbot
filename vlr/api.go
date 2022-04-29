@@ -48,7 +48,7 @@ func GetUpcomingMatches() ([]UpcomingMatch, error) {
 		upcomingMatches.Matches[idx].Match = matchRes
 	}
 
-	return upcomingMatches.Matches, nil
+	return upcomingMatches.Matches[:15], nil
 }
 
 func GetMatch(id string) (*Match, error) {

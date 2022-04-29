@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/Sadzeih/valcompbot/vlr"
-	"github.com/hako/durafmt"
 )
 
 const (
@@ -15,8 +14,10 @@ const (
 `
 
 	eventMd = `
-| **%s** ||
-|:-------:|-----:|
+**%s**
+
+| Match | Starting in |
+|:-----:|------------:|
 %s
 
 `
@@ -31,9 +32,7 @@ func format(sidebar bool, matches []vlr.UpcomingMatch) (string, error) {
 	for _, match := range matches {
 		eventName := match.EventName
 		if _, ok := eventMatches[eventName]; !ok {
-			eventMatches[eventName] = make([]vlr.UpcomingMatch, 1)
-			eventMatches[eventName][0] = match
-			continue
+			eventMatches[eventName] = make([]vlr.UpcomingMatch, 0)
 		}
 		eventMatches[eventName] = append(eventMatches[eventName], match)
 	}
@@ -50,23 +49,12 @@ func format(sidebar bool, matches []vlr.UpcomingMatch) (string, error) {
 					startingIn = "LIVE"
 				}
 			} else {
-				dura, err := durafmt.ParseStringShort(time.Until(matchTime).String())
-				if err != nil {
-					return "", err
-				}
-
-				if dura.Duration().Hours() <= 2 {
-					dura = dura.LimitFirstN(2)
-				}
-				if dura.Duration().Hours() < 1 {
-					dura = dura.LimitFirstN(1)
-				}
-				startingIn = dura.String()
+				startingIn = formatDuration(time.Until(matchTime))
 			}
 
 			matchStr := fmt.Sprintf("%s vs %s", match.Teams[0].Name, match.Teams[1].Name)
 			if match.Teams[0].Name == "" || match.Teams[1].Name == "" {
-				matchStr = fmt.Sprintf("%s: %s", match.Match.Info.Series, match.Match.Info.Subseries)
+				matchStr = fmt.Sprintf("*%s: %s*", match.Match.Info.Series, match.Match.Info.Subseries)
 			}
 
 			matchesMd += fmt.Sprintf(matchMdFmt,
@@ -76,6 +64,7 @@ func format(sidebar bool, matches []vlr.UpcomingMatch) (string, error) {
 			)
 		}
 		eventsMd += fmt.Sprintf(eventMd, eventName, matchesMd)
+		matchesMd = ""
 	}
 
 	md := fmt.Sprintf(tickerMd, eventsMd)
@@ -83,4 +72,22 @@ func format(sidebar bool, matches []vlr.UpcomingMatch) (string, error) {
 		return fmt.Sprintf(sidebarMd, md), nil
 	}
 	return md, nil
+}
+
+func formatDuration(d time.Duration) string {
+	od := d
+	dstr := ""
+	if d.Hours() >= 24 {
+		dstr += fmt.Sprintf("%dd", int(d.Hours()/24))
+		d -= time.Duration(int(d.Hours()/24)*24) * time.Hour
+	}
+	if d.Hours() >= 1 {
+		dstr += fmt.Sprintf("%dh", int(d.Minutes()/60))
+		d -= time.Duration(int(d.Minutes()/60)) * time.Hour
+	}
+	if od.Hours() <= 2 {
+		dstr += fmt.Sprintf("%dm", int(d.Minutes()))
+	}
+
+	return dstr
 }
