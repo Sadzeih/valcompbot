@@ -60,6 +60,13 @@ func main() {
 			if err != nil {
 				fmt.Println(err)
 			}
+			
+			subSettings, _, err = client.Subreddit.GetSettings(context.Background(), config.Get().RedditSubreddit)
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+
 			if err := BuildSidebar(client, subSettings, matches); err != nil {
 				fmt.Println(err)
 			}
