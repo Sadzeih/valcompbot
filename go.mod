@@ -4,7 +4,6 @@ go 1.18
 
 require (
 	github.com/caarlos0/env/v6 v6.9.1
-	github.com/hako/durafmt v0.0.0-20210608085754-5c1018a4e16b
 	github.com/joho/godotenv v1.4.0
 	github.com/vartanbeno/go-reddit/v2 v2.0.1
 )
@@ -17,4 +16,4 @@ require (
 	google.golang.org/appengine v1.4.0 // indirect
 )
 
-replace github.com/vartanbeno/go-reddit/v2 v2.0.1 => github.com/Sadzeih/go-reddit/v2 v2.1.0
+replace github.com/vartanbeno/go-reddit/v2 v2.0.1 => github.com/Sadzeih/go-reddit/v2 v2.1.1
