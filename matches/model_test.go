@@ -1,4 +1,4 @@
-package vlr
+package matches
 
 import (
 	"encoding/json"
@@ -43,7 +43,7 @@ const (
 )
 
 func TestUnmarshal(t *testing.T) {
-	matches := make([]UpcomingMatch, 0)
+	matches := make([]Upcoming, 0)
 	if err := json.Unmarshal([]byte(matchesJson), &matches); err != nil {
 		t.Errorf("could not unmarshal: %s", err)
 	}

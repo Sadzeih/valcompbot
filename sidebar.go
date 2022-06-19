@@ -3,14 +3,57 @@ package main
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/Sadzeih/valcompbot/config"
-	"github.com/Sadzeih/valcompbot/vlr"
+	"github.com/Sadzeih/valcompbot/matches"
 	"github.com/vartanbeno/go-reddit/v2/reddit"
 )
 
-func BuildSidebar(client *reddit.Client, subSettings *reddit.SubredditSettings, matches []vlr.UpcomingMatch) error {
-	sidebarMd, err := format(true, matches)
+func startSidebar(rClient *reddit.Client) {
+	ticker := time.NewTicker(1 * time.Minute)
+	defer ticker.Stop()
+
+	subSettings, _, err := rClient.Subreddit.GetSettings(context.Background(), config.Get().RedditSubreddit)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	m, err := matches.GetUpcoming()
+	if err != nil {
+		fmt.Println(err)
+	}
+	if err := BuildSidebar(rClient, subSettings, m); err != nil {
+		fmt.Println(err)
+	}
+	if err := BuildWidget(rClient, m); err != nil {
+		fmt.Println(err)
+	}
+
+	for range ticker.C {
+		m, err = matches.GetUpcoming()
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		subSettings, _, err = rClient.Subreddit.GetSettings(context.Background(), config.Get().RedditSubreddit)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		if err := BuildSidebar(rClient, subSettings, m); err != nil {
+			fmt.Println(err)
+		}
+		if err := BuildWidget(rClient, m); err != nil {
+			fmt.Println(err)
+		}
+	}
+}
+
+func BuildSidebar(client *reddit.Client, subSettings *reddit.SubredditSettings, m []matches.Upcoming) error {
+	sidebarMd, err := format(true, m)
 	if err != nil {
 		return err
 	}
@@ -24,8 +67,8 @@ func BuildSidebar(client *reddit.Client, subSettings *reddit.SubredditSettings, 
 	return nil
 }
 
-func BuildWidget(client *reddit.Client, matches []vlr.UpcomingMatch) error {
-	sidebarMd, err := format(false, matches)
+func BuildWidget(client *reddit.Client, m []matches.Upcoming) error {
+	sidebarMd, err := format(false, m)
 	if err != nil {
 		return err
 	}

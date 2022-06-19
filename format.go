@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/Sadzeih/valcompbot/vlr"
+	"github.com/Sadzeih/valcompbot/matches"
 )
 
 const (
@@ -25,14 +25,14 @@ const (
 	matchMdFmt = "| [%s](%s) | %s |\n"
 )
 
-func format(sidebar bool, matches []vlr.UpcomingMatch) (string, error) {
+func format(sidebar bool, m []matches.Upcoming) (string, error) {
 	var matchesMd string
 
-	eventMatches := make(map[string][]vlr.UpcomingMatch)
-	for _, match := range matches {
+	eventMatches := make(map[string][]matches.Upcoming)
+	for _, match := range m {
 		eventName := match.EventName
 		if _, ok := eventMatches[eventName]; !ok {
-			eventMatches[eventName] = make([]vlr.UpcomingMatch, 0)
+			eventMatches[eventName] = make([]matches.Upcoming, 0)
 		}
 		eventMatches[eventName] = append(eventMatches[eventName], match)
 	}

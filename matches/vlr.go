@@ -1,4 +1,4 @@
-package vlr
+package matches
 
 import (
 	"encoding/json"
@@ -12,10 +12,11 @@ const (
 	apiURL              = "https://api.vlr.gg"
 	upcomingMatchesPath = "/matches/upcoming"
 	matchPath           = "/match/%s"
+	eventMatchlistPath  = "/matchlist/%s"
 	tokenFmt            = "?token=%s&tier=riot"
 )
 
-func GetUpcomingMatches() ([]UpcomingMatch, error) {
+func GetUpcoming() ([]Upcoming, error) {
 	url := fmt.Sprintf(apiURL+upcomingMatchesPath+tokenFmt, config.Get().VLRToken)
 
 	req, err := http.NewRequest(http.MethodGet, url, nil)
@@ -33,7 +34,7 @@ func GetUpcomingMatches() ([]UpcomingMatch, error) {
 	}
 
 	upcomingMatches := struct {
-		Matches []UpcomingMatch `json:"matches"`
+		Matches []Upcoming `json:"matches"`
 	}{}
 
 	if err := json.NewDecoder(resp.Body).Decode(&upcomingMatches); err != nil {
@@ -56,7 +57,7 @@ func GetMatch(id string) (*Match, error) {
 
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
-		return nil, fmt.Errorf("GetMatch: error creating upcoming upcomingMatches.Matches request: %w", err)
+		return nil, fmt.Errorf("GetMatch: error creating match request: %w", err)
 	}
 
 	resp, err := http.DefaultClient.Do(req)
@@ -70,8 +71,33 @@ func GetMatch(id string) (*Match, error) {
 
 	match := &Match{}
 	if err := json.NewDecoder(resp.Body).Decode(&match); err != nil {
-		return nil, fmt.Errorf("GetMatch: error unmarshalling upcomingMatches.Matches: %w", err)
+		return nil, fmt.Errorf("GetMatch: error unmarshalling Match: %w", err)
 	}
 
 	return match, nil
+}
+
+func GetByEventID(id string) ([]EventMatch, error) {
+	url := fmt.Sprintf(apiURL+eventMatchlistPath+tokenFmt, id, config.Get().VLRToken)
+
+	req, err := http.NewRequest(http.MethodGet, url, nil)
+	if err != nil {
+		return nil, fmt.Errorf("GetByEventID: error creating event matchlist request: %w", err)
+	}
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("GetByEventID: error doing request: %w", err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("GetByEventID: request returned non-2XX code: %d", resp.StatusCode)
+	}
+
+	m := make([]EventMatch, 0)
+	if err := json.NewDecoder(resp.Body).Decode(&m); err != nil {
+		return nil, fmt.Errorf("GetByEventID: error unmarshalling []Match: %w", err)
+	}
+
+	return m, nil
 }

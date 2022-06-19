@@ -2,13 +2,14 @@ package main
 
 import (
 	"context"
-	"fmt"
-	"github.com/Sadzeih/valcompbot/vlr"
 	"log"
 	"sync"
-	"time"
 
 	"github.com/Sadzeih/valcompbot/config"
+	"github.com/Sadzeih/valcompbot/ent"
+	"github.com/Sadzeih/valcompbot/ent/migrate"
+	"github.com/Sadzeih/valcompbot/internal/api"
+	_ "github.com/lib/pq"
 	"github.com/vartanbeno/go-reddit/v2/reddit"
 )
 
@@ -22,9 +23,24 @@ func main() {
 		Username: config.Get().RedditUsername,
 		Password: config.Get().RedditPassword,
 	}
-	client, err := reddit.NewClient(credentials)
+
+	redditClient, err := reddit.NewClient(credentials)
 	if err != nil {
 		log.Fatal(err)
+	}
+
+	entClient, err := ent.Open("postgres", config.Get().PostgresString)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer entClient.Close()
+	ctx := context.Background()
+	if err := entClient.Schema.Create(
+		ctx,
+		migrate.WithDropIndex(true),
+		migrate.WithDropColumn(true),
+	); err != nil {
+		log.Fatalf("failed creating schema resources: %v", err)
 	}
 
 	// A wait group for synchronizing routines
@@ -34,46 +50,12 @@ func main() {
 	// Sidebar ticker routine
 	go func() {
 		defer wg.Done()
+		startSidebar(redditClient)
+	}()
 
-		ticker := time.NewTicker(1 * time.Minute)
-		defer ticker.Stop()
-
-		subSettings, _, err := client.Subreddit.GetSettings(context.Background(), config.Get().RedditSubreddit)
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-
-		matches, err := vlr.GetUpcomingMatches()
-		if err != nil {
-			fmt.Println(err)
-		}
-		if err := BuildSidebar(client, subSettings, matches); err != nil {
-			fmt.Println(err)
-		}
-		if err := BuildWidget(client, matches); err != nil {
-			fmt.Println(err)
-		}
-
-		for range ticker.C {
-			matches, err = vlr.GetUpcomingMatches()
-			if err != nil {
-				fmt.Println(err)
-			}
-			
-			subSettings, _, err = client.Subreddit.GetSettings(context.Background(), config.Get().RedditSubreddit)
-			if err != nil {
-				fmt.Println(err)
-				return
-			}
-
-			if err := BuildSidebar(client, subSettings, matches); err != nil {
-				fmt.Println(err)
-			}
-			if err := BuildWidget(client, matches); err != nil {
-				fmt.Println(err)
-			}
-		}
+	go func() {
+		defer wg.Done()
+		api.Start(redditClient, entClient)
 	}()
 
 	wg.Wait()
