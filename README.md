@@ -14,6 +14,7 @@ REDDIT_CLIENT_SECRET="CLIENT_SECRET"
 REDDIT_USERNAME="BOT_USERNAME"
 REDDIT_PASSWORD="PASSWORD"
 VLR_TOKEN="VLR_TOKEN"
+POSTGRES_STRING="host=localhost port=5432 user=test dbname=valcompbot password=test sslmode=disable"
 ```
 
 and start the bot by running:
