@@ -53,9 +53,17 @@ func main() {
 		startSidebar(redditClient)
 	}()
 
+	// API routine
 	go func() {
 		defer wg.Done()
 		api.Start(redditClient, entClient)
+	}()
+
+	go func() {
+		defer wg.Done()
+		if err := DaysSinceLastSentinelsPost(redditClient); err != nil {
+			log.Fatalf("Error in DaysSinceLastSentinelsPost: %v", err)
+		}
 	}()
 
 	wg.Wait()
