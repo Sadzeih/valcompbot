@@ -8,6 +8,7 @@ import (
 	"github.com/Sadzeih/valcompbot/events"
 	"github.com/Sadzeih/valcompbot/matches"
 	"github.com/gorilla/mux"
+	"github.com/rs/cors"
 	"github.com/vartanbeno/go-reddit/v2/reddit"
 )
 
@@ -30,7 +31,9 @@ func Start(redditClient *reddit.Client, entClient *ent.Client) error {
 	r.HandleFunc("/match/{ID}", matchesHandler.HandlePostMatch).
 		Methods(http.MethodPost)
 
-	if err := http.ListenAndServe(":8080", r); err != nil {
+	c := cors.Default().Handler(r)
+
+	if err := http.ListenAndServe(":8080", c); err != nil {
 		return err
 	}
 
