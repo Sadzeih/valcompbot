@@ -14,7 +14,7 @@ var (
 	lastSENsince    time.Time
 	lastSENsinceFmt = "The last Sentinels thread was %d days ago. 0 days since the last Sentinels thread."
 
-	sentinelsRegex = regexp.MustCompile("(?i)(SEN(tinels)?)|(tenz|kanpeki|sick|dapr|(r(oc?k|awk) ?(us|as+))|shah?z(am)?|zombs)")
+	sentinelsRegex = regexp.MustCompile("(?i)\b(SEN(tinels)?)|(tenz|kanpeki|sick|dapr|(r(oc?k|awk) ?(us|as+))|shah?z(am)?|zombs)\b")
 )
 
 func DaysSinceLastSentinelsPost(c *reddit.Client) error {
@@ -36,8 +36,8 @@ func DaysSinceLastSentinelsPost(c *reddit.Client) error {
 		case post := <-newPosts:
 			if sentinelsRegex.MatchString(post.Title) {
 				str := fmt.Sprintf(lastSENsinceFmt, int(time.Since(lastSENsince).Hours()/24))
-				if lastSENpost == nil {
-					str = "I don't know when the last Sentinels post (but I can't have been that long ago...). 0 days since the last Sentinels post."
+				if lastSENsince.IsZero() && lastSENpost == nil {
+					str = "I don't know when the last Sentinels post was (but it can't have been that long ago...). 0 days since the last Sentinels post."
 				}
 				com, _, err := c.Comment.Submit(context.Background(), post.FullID, str)
 				if err != nil {
