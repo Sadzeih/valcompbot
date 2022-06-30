@@ -14,7 +14,7 @@ var (
 	lastSENsince    time.Time
 	lastSENsinceFmt = "The last Sentinels thread was %d days ago. 0 days since the last Sentinels thread."
 
-	sentinelsRegex = regexp.MustCompile(`(?i)\b(SEN(tinels)?)|(tenz|kanpeki|sick|dapr|(r(oc?k|awk) ?(us|as+))|shah?z(am)?|zombs)\b`)
+	sentinelsRegex = regexp.MustCompile(`(?i)\b((SEN(tinels)?)|(tenz|kanpeki|sick|dapr|(r(oc?k|awk) ?(us|as+))|shah?z(am)?|zombs))\b`)
 )
 
 func DaysSinceLastSentinelsPost(c *reddit.Client) error {
