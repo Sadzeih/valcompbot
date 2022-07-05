@@ -14,6 +14,7 @@ type Config struct {
 	RedditPassword     string `env:"REDDIT_PASSWORD"`
 	VLRToken           string `env:"VLR_TOKEN"`
 	PostgresString     string `env:"POSTGRES_STRING"`
+	AllowOrigin        string `env:"ALLOW_ORIGIN"`
 }
 
 var (

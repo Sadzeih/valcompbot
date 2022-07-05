@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/Sadzeih/valcompbot/config"
 	"github.com/Sadzeih/valcompbot/ent"
 	"github.com/Sadzeih/valcompbot/events"
 	"github.com/Sadzeih/valcompbot/matches"
@@ -40,7 +41,19 @@ func Start(redditClient *reddit.Client, entClient *ent.Client) error {
 	r.HandleFunc("/match/{ID}", matchesHandler.HandlePostMatch).
 		Methods(http.MethodPost)
 
-	c := cors.AllowAll().Handler(r)
+	c := cors.New(cors.Options{
+		AllowedOrigins: []string{config.Get().AllowOrigin},
+		AllowedMethods: []string{
+			http.MethodHead,
+			http.MethodGet,
+			http.MethodPost,
+			http.MethodPut,
+			http.MethodPatch,
+			http.MethodDelete,
+		},
+		AllowedHeaders:   []string{"*"},
+		AllowCredentials: false,
+	}).Handler(r)
 
 	if err := http.ListenAndServe(":8080", c); err != nil {
 		return err
