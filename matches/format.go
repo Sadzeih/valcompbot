@@ -59,7 +59,7 @@ var (
 {{- end }}
 `
 
-	titleFmt = "%s vs %s / %s - %s / Post-Match-Thread"
+	titleFmt = "%s vs %s / %s - %s / Post-Match Thread"
 )
 
 func (m *Match) ToMarkdown() (string, error) {
