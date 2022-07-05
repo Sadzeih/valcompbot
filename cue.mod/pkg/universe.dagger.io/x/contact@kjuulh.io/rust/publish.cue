@@ -1,3 +1,4 @@
+//Deprecated: in favor of universe.dagger.io/alpha package
 package rust
 
 import (
@@ -29,5 +30,5 @@ import (
 	}
 
 	// Directory containing the output of the publish
-	output: container.export.directories."/output/target/release"
+	output: container.export.directories."/output"
 }

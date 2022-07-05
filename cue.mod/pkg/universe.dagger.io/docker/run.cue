@@ -76,7 +76,7 @@ import (
 			entrypoint: []
 			cmd: []
 			workdir: "/"
-			user:    "root"
+			user:    "root:root"
 		}
 		config: input.config
 	}
@@ -149,6 +149,22 @@ import (
 			}
 			for path, output in _directories {
 				directories: "\(path)": output.contents
+			}
+
+			secrets: [path=string]: dagger.#Secret
+			_secrets: {
+				for path, _ in secrets {
+					"\(path)": {
+						contents: dagger.#Secret & _read.output
+						_read:    core.#NewSecret & {
+							input:  _exec.output
+							"path": path
+						}
+					}
+				}
+			}
+			for path, output in _secrets {
+				secrets: "\(path)": output.contents
 			}
 		}
 	}

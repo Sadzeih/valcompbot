@@ -9,8 +9,10 @@ require (
 	github.com/gorilla/mux v1.8.0
 	github.com/joho/godotenv v1.4.0
 	github.com/lib/pq v1.10.4
+	github.com/purini-to/zapmw v1.1.0
 	github.com/rs/cors v1.8.2
 	github.com/vartanbeno/go-reddit/v2 v2.0.1
+	go.uber.org/zap v1.10.0
 	golang.org/x/exp v0.0.0-20220613132600-b0d781184e0d
 )
 
@@ -24,7 +26,10 @@ require (
 	github.com/google/go-querystring v1.0.0 // indirect
 	github.com/hashicorp/hcl/v2 v2.10.0 // indirect
 	github.com/mitchellh/go-wordwrap v0.0.0-20150314170334-ad45545899c7 // indirect
+	github.com/pkg/errors v0.9.1 // indirect
 	github.com/zclconf/go-cty v1.8.0 // indirect
+	go.uber.org/atomic v1.4.0 // indirect
+	go.uber.org/multierr v1.1.0 // indirect
 	golang.org/x/mod v0.6.0-dev.0.20220106191415-9b9b3d81d5e3 // indirect
 	golang.org/x/net v0.0.0-20211015210444-4f30a5c0130f // indirect
 	golang.org/x/oauth2 v0.0.0-20211104180415-d3ed0bb246c8 // indirect

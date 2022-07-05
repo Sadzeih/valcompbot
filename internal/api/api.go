@@ -8,12 +8,21 @@ import (
 	"github.com/Sadzeih/valcompbot/events"
 	"github.com/Sadzeih/valcompbot/matches"
 	"github.com/gorilla/mux"
+	"github.com/purini-to/zapmw"
 	"github.com/rs/cors"
 	"github.com/vartanbeno/go-reddit/v2/reddit"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
 
 func Start(redditClient *reddit.Client, entClient *ent.Client) error {
 	r := mux.NewRouter()
+	logger, _ := zap.NewProduction()
+	r.Use(
+		zapmw.WithZap(logger),
+		zapmw.Request(zapcore.InfoLevel, "request"),
+		zapmw.Recoverer(zapcore.ErrorLevel, "recover", zapmw.RecovererDefault),
+	)
 
 	ctx := context.Background()
 
@@ -31,7 +40,7 @@ func Start(redditClient *reddit.Client, entClient *ent.Client) error {
 	r.HandleFunc("/match/{ID}", matchesHandler.HandlePostMatch).
 		Methods(http.MethodPost)
 
-	c := cors.Default().Handler(r)
+	c := cors.AllowAll().Handler(r)
 
 	if err := http.ListenAndServe(":8080", c); err != nil {
 		return err
