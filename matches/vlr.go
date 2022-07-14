@@ -50,7 +50,7 @@ func GetUpcoming() ([]Upcoming, error) {
 		upcomingMatches.Matches[idx].Match = matchRes
 	}
 
-	return upcomingMatches.Matches[:math.Min(len(upcomingMatches.Matches), 15)], nil
+	return upcomingMatches.Matches[:math.Min(int(len(upcomingMatches.Matches)), 15)], nil
 }
 
 func GetMatch(id string) (*Match, error) {
