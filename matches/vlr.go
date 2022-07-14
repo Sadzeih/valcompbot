@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"math"
 
 	"github.com/Sadzeih/valcompbot/config"
 )
