@@ -13,6 +13,7 @@ type Config struct {
 	RedditUsername     string `env:"REDDIT_USERNAME"`
 	RedditPassword     string `env:"REDDIT_PASSWORD"`
 	VLRToken           string `env:"VLR_TOKEN"`
+	EnableSentinels    string `env:"ENABLE_SENTINELS"`
 	PostgresString     string `env:"POSTGRES_STRING"`
 	AllowOrigin        string `env:"ALLOW_ORIGIN"`
 }
