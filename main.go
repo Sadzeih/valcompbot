@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"log"
+	"strconv"
 	"sync"
 
 	"github.com/Sadzeih/valcompbot/config"
@@ -59,7 +60,11 @@ func main() {
 		api.Start(redditClient, entClient)
 	}()
 
-	if config.Get().EnableSentinels {
+	e, err := strconv.ParseBool(config.Get().EnableSentinels)
+	if err != nil {
+		log.Fatalf("failed to parse bool: %v", err)
+	}
+	if e {
 		go func() {
 			defer wg.Done()
 			if err := DaysSinceLastSentinelsPost(redditClient); err != nil {
