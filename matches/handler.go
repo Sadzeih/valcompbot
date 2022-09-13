@@ -18,6 +18,10 @@ import (
 	"golang.org/x/exp/slices"
 )
 
+const (
+	pmtFlairID = "76154df2-c8c8-11ec-8e35-c21565c22f2e"
+)
+
 type MatchesHandler struct {
 	reddit *reddit.Client
 	ent    *ent.Client
@@ -173,6 +177,7 @@ func (h *MatchesHandler) HandlePostMatch(w http.ResponseWriter, r *http.Request)
 		Subreddit: config.Get().RedditSubreddit,
 		Title:     title,
 		Text:      md,
+		FlairID:   pmtFlairID,
 		Spoiler:   true,
 	})
 	if err != nil {
