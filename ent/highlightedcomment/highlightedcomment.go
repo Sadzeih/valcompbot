@@ -17,14 +17,16 @@ const (
 	FieldBody = "body"
 	// FieldAuthor holds the string denoting the author field in the database.
 	FieldAuthor = "author"
-	// FieldAuthorRole holds the string denoting the author_role field in the database.
-	FieldAuthorRole = "author_role"
+	// FieldFlair holds the string denoting the flair field in the database.
+	FieldFlair = "flair"
 	// FieldParentID holds the string denoting the parent_id field in the database.
 	FieldParentID = "parent_id"
 	// FieldLink holds the string denoting the link field in the database.
 	FieldLink = "link"
 	// FieldAuthorType holds the string denoting the author_type field in the database.
 	FieldAuthorType = "author_type"
+	// FieldTimestamp holds the string denoting the timestamp field in the database.
+	FieldTimestamp = "timestamp"
 	// Table holds the table name of the highlightedcomment in the database.
 	Table = "highlighted_comments"
 )
@@ -35,10 +37,11 @@ var Columns = []string{
 	FieldCommentID,
 	FieldBody,
 	FieldAuthor,
-	FieldAuthorRole,
+	FieldFlair,
 	FieldParentID,
 	FieldLink,
 	FieldAuthorType,
+	FieldTimestamp,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).

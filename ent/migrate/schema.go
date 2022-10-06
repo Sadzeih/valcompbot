@@ -14,16 +14,29 @@ var (
 		{Name: "comment_id", Type: field.TypeString, Unique: true},
 		{Name: "body", Type: field.TypeString},
 		{Name: "author", Type: field.TypeString},
-		{Name: "author_role", Type: field.TypeString},
+		{Name: "flair", Type: field.TypeString},
 		{Name: "parent_id", Type: field.TypeString},
 		{Name: "link", Type: field.TypeString},
 		{Name: "author_type", Type: field.TypeString},
+		{Name: "timestamp", Type: field.TypeTime},
 	}
 	// HighlightedCommentsTable holds the schema information for the "highlighted_comments" table.
 	HighlightedCommentsTable = &schema.Table{
 		Name:       "highlighted_comments",
 		Columns:    HighlightedCommentsColumns,
 		PrimaryKey: []*schema.Column{HighlightedCommentsColumns[0]},
+	}
+	// PinnedCommentsColumns holds the columns for the "pinned_comments" table.
+	PinnedCommentsColumns = []*schema.Column{
+		{Name: "oid", Type: field.TypeUUID},
+		{Name: "comment_id", Type: field.TypeString, Unique: true},
+		{Name: "parent_id", Type: field.TypeString},
+	}
+	// PinnedCommentsTable holds the schema information for the "pinned_comments" table.
+	PinnedCommentsTable = &schema.Table{
+		Name:       "pinned_comments",
+		Columns:    PinnedCommentsColumns,
+		PrimaryKey: []*schema.Column{PinnedCommentsColumns[0]},
 	}
 	// TrackedEventsColumns holds the columns for the "tracked_events" table.
 	TrackedEventsColumns = []*schema.Column{
@@ -40,6 +53,7 @@ var (
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		HighlightedCommentsTable,
+		PinnedCommentsTable,
 		TrackedEventsTable,
 	}
 )

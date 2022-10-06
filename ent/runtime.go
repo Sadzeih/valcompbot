@@ -4,6 +4,7 @@ package ent
 
 import (
 	"github.com/Sadzeih/valcompbot/ent/highlightedcomment"
+	"github.com/Sadzeih/valcompbot/ent/pinnedcomment"
 	"github.com/Sadzeih/valcompbot/ent/schema"
 	"github.com/Sadzeih/valcompbot/ent/trackedevent"
 	"github.com/google/uuid"
@@ -19,6 +20,12 @@ func init() {
 	highlightedcommentDescID := highlightedcommentFields[0].Descriptor()
 	// highlightedcomment.DefaultID holds the default value on creation for the id field.
 	highlightedcomment.DefaultID = highlightedcommentDescID.Default.(func() uuid.UUID)
+	pinnedcommentFields := schema.PinnedComment{}.Fields()
+	_ = pinnedcommentFields
+	// pinnedcommentDescID is the schema descriptor for id field.
+	pinnedcommentDescID := pinnedcommentFields[0].Descriptor()
+	// pinnedcomment.DefaultID holds the default value on creation for the id field.
+	pinnedcomment.DefaultID = pinnedcommentDescID.Default.(func() uuid.UUID)
 	trackedeventFields := schema.TrackedEvent{}.Fields()
 	_ = trackedeventFields
 	// trackedeventDescID is the schema descriptor for id field.

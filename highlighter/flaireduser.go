@@ -23,9 +23,3 @@ func (s userMap) Exists(u string) bool {
 	_, ok := s[u]
 	return ok
 }
-
-var (
-	rioters = userMap{
-		"Sadzeih": {Username: "Sadzeih", Role: "ValComp Mod"},
-	}
-)

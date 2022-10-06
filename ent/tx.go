@@ -14,6 +14,8 @@ type Tx struct {
 	config
 	// HighlightedComment is the client for interacting with the HighlightedComment builders.
 	HighlightedComment *HighlightedCommentClient
+	// PinnedComment is the client for interacting with the PinnedComment builders.
+	PinnedComment *PinnedCommentClient
 	// TrackedEvent is the client for interacting with the TrackedEvent builders.
 	TrackedEvent *TrackedEventClient
 
@@ -152,6 +154,7 @@ func (tx *Tx) Client() *Client {
 
 func (tx *Tx) init() {
 	tx.HighlightedComment = NewHighlightedCommentClient(tx.config)
+	tx.PinnedComment = NewPinnedCommentClient(tx.config)
 	tx.TrackedEvent = NewTrackedEventClient(tx.config)
 }
 

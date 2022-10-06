@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -45,9 +46,9 @@ func (hcu *HighlightedCommentUpdate) SetAuthor(s string) *HighlightedCommentUpda
 	return hcu
 }
 
-// SetAuthorRole sets the "author_role" field.
-func (hcu *HighlightedCommentUpdate) SetAuthorRole(s string) *HighlightedCommentUpdate {
-	hcu.mutation.SetAuthorRole(s)
+// SetFlair sets the "flair" field.
+func (hcu *HighlightedCommentUpdate) SetFlair(s string) *HighlightedCommentUpdate {
+	hcu.mutation.SetFlair(s)
 	return hcu
 }
 
@@ -66,6 +67,12 @@ func (hcu *HighlightedCommentUpdate) SetLink(s string) *HighlightedCommentUpdate
 // SetAuthorType sets the "author_type" field.
 func (hcu *HighlightedCommentUpdate) SetAuthorType(s string) *HighlightedCommentUpdate {
 	hcu.mutation.SetAuthorType(s)
+	return hcu
+}
+
+// SetTimestamp sets the "timestamp" field.
+func (hcu *HighlightedCommentUpdate) SetTimestamp(t time.Time) *HighlightedCommentUpdate {
+	hcu.mutation.SetTimestamp(t)
 	return hcu
 }
 
@@ -167,11 +174,11 @@ func (hcu *HighlightedCommentUpdate) sqlSave(ctx context.Context) (n int, err er
 			Column: highlightedcomment.FieldAuthor,
 		})
 	}
-	if value, ok := hcu.mutation.AuthorRole(); ok {
+	if value, ok := hcu.mutation.Flair(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: highlightedcomment.FieldAuthorRole,
+			Column: highlightedcomment.FieldFlair,
 		})
 	}
 	if value, ok := hcu.mutation.ParentID(); ok {
@@ -193,6 +200,13 @@ func (hcu *HighlightedCommentUpdate) sqlSave(ctx context.Context) (n int, err er
 			Type:   field.TypeString,
 			Value:  value,
 			Column: highlightedcomment.FieldAuthorType,
+		})
+	}
+	if value, ok := hcu.mutation.Timestamp(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: highlightedcomment.FieldTimestamp,
 		})
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, hcu.driver, _spec); err != nil {
@@ -232,9 +246,9 @@ func (hcuo *HighlightedCommentUpdateOne) SetAuthor(s string) *HighlightedComment
 	return hcuo
 }
 
-// SetAuthorRole sets the "author_role" field.
-func (hcuo *HighlightedCommentUpdateOne) SetAuthorRole(s string) *HighlightedCommentUpdateOne {
-	hcuo.mutation.SetAuthorRole(s)
+// SetFlair sets the "flair" field.
+func (hcuo *HighlightedCommentUpdateOne) SetFlair(s string) *HighlightedCommentUpdateOne {
+	hcuo.mutation.SetFlair(s)
 	return hcuo
 }
 
@@ -253,6 +267,12 @@ func (hcuo *HighlightedCommentUpdateOne) SetLink(s string) *HighlightedCommentUp
 // SetAuthorType sets the "author_type" field.
 func (hcuo *HighlightedCommentUpdateOne) SetAuthorType(s string) *HighlightedCommentUpdateOne {
 	hcuo.mutation.SetAuthorType(s)
+	return hcuo
+}
+
+// SetTimestamp sets the "timestamp" field.
+func (hcuo *HighlightedCommentUpdateOne) SetTimestamp(t time.Time) *HighlightedCommentUpdateOne {
+	hcuo.mutation.SetTimestamp(t)
 	return hcuo
 }
 
@@ -384,11 +404,11 @@ func (hcuo *HighlightedCommentUpdateOne) sqlSave(ctx context.Context) (_node *Hi
 			Column: highlightedcomment.FieldAuthor,
 		})
 	}
-	if value, ok := hcuo.mutation.AuthorRole(); ok {
+	if value, ok := hcuo.mutation.Flair(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: highlightedcomment.FieldAuthorRole,
+			Column: highlightedcomment.FieldFlair,
 		})
 	}
 	if value, ok := hcuo.mutation.ParentID(); ok {
@@ -410,6 +430,13 @@ func (hcuo *HighlightedCommentUpdateOne) sqlSave(ctx context.Context) (_node *Hi
 			Type:   field.TypeString,
 			Value:  value,
 			Column: highlightedcomment.FieldAuthorType,
+		})
+	}
+	if value, ok := hcuo.mutation.Timestamp(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: highlightedcomment.FieldTimestamp,
 		})
 	}
 	_node = &HighlightedComment{config: hcuo.config}

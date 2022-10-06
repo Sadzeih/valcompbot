@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -38,9 +39,9 @@ func (hcc *HighlightedCommentCreate) SetAuthor(s string) *HighlightedCommentCrea
 	return hcc
 }
 
-// SetAuthorRole sets the "author_role" field.
-func (hcc *HighlightedCommentCreate) SetAuthorRole(s string) *HighlightedCommentCreate {
-	hcc.mutation.SetAuthorRole(s)
+// SetFlair sets the "flair" field.
+func (hcc *HighlightedCommentCreate) SetFlair(s string) *HighlightedCommentCreate {
+	hcc.mutation.SetFlair(s)
 	return hcc
 }
 
@@ -59,6 +60,12 @@ func (hcc *HighlightedCommentCreate) SetLink(s string) *HighlightedCommentCreate
 // SetAuthorType sets the "author_type" field.
 func (hcc *HighlightedCommentCreate) SetAuthorType(s string) *HighlightedCommentCreate {
 	hcc.mutation.SetAuthorType(s)
+	return hcc
+}
+
+// SetTimestamp sets the "timestamp" field.
+func (hcc *HighlightedCommentCreate) SetTimestamp(t time.Time) *HighlightedCommentCreate {
+	hcc.mutation.SetTimestamp(t)
 	return hcc
 }
 
@@ -170,8 +177,8 @@ func (hcc *HighlightedCommentCreate) check() error {
 	if _, ok := hcc.mutation.Author(); !ok {
 		return &ValidationError{Name: "author", err: errors.New(`ent: missing required field "HighlightedComment.author"`)}
 	}
-	if _, ok := hcc.mutation.AuthorRole(); !ok {
-		return &ValidationError{Name: "author_role", err: errors.New(`ent: missing required field "HighlightedComment.author_role"`)}
+	if _, ok := hcc.mutation.Flair(); !ok {
+		return &ValidationError{Name: "flair", err: errors.New(`ent: missing required field "HighlightedComment.flair"`)}
 	}
 	if _, ok := hcc.mutation.ParentID(); !ok {
 		return &ValidationError{Name: "parent_id", err: errors.New(`ent: missing required field "HighlightedComment.parent_id"`)}
@@ -181,6 +188,9 @@ func (hcc *HighlightedCommentCreate) check() error {
 	}
 	if _, ok := hcc.mutation.AuthorType(); !ok {
 		return &ValidationError{Name: "author_type", err: errors.New(`ent: missing required field "HighlightedComment.author_type"`)}
+	}
+	if _, ok := hcc.mutation.Timestamp(); !ok {
+		return &ValidationError{Name: "timestamp", err: errors.New(`ent: missing required field "HighlightedComment.timestamp"`)}
 	}
 	return nil
 }
@@ -242,13 +252,13 @@ func (hcc *HighlightedCommentCreate) createSpec() (*HighlightedComment, *sqlgrap
 		})
 		_node.Author = value
 	}
-	if value, ok := hcc.mutation.AuthorRole(); ok {
+	if value, ok := hcc.mutation.Flair(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: highlightedcomment.FieldAuthorRole,
+			Column: highlightedcomment.FieldFlair,
 		})
-		_node.AuthorRole = value
+		_node.Flair = value
 	}
 	if value, ok := hcc.mutation.ParentID(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -273,6 +283,14 @@ func (hcc *HighlightedCommentCreate) createSpec() (*HighlightedComment, *sqlgrap
 			Column: highlightedcomment.FieldAuthorType,
 		})
 		_node.AuthorType = value
+	}
+	if value, ok := hcc.mutation.Timestamp(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: highlightedcomment.FieldTimestamp,
+		})
+		_node.Timestamp = value
 	}
 	return _node, _spec
 }

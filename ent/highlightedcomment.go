@@ -5,6 +5,7 @@ package ent
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/Sadzeih/valcompbot/ent/highlightedcomment"
@@ -22,14 +23,16 @@ type HighlightedComment struct {
 	Body string `json:"body,omitempty"`
 	// Author holds the value of the "author" field.
 	Author string `json:"author,omitempty"`
-	// AuthorRole holds the value of the "author_role" field.
-	AuthorRole string `json:"author_role,omitempty"`
+	// Flair holds the value of the "flair" field.
+	Flair string `json:"flair,omitempty"`
 	// ParentID holds the value of the "parent_id" field.
 	ParentID string `json:"parent_id,omitempty"`
 	// Link holds the value of the "link" field.
 	Link string `json:"link,omitempty"`
 	// AuthorType holds the value of the "author_type" field.
 	AuthorType string `json:"author_type,omitempty"`
+	// Timestamp holds the value of the "timestamp" field.
+	Timestamp time.Time `json:"timestamp,omitempty"`
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -37,8 +40,10 @@ func (*HighlightedComment) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case highlightedcomment.FieldCommentID, highlightedcomment.FieldBody, highlightedcomment.FieldAuthor, highlightedcomment.FieldAuthorRole, highlightedcomment.FieldParentID, highlightedcomment.FieldLink, highlightedcomment.FieldAuthorType:
+		case highlightedcomment.FieldCommentID, highlightedcomment.FieldBody, highlightedcomment.FieldAuthor, highlightedcomment.FieldFlair, highlightedcomment.FieldParentID, highlightedcomment.FieldLink, highlightedcomment.FieldAuthorType:
 			values[i] = new(sql.NullString)
+		case highlightedcomment.FieldTimestamp:
+			values[i] = new(sql.NullTime)
 		case highlightedcomment.FieldID:
 			values[i] = new(uuid.UUID)
 		default:
@@ -80,11 +85,11 @@ func (hc *HighlightedComment) assignValues(columns []string, values []interface{
 			} else if value.Valid {
 				hc.Author = value.String
 			}
-		case highlightedcomment.FieldAuthorRole:
+		case highlightedcomment.FieldFlair:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field author_role", values[i])
+				return fmt.Errorf("unexpected type %T for field flair", values[i])
 			} else if value.Valid {
-				hc.AuthorRole = value.String
+				hc.Flair = value.String
 			}
 		case highlightedcomment.FieldParentID:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -103,6 +108,12 @@ func (hc *HighlightedComment) assignValues(columns []string, values []interface{
 				return fmt.Errorf("unexpected type %T for field author_type", values[i])
 			} else if value.Valid {
 				hc.AuthorType = value.String
+			}
+		case highlightedcomment.FieldTimestamp:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field timestamp", values[i])
+			} else if value.Valid {
+				hc.Timestamp = value.Time
 			}
 		}
 	}
@@ -141,8 +152,8 @@ func (hc *HighlightedComment) String() string {
 	builder.WriteString("author=")
 	builder.WriteString(hc.Author)
 	builder.WriteString(", ")
-	builder.WriteString("author_role=")
-	builder.WriteString(hc.AuthorRole)
+	builder.WriteString("flair=")
+	builder.WriteString(hc.Flair)
 	builder.WriteString(", ")
 	builder.WriteString("parent_id=")
 	builder.WriteString(hc.ParentID)
@@ -152,6 +163,9 @@ func (hc *HighlightedComment) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("author_type=")
 	builder.WriteString(hc.AuthorType)
+	builder.WriteString(", ")
+	builder.WriteString("timestamp=")
+	builder.WriteString(hc.Timestamp.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }

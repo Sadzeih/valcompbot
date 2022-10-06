@@ -7,8 +7,10 @@ import (
 	"errors"
 	"fmt"
 	"sync"
+	"time"
 
 	"github.com/Sadzeih/valcompbot/ent/highlightedcomment"
+	"github.com/Sadzeih/valcompbot/ent/pinnedcomment"
 	"github.com/Sadzeih/valcompbot/ent/predicate"
 	"github.com/Sadzeih/valcompbot/ent/trackedevent"
 	"github.com/google/uuid"
@@ -26,6 +28,7 @@ const (
 
 	// Node types.
 	TypeHighlightedComment = "HighlightedComment"
+	TypePinnedComment      = "PinnedComment"
 	TypeTrackedEvent       = "TrackedEvent"
 )
 
@@ -38,10 +41,11 @@ type HighlightedCommentMutation struct {
 	comment_id    *string
 	body          *string
 	author        *string
-	author_role   *string
+	flair         *string
 	parent_id     *string
 	link          *string
 	author_type   *string
+	timestamp     *time.Time
 	clearedFields map[string]struct{}
 	done          bool
 	oldValue      func(context.Context) (*HighlightedComment, error)
@@ -260,40 +264,40 @@ func (m *HighlightedCommentMutation) ResetAuthor() {
 	m.author = nil
 }
 
-// SetAuthorRole sets the "author_role" field.
-func (m *HighlightedCommentMutation) SetAuthorRole(s string) {
-	m.author_role = &s
+// SetFlair sets the "flair" field.
+func (m *HighlightedCommentMutation) SetFlair(s string) {
+	m.flair = &s
 }
 
-// AuthorRole returns the value of the "author_role" field in the mutation.
-func (m *HighlightedCommentMutation) AuthorRole() (r string, exists bool) {
-	v := m.author_role
+// Flair returns the value of the "flair" field in the mutation.
+func (m *HighlightedCommentMutation) Flair() (r string, exists bool) {
+	v := m.flair
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldAuthorRole returns the old "author_role" field's value of the HighlightedComment entity.
+// OldFlair returns the old "flair" field's value of the HighlightedComment entity.
 // If the HighlightedComment object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *HighlightedCommentMutation) OldAuthorRole(ctx context.Context) (v string, err error) {
+func (m *HighlightedCommentMutation) OldFlair(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldAuthorRole is only allowed on UpdateOne operations")
+		return v, errors.New("OldFlair is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldAuthorRole requires an ID field in the mutation")
+		return v, errors.New("OldFlair requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldAuthorRole: %w", err)
+		return v, fmt.Errorf("querying old value for OldFlair: %w", err)
 	}
-	return oldValue.AuthorRole, nil
+	return oldValue.Flair, nil
 }
 
-// ResetAuthorRole resets all changes to the "author_role" field.
-func (m *HighlightedCommentMutation) ResetAuthorRole() {
-	m.author_role = nil
+// ResetFlair resets all changes to the "flair" field.
+func (m *HighlightedCommentMutation) ResetFlair() {
+	m.flair = nil
 }
 
 // SetParentID sets the "parent_id" field.
@@ -404,6 +408,42 @@ func (m *HighlightedCommentMutation) ResetAuthorType() {
 	m.author_type = nil
 }
 
+// SetTimestamp sets the "timestamp" field.
+func (m *HighlightedCommentMutation) SetTimestamp(t time.Time) {
+	m.timestamp = &t
+}
+
+// Timestamp returns the value of the "timestamp" field in the mutation.
+func (m *HighlightedCommentMutation) Timestamp() (r time.Time, exists bool) {
+	v := m.timestamp
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTimestamp returns the old "timestamp" field's value of the HighlightedComment entity.
+// If the HighlightedComment object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *HighlightedCommentMutation) OldTimestamp(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTimestamp is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTimestamp requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTimestamp: %w", err)
+	}
+	return oldValue.Timestamp, nil
+}
+
+// ResetTimestamp resets all changes to the "timestamp" field.
+func (m *HighlightedCommentMutation) ResetTimestamp() {
+	m.timestamp = nil
+}
+
 // Where appends a list predicates to the HighlightedCommentMutation builder.
 func (m *HighlightedCommentMutation) Where(ps ...predicate.HighlightedComment) {
 	m.predicates = append(m.predicates, ps...)
@@ -423,7 +463,7 @@ func (m *HighlightedCommentMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *HighlightedCommentMutation) Fields() []string {
-	fields := make([]string, 0, 7)
+	fields := make([]string, 0, 8)
 	if m.comment_id != nil {
 		fields = append(fields, highlightedcomment.FieldCommentID)
 	}
@@ -433,8 +473,8 @@ func (m *HighlightedCommentMutation) Fields() []string {
 	if m.author != nil {
 		fields = append(fields, highlightedcomment.FieldAuthor)
 	}
-	if m.author_role != nil {
-		fields = append(fields, highlightedcomment.FieldAuthorRole)
+	if m.flair != nil {
+		fields = append(fields, highlightedcomment.FieldFlair)
 	}
 	if m.parent_id != nil {
 		fields = append(fields, highlightedcomment.FieldParentID)
@@ -444,6 +484,9 @@ func (m *HighlightedCommentMutation) Fields() []string {
 	}
 	if m.author_type != nil {
 		fields = append(fields, highlightedcomment.FieldAuthorType)
+	}
+	if m.timestamp != nil {
+		fields = append(fields, highlightedcomment.FieldTimestamp)
 	}
 	return fields
 }
@@ -459,14 +502,16 @@ func (m *HighlightedCommentMutation) Field(name string) (ent.Value, bool) {
 		return m.Body()
 	case highlightedcomment.FieldAuthor:
 		return m.Author()
-	case highlightedcomment.FieldAuthorRole:
-		return m.AuthorRole()
+	case highlightedcomment.FieldFlair:
+		return m.Flair()
 	case highlightedcomment.FieldParentID:
 		return m.ParentID()
 	case highlightedcomment.FieldLink:
 		return m.Link()
 	case highlightedcomment.FieldAuthorType:
 		return m.AuthorType()
+	case highlightedcomment.FieldTimestamp:
+		return m.Timestamp()
 	}
 	return nil, false
 }
@@ -482,14 +527,16 @@ func (m *HighlightedCommentMutation) OldField(ctx context.Context, name string) 
 		return m.OldBody(ctx)
 	case highlightedcomment.FieldAuthor:
 		return m.OldAuthor(ctx)
-	case highlightedcomment.FieldAuthorRole:
-		return m.OldAuthorRole(ctx)
+	case highlightedcomment.FieldFlair:
+		return m.OldFlair(ctx)
 	case highlightedcomment.FieldParentID:
 		return m.OldParentID(ctx)
 	case highlightedcomment.FieldLink:
 		return m.OldLink(ctx)
 	case highlightedcomment.FieldAuthorType:
 		return m.OldAuthorType(ctx)
+	case highlightedcomment.FieldTimestamp:
+		return m.OldTimestamp(ctx)
 	}
 	return nil, fmt.Errorf("unknown HighlightedComment field %s", name)
 }
@@ -520,12 +567,12 @@ func (m *HighlightedCommentMutation) SetField(name string, value ent.Value) erro
 		}
 		m.SetAuthor(v)
 		return nil
-	case highlightedcomment.FieldAuthorRole:
+	case highlightedcomment.FieldFlair:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetAuthorRole(v)
+		m.SetFlair(v)
 		return nil
 	case highlightedcomment.FieldParentID:
 		v, ok := value.(string)
@@ -547,6 +594,13 @@ func (m *HighlightedCommentMutation) SetField(name string, value ent.Value) erro
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetAuthorType(v)
+		return nil
+	case highlightedcomment.FieldTimestamp:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTimestamp(v)
 		return nil
 	}
 	return fmt.Errorf("unknown HighlightedComment field %s", name)
@@ -606,8 +660,8 @@ func (m *HighlightedCommentMutation) ResetField(name string) error {
 	case highlightedcomment.FieldAuthor:
 		m.ResetAuthor()
 		return nil
-	case highlightedcomment.FieldAuthorRole:
-		m.ResetAuthorRole()
+	case highlightedcomment.FieldFlair:
+		m.ResetFlair()
 		return nil
 	case highlightedcomment.FieldParentID:
 		m.ResetParentID()
@@ -617,6 +671,9 @@ func (m *HighlightedCommentMutation) ResetField(name string) error {
 		return nil
 	case highlightedcomment.FieldAuthorType:
 		m.ResetAuthorType()
+		return nil
+	case highlightedcomment.FieldTimestamp:
+		m.ResetTimestamp()
 		return nil
 	}
 	return fmt.Errorf("unknown HighlightedComment field %s", name)
@@ -668,6 +725,377 @@ func (m *HighlightedCommentMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *HighlightedCommentMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown HighlightedComment edge %s", name)
+}
+
+// PinnedCommentMutation represents an operation that mutates the PinnedComment nodes in the graph.
+type PinnedCommentMutation struct {
+	config
+	op            Op
+	typ           string
+	id            *uuid.UUID
+	comment_id    *string
+	parent_id     *string
+	clearedFields map[string]struct{}
+	done          bool
+	oldValue      func(context.Context) (*PinnedComment, error)
+	predicates    []predicate.PinnedComment
+}
+
+var _ ent.Mutation = (*PinnedCommentMutation)(nil)
+
+// pinnedcommentOption allows management of the mutation configuration using functional options.
+type pinnedcommentOption func(*PinnedCommentMutation)
+
+// newPinnedCommentMutation creates new mutation for the PinnedComment entity.
+func newPinnedCommentMutation(c config, op Op, opts ...pinnedcommentOption) *PinnedCommentMutation {
+	m := &PinnedCommentMutation{
+		config:        c,
+		op:            op,
+		typ:           TypePinnedComment,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withPinnedCommentID sets the ID field of the mutation.
+func withPinnedCommentID(id uuid.UUID) pinnedcommentOption {
+	return func(m *PinnedCommentMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *PinnedComment
+		)
+		m.oldValue = func(ctx context.Context) (*PinnedComment, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().PinnedComment.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withPinnedComment sets the old PinnedComment of the mutation.
+func withPinnedComment(node *PinnedComment) pinnedcommentOption {
+	return func(m *PinnedCommentMutation) {
+		m.oldValue = func(context.Context) (*PinnedComment, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m PinnedCommentMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m PinnedCommentMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of PinnedComment entities.
+func (m *PinnedCommentMutation) SetID(id uuid.UUID) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *PinnedCommentMutation) ID() (id uuid.UUID, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *PinnedCommentMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []uuid.UUID{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().PinnedComment.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCommentID sets the "comment_id" field.
+func (m *PinnedCommentMutation) SetCommentID(s string) {
+	m.comment_id = &s
+}
+
+// CommentID returns the value of the "comment_id" field in the mutation.
+func (m *PinnedCommentMutation) CommentID() (r string, exists bool) {
+	v := m.comment_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCommentID returns the old "comment_id" field's value of the PinnedComment entity.
+// If the PinnedComment object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PinnedCommentMutation) OldCommentID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCommentID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCommentID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCommentID: %w", err)
+	}
+	return oldValue.CommentID, nil
+}
+
+// ResetCommentID resets all changes to the "comment_id" field.
+func (m *PinnedCommentMutation) ResetCommentID() {
+	m.comment_id = nil
+}
+
+// SetParentID sets the "parent_id" field.
+func (m *PinnedCommentMutation) SetParentID(s string) {
+	m.parent_id = &s
+}
+
+// ParentID returns the value of the "parent_id" field in the mutation.
+func (m *PinnedCommentMutation) ParentID() (r string, exists bool) {
+	v := m.parent_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldParentID returns the old "parent_id" field's value of the PinnedComment entity.
+// If the PinnedComment object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PinnedCommentMutation) OldParentID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldParentID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldParentID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldParentID: %w", err)
+	}
+	return oldValue.ParentID, nil
+}
+
+// ResetParentID resets all changes to the "parent_id" field.
+func (m *PinnedCommentMutation) ResetParentID() {
+	m.parent_id = nil
+}
+
+// Where appends a list predicates to the PinnedCommentMutation builder.
+func (m *PinnedCommentMutation) Where(ps ...predicate.PinnedComment) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// Op returns the operation name.
+func (m *PinnedCommentMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (PinnedComment).
+func (m *PinnedCommentMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *PinnedCommentMutation) Fields() []string {
+	fields := make([]string, 0, 2)
+	if m.comment_id != nil {
+		fields = append(fields, pinnedcomment.FieldCommentID)
+	}
+	if m.parent_id != nil {
+		fields = append(fields, pinnedcomment.FieldParentID)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *PinnedCommentMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case pinnedcomment.FieldCommentID:
+		return m.CommentID()
+	case pinnedcomment.FieldParentID:
+		return m.ParentID()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *PinnedCommentMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case pinnedcomment.FieldCommentID:
+		return m.OldCommentID(ctx)
+	case pinnedcomment.FieldParentID:
+		return m.OldParentID(ctx)
+	}
+	return nil, fmt.Errorf("unknown PinnedComment field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *PinnedCommentMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case pinnedcomment.FieldCommentID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCommentID(v)
+		return nil
+	case pinnedcomment.FieldParentID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetParentID(v)
+		return nil
+	}
+	return fmt.Errorf("unknown PinnedComment field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *PinnedCommentMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *PinnedCommentMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *PinnedCommentMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown PinnedComment numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *PinnedCommentMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *PinnedCommentMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *PinnedCommentMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown PinnedComment nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *PinnedCommentMutation) ResetField(name string) error {
+	switch name {
+	case pinnedcomment.FieldCommentID:
+		m.ResetCommentID()
+		return nil
+	case pinnedcomment.FieldParentID:
+		m.ResetParentID()
+		return nil
+	}
+	return fmt.Errorf("unknown PinnedComment field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *PinnedCommentMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *PinnedCommentMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *PinnedCommentMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *PinnedCommentMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *PinnedCommentMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *PinnedCommentMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *PinnedCommentMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown PinnedComment unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *PinnedCommentMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown PinnedComment edge %s", name)
 }
 
 // TrackedEventMutation represents an operation that mutates the TrackedEvent nodes in the graph.

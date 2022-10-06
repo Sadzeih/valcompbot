@@ -20,10 +20,11 @@ func (HighlightedComment) Fields() []ent.Field {
 		field.String("comment_id").Unique(),
 		field.String("body"),
 		field.String("author"),
-		field.String("author_role"),
+		field.String("flair"),
 		field.String("parent_id"),
 		field.String("link"),
 		field.String("author_type"),
+		field.Time("timestamp"),
 	}
 }
 

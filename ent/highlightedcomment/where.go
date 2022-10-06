@@ -3,6 +3,8 @@
 package highlightedcomment
 
 import (
+	"time"
+
 	"entgo.io/ent/dialect/sql"
 	"github.com/Sadzeih/valcompbot/ent/predicate"
 	"github.com/google/uuid"
@@ -100,10 +102,10 @@ func Author(v string) predicate.HighlightedComment {
 	})
 }
 
-// AuthorRole applies equality check predicate on the "author_role" field. It's identical to AuthorRoleEQ.
-func AuthorRole(v string) predicate.HighlightedComment {
+// Flair applies equality check predicate on the "flair" field. It's identical to FlairEQ.
+func Flair(v string) predicate.HighlightedComment {
 	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldAuthorRole), v))
+		s.Where(sql.EQ(s.C(FieldFlair), v))
 	})
 }
 
@@ -125,6 +127,13 @@ func Link(v string) predicate.HighlightedComment {
 func AuthorType(v string) predicate.HighlightedComment {
 	return predicate.HighlightedComment(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldAuthorType), v))
+	})
+}
+
+// Timestamp applies equality check predicate on the "timestamp" field. It's identical to TimestampEQ.
+func Timestamp(v time.Time) predicate.HighlightedComment {
+	return predicate.HighlightedComment(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldTimestamp), v))
 	})
 }
 
@@ -425,102 +434,102 @@ func AuthorContainsFold(v string) predicate.HighlightedComment {
 	})
 }
 
-// AuthorRoleEQ applies the EQ predicate on the "author_role" field.
-func AuthorRoleEQ(v string) predicate.HighlightedComment {
+// FlairEQ applies the EQ predicate on the "flair" field.
+func FlairEQ(v string) predicate.HighlightedComment {
 	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldAuthorRole), v))
+		s.Where(sql.EQ(s.C(FieldFlair), v))
 	})
 }
 
-// AuthorRoleNEQ applies the NEQ predicate on the "author_role" field.
-func AuthorRoleNEQ(v string) predicate.HighlightedComment {
+// FlairNEQ applies the NEQ predicate on the "flair" field.
+func FlairNEQ(v string) predicate.HighlightedComment {
 	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldAuthorRole), v))
+		s.Where(sql.NEQ(s.C(FieldFlair), v))
 	})
 }
 
-// AuthorRoleIn applies the In predicate on the "author_role" field.
-func AuthorRoleIn(vs ...string) predicate.HighlightedComment {
+// FlairIn applies the In predicate on the "flair" field.
+func FlairIn(vs ...string) predicate.HighlightedComment {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
 	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldAuthorRole), v...))
+		s.Where(sql.In(s.C(FieldFlair), v...))
 	})
 }
 
-// AuthorRoleNotIn applies the NotIn predicate on the "author_role" field.
-func AuthorRoleNotIn(vs ...string) predicate.HighlightedComment {
+// FlairNotIn applies the NotIn predicate on the "flair" field.
+func FlairNotIn(vs ...string) predicate.HighlightedComment {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
 	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldAuthorRole), v...))
+		s.Where(sql.NotIn(s.C(FieldFlair), v...))
 	})
 }
 
-// AuthorRoleGT applies the GT predicate on the "author_role" field.
-func AuthorRoleGT(v string) predicate.HighlightedComment {
+// FlairGT applies the GT predicate on the "flair" field.
+func FlairGT(v string) predicate.HighlightedComment {
 	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldAuthorRole), v))
+		s.Where(sql.GT(s.C(FieldFlair), v))
 	})
 }
 
-// AuthorRoleGTE applies the GTE predicate on the "author_role" field.
-func AuthorRoleGTE(v string) predicate.HighlightedComment {
+// FlairGTE applies the GTE predicate on the "flair" field.
+func FlairGTE(v string) predicate.HighlightedComment {
 	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldAuthorRole), v))
+		s.Where(sql.GTE(s.C(FieldFlair), v))
 	})
 }
 
-// AuthorRoleLT applies the LT predicate on the "author_role" field.
-func AuthorRoleLT(v string) predicate.HighlightedComment {
+// FlairLT applies the LT predicate on the "flair" field.
+func FlairLT(v string) predicate.HighlightedComment {
 	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldAuthorRole), v))
+		s.Where(sql.LT(s.C(FieldFlair), v))
 	})
 }
 
-// AuthorRoleLTE applies the LTE predicate on the "author_role" field.
-func AuthorRoleLTE(v string) predicate.HighlightedComment {
+// FlairLTE applies the LTE predicate on the "flair" field.
+func FlairLTE(v string) predicate.HighlightedComment {
 	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldAuthorRole), v))
+		s.Where(sql.LTE(s.C(FieldFlair), v))
 	})
 }
 
-// AuthorRoleContains applies the Contains predicate on the "author_role" field.
-func AuthorRoleContains(v string) predicate.HighlightedComment {
+// FlairContains applies the Contains predicate on the "flair" field.
+func FlairContains(v string) predicate.HighlightedComment {
 	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldAuthorRole), v))
+		s.Where(sql.Contains(s.C(FieldFlair), v))
 	})
 }
 
-// AuthorRoleHasPrefix applies the HasPrefix predicate on the "author_role" field.
-func AuthorRoleHasPrefix(v string) predicate.HighlightedComment {
+// FlairHasPrefix applies the HasPrefix predicate on the "flair" field.
+func FlairHasPrefix(v string) predicate.HighlightedComment {
 	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldAuthorRole), v))
+		s.Where(sql.HasPrefix(s.C(FieldFlair), v))
 	})
 }
 
-// AuthorRoleHasSuffix applies the HasSuffix predicate on the "author_role" field.
-func AuthorRoleHasSuffix(v string) predicate.HighlightedComment {
+// FlairHasSuffix applies the HasSuffix predicate on the "flair" field.
+func FlairHasSuffix(v string) predicate.HighlightedComment {
 	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldAuthorRole), v))
+		s.Where(sql.HasSuffix(s.C(FieldFlair), v))
 	})
 }
 
-// AuthorRoleEqualFold applies the EqualFold predicate on the "author_role" field.
-func AuthorRoleEqualFold(v string) predicate.HighlightedComment {
+// FlairEqualFold applies the EqualFold predicate on the "flair" field.
+func FlairEqualFold(v string) predicate.HighlightedComment {
 	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldAuthorRole), v))
+		s.Where(sql.EqualFold(s.C(FieldFlair), v))
 	})
 }
 
-// AuthorRoleContainsFold applies the ContainsFold predicate on the "author_role" field.
-func AuthorRoleContainsFold(v string) predicate.HighlightedComment {
+// FlairContainsFold applies the ContainsFold predicate on the "flair" field.
+func FlairContainsFold(v string) predicate.HighlightedComment {
 	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldAuthorRole), v))
+		s.Where(sql.ContainsFold(s.C(FieldFlair), v))
 	})
 }
 
@@ -818,6 +827,70 @@ func AuthorTypeEqualFold(v string) predicate.HighlightedComment {
 func AuthorTypeContainsFold(v string) predicate.HighlightedComment {
 	return predicate.HighlightedComment(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldAuthorType), v))
+	})
+}
+
+// TimestampEQ applies the EQ predicate on the "timestamp" field.
+func TimestampEQ(v time.Time) predicate.HighlightedComment {
+	return predicate.HighlightedComment(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldTimestamp), v))
+	})
+}
+
+// TimestampNEQ applies the NEQ predicate on the "timestamp" field.
+func TimestampNEQ(v time.Time) predicate.HighlightedComment {
+	return predicate.HighlightedComment(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldTimestamp), v))
+	})
+}
+
+// TimestampIn applies the In predicate on the "timestamp" field.
+func TimestampIn(vs ...time.Time) predicate.HighlightedComment {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.HighlightedComment(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldTimestamp), v...))
+	})
+}
+
+// TimestampNotIn applies the NotIn predicate on the "timestamp" field.
+func TimestampNotIn(vs ...time.Time) predicate.HighlightedComment {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.HighlightedComment(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldTimestamp), v...))
+	})
+}
+
+// TimestampGT applies the GT predicate on the "timestamp" field.
+func TimestampGT(v time.Time) predicate.HighlightedComment {
+	return predicate.HighlightedComment(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldTimestamp), v))
+	})
+}
+
+// TimestampGTE applies the GTE predicate on the "timestamp" field.
+func TimestampGTE(v time.Time) predicate.HighlightedComment {
+	return predicate.HighlightedComment(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldTimestamp), v))
+	})
+}
+
+// TimestampLT applies the LT predicate on the "timestamp" field.
+func TimestampLT(v time.Time) predicate.HighlightedComment {
+	return predicate.HighlightedComment(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldTimestamp), v))
+	})
+}
+
+// TimestampLTE applies the LTE predicate on the "timestamp" field.
+func TimestampLTE(v time.Time) predicate.HighlightedComment {
+	return predicate.HighlightedComment(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldTimestamp), v))
 	})
 }
 

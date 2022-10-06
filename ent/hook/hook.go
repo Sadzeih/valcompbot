@@ -22,6 +22,19 @@ func (f HighlightedCommentFunc) Mutate(ctx context.Context, m ent.Mutation) (ent
 	return f(ctx, mv)
 }
 
+// The PinnedCommentFunc type is an adapter to allow the use of ordinary
+// function as PinnedComment mutator.
+type PinnedCommentFunc func(context.Context, *ent.PinnedCommentMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f PinnedCommentFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.PinnedCommentMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PinnedCommentMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The TrackedEventFunc type is an adapter to allow the use of ordinary
 // function as TrackedEvent mutator.
 type TrackedEventFunc func(context.Context, *ent.TrackedEventMutation) (ent.Value, error)

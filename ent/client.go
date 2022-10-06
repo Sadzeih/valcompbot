@@ -12,6 +12,7 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/Sadzeih/valcompbot/ent/highlightedcomment"
+	"github.com/Sadzeih/valcompbot/ent/pinnedcomment"
 	"github.com/Sadzeih/valcompbot/ent/trackedevent"
 
 	"entgo.io/ent/dialect"
@@ -25,6 +26,8 @@ type Client struct {
 	Schema *migrate.Schema
 	// HighlightedComment is the client for interacting with the HighlightedComment builders.
 	HighlightedComment *HighlightedCommentClient
+	// PinnedComment is the client for interacting with the PinnedComment builders.
+	PinnedComment *PinnedCommentClient
 	// TrackedEvent is the client for interacting with the TrackedEvent builders.
 	TrackedEvent *TrackedEventClient
 }
@@ -41,6 +44,7 @@ func NewClient(opts ...Option) *Client {
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.HighlightedComment = NewHighlightedCommentClient(c.config)
+	c.PinnedComment = NewPinnedCommentClient(c.config)
 	c.TrackedEvent = NewTrackedEventClient(c.config)
 }
 
@@ -76,6 +80,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		ctx:                ctx,
 		config:             cfg,
 		HighlightedComment: NewHighlightedCommentClient(cfg),
+		PinnedComment:      NewPinnedCommentClient(cfg),
 		TrackedEvent:       NewTrackedEventClient(cfg),
 	}, nil
 }
@@ -97,6 +102,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		ctx:                ctx,
 		config:             cfg,
 		HighlightedComment: NewHighlightedCommentClient(cfg),
+		PinnedComment:      NewPinnedCommentClient(cfg),
 		TrackedEvent:       NewTrackedEventClient(cfg),
 	}, nil
 }
@@ -127,6 +133,7 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	c.HighlightedComment.Use(hooks...)
+	c.PinnedComment.Use(hooks...)
 	c.TrackedEvent.Use(hooks...)
 }
 
@@ -218,6 +225,96 @@ func (c *HighlightedCommentClient) GetX(ctx context.Context, id uuid.UUID) *High
 // Hooks returns the client hooks.
 func (c *HighlightedCommentClient) Hooks() []Hook {
 	return c.hooks.HighlightedComment
+}
+
+// PinnedCommentClient is a client for the PinnedComment schema.
+type PinnedCommentClient struct {
+	config
+}
+
+// NewPinnedCommentClient returns a client for the PinnedComment from the given config.
+func NewPinnedCommentClient(c config) *PinnedCommentClient {
+	return &PinnedCommentClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `pinnedcomment.Hooks(f(g(h())))`.
+func (c *PinnedCommentClient) Use(hooks ...Hook) {
+	c.hooks.PinnedComment = append(c.hooks.PinnedComment, hooks...)
+}
+
+// Create returns a builder for creating a PinnedComment entity.
+func (c *PinnedCommentClient) Create() *PinnedCommentCreate {
+	mutation := newPinnedCommentMutation(c.config, OpCreate)
+	return &PinnedCommentCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of PinnedComment entities.
+func (c *PinnedCommentClient) CreateBulk(builders ...*PinnedCommentCreate) *PinnedCommentCreateBulk {
+	return &PinnedCommentCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for PinnedComment.
+func (c *PinnedCommentClient) Update() *PinnedCommentUpdate {
+	mutation := newPinnedCommentMutation(c.config, OpUpdate)
+	return &PinnedCommentUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *PinnedCommentClient) UpdateOne(pc *PinnedComment) *PinnedCommentUpdateOne {
+	mutation := newPinnedCommentMutation(c.config, OpUpdateOne, withPinnedComment(pc))
+	return &PinnedCommentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *PinnedCommentClient) UpdateOneID(id uuid.UUID) *PinnedCommentUpdateOne {
+	mutation := newPinnedCommentMutation(c.config, OpUpdateOne, withPinnedCommentID(id))
+	return &PinnedCommentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for PinnedComment.
+func (c *PinnedCommentClient) Delete() *PinnedCommentDelete {
+	mutation := newPinnedCommentMutation(c.config, OpDelete)
+	return &PinnedCommentDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *PinnedCommentClient) DeleteOne(pc *PinnedComment) *PinnedCommentDeleteOne {
+	return c.DeleteOneID(pc.ID)
+}
+
+// DeleteOne returns a builder for deleting the given entity by its id.
+func (c *PinnedCommentClient) DeleteOneID(id uuid.UUID) *PinnedCommentDeleteOne {
+	builder := c.Delete().Where(pinnedcomment.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &PinnedCommentDeleteOne{builder}
+}
+
+// Query returns a query builder for PinnedComment.
+func (c *PinnedCommentClient) Query() *PinnedCommentQuery {
+	return &PinnedCommentQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a PinnedComment entity by its id.
+func (c *PinnedCommentClient) Get(ctx context.Context, id uuid.UUID) (*PinnedComment, error) {
+	return c.Query().Where(pinnedcomment.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *PinnedCommentClient) GetX(ctx context.Context, id uuid.UUID) *PinnedComment {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *PinnedCommentClient) Hooks() []Hook {
+	return c.hooks.PinnedComment
 }
 
 // TrackedEventClient is a client for the TrackedEvent schema.
