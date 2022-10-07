@@ -46,4 +46,4 @@ require (
 	google.golang.org/protobuf v1.27.1 // indirect
 )
 
-replace github.com/vartanbeno/go-reddit/v2 v2.0.1 => github.com/Sadzeih/go-reddit/v2 v2.1.2
+replace github.com/vartanbeno/go-reddit/v2 v2.0.1 => github.com/Sadzeih/go-reddit/v2 v2.2.0

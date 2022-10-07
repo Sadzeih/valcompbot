@@ -175,6 +175,7 @@ func (h *Highlighter) Run() error {
 
 			highlight := ""
 
+			// loop over all user types
 			for userType, prefix := range prefixMap {
 				// grab all existing comments on this thread
 				comments, err := h.ent.HighlightedComment.
@@ -209,6 +210,7 @@ func (h *Highlighter) Run() error {
 				}
 			}
 
+			// find the pinned comment for the thread
 			pinned, err := h.ent.PinnedComment.Query().
 				Where(pinnedcomment.ParentID(comment.PostID)).
 				Only(context.Background())
