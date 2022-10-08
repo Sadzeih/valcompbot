@@ -1,2 +1,4 @@
 .env
 .idea/
+go.work*
+sa.json

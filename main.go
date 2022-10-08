@@ -9,6 +9,7 @@ import (
 	"github.com/Sadzeih/valcompbot/config"
 	"github.com/Sadzeih/valcompbot/ent"
 	"github.com/Sadzeih/valcompbot/ent/migrate"
+	"github.com/Sadzeih/valcompbot/highlighter"
 	"github.com/Sadzeih/valcompbot/internal/api"
 	_ "github.com/lib/pq"
 	"github.com/vartanbeno/go-reddit/v2/reddit"
@@ -58,6 +59,15 @@ func main() {
 	go func() {
 		defer wg.Done()
 		api.Start(redditClient, entClient)
+	}()
+
+	// Comment highlighter routine
+	go func() {
+		h, err := highlighter.New(context.Background(), redditClient, entClient)
+		if err != nil {
+			log.Fatalf("failed creating highlighter: %v", err)
+		}
+		h.Run()
 	}()
 
 	e, err := strconv.ParseBool(config.Get().EnableSentinels)
