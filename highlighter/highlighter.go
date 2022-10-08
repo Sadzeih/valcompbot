@@ -156,21 +156,16 @@ func (h *Highlighter) Run() error {
 		case err := <-errsCh:
 			return err
 		case comment := <-commentsCh:
-			edited := false
-
 			flair, err := h.ParseFlair(comment.AuthorFlairText)
 			if err != nil {
 				return err
 			}
-			if flair.Verified {
-				edited = true
-				if err := h.saveComment(flair, comment); err != nil {
-					return err
-				}
+			if !flair.Verified {
+				continue
 			}
 
-			if !edited {
-				continue
+			if err := h.saveComment(flair, comment); err != nil {
+				return err
 			}
 
 			highlight := ""
