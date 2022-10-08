@@ -67,7 +67,9 @@ func main() {
 		if err != nil {
 			log.Fatalf("failed creating highlighter: %v", err)
 		}
-		h.Run()
+		if err := h.Run(); err != nil {
+			log.Fatalf("failed to run highlighter: %v", err)
+		}
 	}()
 
 	e, err := strconv.ParseBool(config.Get().EnableSentinels)
