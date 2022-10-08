@@ -67,6 +67,10 @@ func (h *Highlighter) ParseFlair(flair string) (*Flair, error) {
 	teams := make([]string, 0)
 	for _, icon := range iconRegex.FindAllString(string(icons), -1) {
 		team := ""
+		if icon == ":verified:" {
+			verified = true
+			continue
+		}
 
 		// look for Esports Orgs
 		team, err := h.FindTeam(string(icon))
@@ -84,8 +88,6 @@ func (h *Highlighter) ParseFlair(flair string) (*Flair, error) {
 				verified = true
 			case ":VAL:":
 				team = "VALORANT"
-				verified = true
-			case ":verified:":
 				verified = true
 			}
 		}
@@ -160,6 +162,7 @@ func (h *Highlighter) Run() error {
 			if err != nil {
 				return err
 			}
+			fmt.Println(flair)
 			if !flair.Verified {
 				continue
 			}
