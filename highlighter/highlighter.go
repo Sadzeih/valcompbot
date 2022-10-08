@@ -41,12 +41,12 @@ func (h *Highlighter) FindTeam(tag string) (string, error) {
 	}
 
 	for _, row := range teamsResp.Values {
-		if row[1].(string) == tag {
+		if len(row) == 2 && row[1].(string) == tag {
 			return row[0].(string), nil
 		}
 	}
 
-	return "", nil
+	return strings.Trim(tag, ":"), nil
 }
 
 func (h *Highlighter) ParseFlair(flair string) (*Flair, error) {
