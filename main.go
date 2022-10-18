@@ -61,11 +61,7 @@ func main() {
 		api.Start(redditClient, entClient)
 	}()
 
-	s, err := strconv.ParseBool(config.Get().EnableStickies)
-	if err != nil {
-		log.Fatalf("failed to parse bool: %v", err)
-	}
-	if s {
+	if config.Get().EnableStickies {
 		// Comment highlighter routine
 		go func() {
 			h, err := highlighter.New(context.Background(), redditClient, entClient)
@@ -78,11 +74,7 @@ func main() {
 		}()
 	}
 
-	e, err := strconv.ParseBool(config.Get().EnableSentinels)
-	if err != nil {
-		log.Fatalf("failed to parse bool: %v", err)
-	}
-	if e {
+	if config.Get().EnableSentinels {
 		go func() {
 			defer wg.Done()
 			if err := DaysSinceLastSentinelsPost(redditClient); err != nil {
