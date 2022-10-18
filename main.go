@@ -61,16 +61,22 @@ func main() {
 		api.Start(redditClient, entClient)
 	}()
 
-	// Comment highlighter routine
-	go func() {
-		h, err := highlighter.New(context.Background(), redditClient, entClient)
-		if err != nil {
-			log.Fatalf("failed creating highlighter: %v", err)
-		}
-		if err := h.Run(); err != nil {
-			log.Fatalf("failed to run highlighter: %v", err)
-		}
-	}()
+	s, err := strconv.ParseBool(config.Get().EnableStickies)
+	if err != nil {
+		log.Fatalf("failed to parse bool: %v", err)
+	}
+	if s {
+		// Comment highlighter routine
+		go func() {
+			h, err := highlighter.New(context.Background(), redditClient, entClient)
+			if err != nil {
+				log.Fatalf("failed creating highlighter: %v", err)
+			}
+			if err := h.Run(); err != nil {
+				log.Fatalf("failed to run highlighter: %v", err)
+			}
+		}()
+	}
 
 	e, err := strconv.ParseBool(config.Get().EnableSentinels)
 	if err != nil {
