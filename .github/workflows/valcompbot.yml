@@ -26,5 +26,6 @@ jobs:
         name: Build and push
         uses: docker/build-push-action@v3
         with:
+
           push: true
-          tags: sadzeih/valcompbot:latest,sadzeih/valcompbot:${{ github.ref_name }}
+          tags: ghcr.io/sadzeih/valcompbot:latest,ghcr.io/sadzeih/valcompbot:${{ github.ref_name }}
