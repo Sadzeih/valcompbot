@@ -26,12 +26,6 @@ var (
 
 ---
 
-[For spoiler-free VALORANT VoDs check out Juked](https://juked.gg/vods?games[]=20&sort=recent)
-
-**Join the subreddit Discord server by clicking the link in the sidebar!**
-
----
-
 {{- range $index, $map := .Maps }}
 {{- if ne (index .Teams 0).IsWinner (index .Teams 1).IsWinner }}
 # Map {{ $index | AddOne }}: {{ $map.Name | Title }}
