@@ -37,7 +37,6 @@ var (
 | **{{(index .Teams 1).Name | Trim }}** | {{ (index .Teams 1).RoundsWonDefense }} |  {{ (index .Teams 1).RoundsWonAttack }} | {{ (index .Teams 1).RoundsWon }}
 {{- else }}
 | **Team** | **DEF** | **ATK** | **Total** |
-|:----|:-----|:----|---|
 | **{{(index .Teams 0).Name | Trim }}** | {{ (index .Teams 0).RoundsWonDefense }} |  {{ (index .Teams 0).RoundsWonAttack }} | {{ (index .Teams 0).RoundsWon }}
 |              |          **ATK**            |            **DEF**          |
 | **{{(index .Teams 1).Name | Trim }}** | {{ (index .Teams 1).RoundsWonAttack }} |  {{ (index .Teams 1).RoundsWonDefense }} | {{ (index .Teams 1).RoundsWon }}
