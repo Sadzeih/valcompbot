@@ -3,14 +3,18 @@ package api
 import (
 	"context"
 	"net/http"
+	"strings"
 
 	"github.com/Sadzeih/valcompbot/config"
 	"github.com/Sadzeih/valcompbot/ent"
 	"github.com/Sadzeih/valcompbot/events"
 	"github.com/Sadzeih/valcompbot/matches"
+	"github.com/Sadzeih/valcompbot/oauth2"
+
 	"github.com/gorilla/mux"
 	"github.com/purini-to/zapmw"
 	"github.com/rs/cors"
+	"github.com/urfave/negroni"
 	"github.com/vartanbeno/go-reddit/v2/reddit"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -27,19 +31,40 @@ func Start(redditClient *reddit.Client, entClient *ent.Client) error {
 
 	ctx := context.Background()
 
+	oauthRepo := oauth2.New(
+		redditClient,
+		config.Get().SigningKey,
+		config.Get().RedditClientID,
+		config.Get().RedditClientSecret,
+		strings.Split(config.Get().RedditClientScopes, ","),
+		config.Get().RedditClientRedirectURL,
+	)
+
+	r.HandleFunc("/oauth/authorize/url", oauthRepo.AuthCodeURLHandler).
+		Methods(http.MethodGet)
+	r.HandleFunc("/oauth/callback", oauthRepo.Callback).
+		Methods(http.MethodGet)
+
+	ar := mux.NewRouter()
+
 	eventsHandler := events.NewHandler(ctx, entClient)
-	r.HandleFunc("/event", eventsHandler.HandleTrackEvent).
+	ar.HandleFunc("/event", eventsHandler.HandleTrackEvent).
 		Methods(http.MethodPost)
-	r.HandleFunc("/event/{eventID}", eventsHandler.HandleDeleteTrackedEvent).
+	ar.HandleFunc("/event/{eventID}", eventsHandler.HandleDeleteTrackedEvent).
 		Methods(http.MethodDelete)
-	r.HandleFunc("/events", eventsHandler.HandleGetTrackedEvents)
+	ar.HandleFunc("/events", eventsHandler.HandleGetTrackedEvents)
 
 	matchesHandler := matches.NewHandler(ctx, redditClient, entClient)
-	r.HandleFunc("/matches/{eventID}", matchesHandler.HandleGetByEventID)
-	r.HandleFunc("/match/{ID}", matchesHandler.HandleGetMatch).
+	ar.HandleFunc("/matches/{eventID}", matchesHandler.HandleGetByEventID)
+	ar.HandleFunc("/match/{ID}", matchesHandler.HandleGetMatch).
 		Methods(http.MethodGet)
-	r.HandleFunc("/match/{ID}", matchesHandler.HandlePostMatch).
+	ar.HandleFunc("/match/{ID}", matchesHandler.HandlePostMatch).
 		Methods(http.MethodPost)
+
+	an := negroni.New(negroni.HandlerFunc(oauthRepo.Middleware), negroni.Wrap(ar))
+	r.PathPrefix("/").Handler(an)
+
+	n := negroni.New(negroni.NewRecovery())
 
 	c := cors.New(cors.Options{
 		AllowedOrigins: []string{config.Get().AllowOrigin},
@@ -54,8 +79,9 @@ func Start(redditClient *reddit.Client, entClient *ent.Client) error {
 		AllowedHeaders:   []string{"*"},
 		AllowCredentials: false,
 	}).Handler(r)
+	n.UseHandler(c)
 
-	if err := http.ListenAndServe(":8080", c); err != nil {
+	if err := http.ListenAndServe(":8080", n); err != nil {
 		return err
 	}
 

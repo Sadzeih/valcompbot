@@ -8,7 +8,6 @@ import (
 	"github.com/Sadzeih/valcompbot/config"
 	"github.com/Sadzeih/valcompbot/ent"
 	"github.com/Sadzeih/valcompbot/ent/migrate"
-	"github.com/Sadzeih/valcompbot/highlighter"
 	"github.com/Sadzeih/valcompbot/internal/api"
 	_ "github.com/lib/pq"
 	"github.com/vartanbeno/go-reddit/v2/reddit"
@@ -47,19 +46,20 @@ func main() {
 	// A wait group for synchronizing routines
 	wg := sync.WaitGroup{}
 	wg.Add(1)
-
-	// Sidebar ticker routine
-	go func() {
-		defer wg.Done()
-		startSidebar(redditClient)
-	}()
+	//
+	//// Sidebar ticker routine
+	//go func() {
+	//	defer wg.Done()
+	//	startSidebar(redditClient)
+	//}()
 
 	// API routine
 	go func() {
-		defer wg.Done()
+		//defer wg.Done()
 		api.Start(redditClient, entClient)
 	}()
 
+<<<<<<< Updated upstream
 	if config.Get().EnableStickies {
 		// Comment highlighter routine
 		go func() {
@@ -81,6 +81,31 @@ func main() {
 			}
 		}()
 	}
+=======
+	//// Comment highlighter routine
+	//go func() {
+	//	h, err := highlighter.New(context.Background(), redditClient, entClient)
+	//	if err != nil {
+	//		log.Fatalf("failed creating highlighter: %v", err)
+	//	}
+	//	if err := h.Run(); err != nil {
+	//		log.Fatalf("failed to run highlighter: %v", err)
+	//	}
+	//}()
+	//
+	//e, err := strconv.ParseBool(config.Get().EnableSentinels)
+	//if err != nil {
+	//	log.Fatalf("failed to parse bool: %v", err)
+	//}
+	//if e {
+	//	go func() {
+	//		defer wg.Done()
+	//		if err := DaysSinceLastSentinelsPost(redditClient); err != nil {
+	//			log.Fatalf("Error in DaysSinceLastSentinelsPost: %v", err)
+	//		}
+	//	}()
+	//}
+>>>>>>> Stashed changes
 
 	wg.Wait()
 }
