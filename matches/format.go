@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-var (
+const (
 	MatchMd = `# [{{(index .Teams 0).Name | Trim }}](https://vlr.gg/team/{{(index .Teams 0).ID}}) {{(index .Teams 0).MapsWon}}-{{(index .Teams 1).MapsWon}} [{{(index .Teams 1).Name | Trim }}](https://vlr.gg/team/{{(index .Teams 1).ID}})
 
 [vlr.gg]({{.Info.Link}})
@@ -62,9 +62,11 @@ var (
 	titleFmt = "%s vs %s / %s - %s / Post-Match Thread"
 )
 
-func (m *Match) ToMarkdown() (string, error) {
-	funcMap := template.FuncMap{
-		"Title": strings.Title,
+var (
+	funcMap = template.FuncMap{
+		"Title": func(s string) string {
+			return strings.ToTitle(s)
+		},
 		"Trim": func(s string) string {
 			return strings.Trim(s, "\t ")
 		},
@@ -75,13 +77,12 @@ func (m *Match) ToMarkdown() (string, error) {
 			return i + 1
 		},
 	}
+	pmtTmpl = template.Must(template.New("pmtTmpl").Funcs(funcMap).Parse(MatchMd))
+)
 
-	tmpl, err := template.New("toMarkdown").Funcs(funcMap).Parse(MatchMd)
-	if err != nil {
-		return "", err
-	}
+func (m *Match) ToMarkdown() (string, error) {
 	result := bytes.Buffer{}
-	err = tmpl.Execute(&result, m)
+	err := pmtTmpl.Execute(&result, m)
 	if err != nil {
 		return "", err
 	}
