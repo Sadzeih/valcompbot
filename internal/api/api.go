@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"github.com/Sadzeih/valcompbot/pickems"
 	"net/http"
 
 	"github.com/Sadzeih/valcompbot/config"
@@ -40,6 +41,12 @@ func Start(redditClient *reddit.Client, entClient *ent.Client) error {
 		Methods(http.MethodGet)
 	r.HandleFunc("/match/{ID}", matchesHandler.HandlePostMatch).
 		Methods(http.MethodPost)
+
+	pickemsHandler := pickems.NewHandler(ctx, redditClient, entClient)
+	r.HandleFunc("/pickems/event", pickemsHandler.SetEvent).
+		Methods(http.MethodPost)
+	r.HandleFunc("/pickems/leaderboards", pickemsHandler.GetLeaderboards).
+		Methods(http.MethodGet)
 
 	c := cors.New(cors.Options{
 		AllowedOrigins: []string{config.Get().AllowOrigin},

@@ -9,6 +9,9 @@ import (
 // HighlightedComment is the predicate function for highlightedcomment builders.
 type HighlightedComment func(*sql.Selector)
 
+// PickemsEvent is the predicate function for pickemsevent builders.
+type PickemsEvent func(*sql.Selector)
+
 // PinnedComment is the predicate function for pinnedcomment builders.
 type PinnedComment func(*sql.Selector)
 

@@ -2,7 +2,9 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"github.com/Sadzeih/valcompbot/comments"
+	"github.com/Sadzeih/valcompbot/ent/pickemsevent"
 	"github.com/Sadzeih/valcompbot/pickems"
 	"log"
 	"sync"
@@ -84,6 +86,18 @@ func main() {
 	if config.Get().EnablePickems {
 		go func() {
 			defer wg.Done()
+
+			pickemsEvent, err := entClient.PickemsEvent.Query().
+				Order(ent.Desc(pickemsevent.FieldTimestamp)).
+				Limit(1).
+				Only(ctx)
+			if ent.MaskNotFound(err) != nil {
+				log.Print(fmt.Errorf("could not get latest pickems event"))
+				return
+			}
+			if pickemsEvent != nil {
+				pickems.Event = pickemsEvent.EventID
+			}
 
 			pickemsService := pickems.New(redditClient, commentsTopic.Subscribe())
 			if err := pickemsService.Run(); err != nil {

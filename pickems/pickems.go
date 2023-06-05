@@ -11,16 +11,17 @@ import (
 
 const (
 	noEventMd = `There is no pickems event running at the moment. Ask me later!`
-	joinFmtMd = "[Join the subreddit pickems here.](https://vlr.gg/event/pickem/%s?code=valcomp)"
+	joinFmtMd = "[Join the subreddit pickems here.](https://vlr.gg/event/pickem/%d?group_id=valcomp)"
 )
 
 var (
 	rankSyntax    = regexp.MustCompile(`^!rank$`)
 	pickemsSyntax = regexp.MustCompile(`^!pickems$`)
+
+	Event *int = nil
 )
 
 type Service struct {
-	eventID      string
 	redditClient *reddit.Client
 	commentsSub  *comments.Subscriber
 }
@@ -44,7 +45,7 @@ func (s *Service) Run() error {
 		case comm := <-s.commentsSub.Comments:
 			switch {
 			case rankSyntax.MatchString(comm.Body):
-				if s.eventID == "" {
+				if Event == nil {
 					s.NoEventRunning(comm)
 					break
 				}
@@ -53,7 +54,7 @@ func (s *Service) Run() error {
 				}
 				break
 			case pickemsSyntax.MatchString(comm.Body):
-				if s.eventID == "" {
+				if Event == nil {
 					s.NoEventRunning(comm)
 					break
 				}
@@ -74,7 +75,7 @@ func (s *Service) NoEventRunning(comm *reddit.Comment) {
 }
 
 func (s *Service) PickemsComment(comm *reddit.Comment) {
-	_, _, err := s.redditClient.Comment.Submit(context.Background(), comm.FullID, fmt.Sprintf(joinFmtMd, s.eventID))
+	_, _, err := s.redditClient.Comment.Submit(context.Background(), comm.FullID, fmt.Sprintf(joinFmtMd, Event))
 	if err != nil {
 		log.Print(fmt.Errorf("could not submit pickems comment: %w", err))
 	}

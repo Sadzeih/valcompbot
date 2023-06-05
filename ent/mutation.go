@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/Sadzeih/valcompbot/ent/highlightedcomment"
+	"github.com/Sadzeih/valcompbot/ent/pickemsevent"
 	"github.com/Sadzeih/valcompbot/ent/pinnedcomment"
 	"github.com/Sadzeih/valcompbot/ent/predicate"
 	"github.com/Sadzeih/valcompbot/ent/trackedevent"
@@ -28,6 +29,7 @@ const (
 
 	// Node types.
 	TypeHighlightedComment = "HighlightedComment"
+	TypePickemsEvent       = "PickemsEvent"
 	TypePinnedComment      = "PinnedComment"
 	TypeTrackedEvent       = "TrackedEvent"
 )
@@ -725,6 +727,436 @@ func (m *HighlightedCommentMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *HighlightedCommentMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown HighlightedComment edge %s", name)
+}
+
+// PickemsEventMutation represents an operation that mutates the PickemsEvent nodes in the graph.
+type PickemsEventMutation struct {
+	config
+	op            Op
+	typ           string
+	id            *uuid.UUID
+	event_id      *int
+	addevent_id   *int
+	timestamp     *time.Time
+	clearedFields map[string]struct{}
+	done          bool
+	oldValue      func(context.Context) (*PickemsEvent, error)
+	predicates    []predicate.PickemsEvent
+}
+
+var _ ent.Mutation = (*PickemsEventMutation)(nil)
+
+// pickemseventOption allows management of the mutation configuration using functional options.
+type pickemseventOption func(*PickemsEventMutation)
+
+// newPickemsEventMutation creates new mutation for the PickemsEvent entity.
+func newPickemsEventMutation(c config, op Op, opts ...pickemseventOption) *PickemsEventMutation {
+	m := &PickemsEventMutation{
+		config:        c,
+		op:            op,
+		typ:           TypePickemsEvent,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withPickemsEventID sets the ID field of the mutation.
+func withPickemsEventID(id uuid.UUID) pickemseventOption {
+	return func(m *PickemsEventMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *PickemsEvent
+		)
+		m.oldValue = func(ctx context.Context) (*PickemsEvent, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().PickemsEvent.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withPickemsEvent sets the old PickemsEvent of the mutation.
+func withPickemsEvent(node *PickemsEvent) pickemseventOption {
+	return func(m *PickemsEventMutation) {
+		m.oldValue = func(context.Context) (*PickemsEvent, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m PickemsEventMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m PickemsEventMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of PickemsEvent entities.
+func (m *PickemsEventMutation) SetID(id uuid.UUID) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *PickemsEventMutation) ID() (id uuid.UUID, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *PickemsEventMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []uuid.UUID{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().PickemsEvent.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetEventID sets the "event_id" field.
+func (m *PickemsEventMutation) SetEventID(i int) {
+	m.event_id = &i
+	m.addevent_id = nil
+}
+
+// EventID returns the value of the "event_id" field in the mutation.
+func (m *PickemsEventMutation) EventID() (r int, exists bool) {
+	v := m.event_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEventID returns the old "event_id" field's value of the PickemsEvent entity.
+// If the PickemsEvent object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PickemsEventMutation) OldEventID(ctx context.Context) (v *int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEventID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEventID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEventID: %w", err)
+	}
+	return oldValue.EventID, nil
+}
+
+// AddEventID adds i to the "event_id" field.
+func (m *PickemsEventMutation) AddEventID(i int) {
+	if m.addevent_id != nil {
+		*m.addevent_id += i
+	} else {
+		m.addevent_id = &i
+	}
+}
+
+// AddedEventID returns the value that was added to the "event_id" field in this mutation.
+func (m *PickemsEventMutation) AddedEventID() (r int, exists bool) {
+	v := m.addevent_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearEventID clears the value of the "event_id" field.
+func (m *PickemsEventMutation) ClearEventID() {
+	m.event_id = nil
+	m.addevent_id = nil
+	m.clearedFields[pickemsevent.FieldEventID] = struct{}{}
+}
+
+// EventIDCleared returns if the "event_id" field was cleared in this mutation.
+func (m *PickemsEventMutation) EventIDCleared() bool {
+	_, ok := m.clearedFields[pickemsevent.FieldEventID]
+	return ok
+}
+
+// ResetEventID resets all changes to the "event_id" field.
+func (m *PickemsEventMutation) ResetEventID() {
+	m.event_id = nil
+	m.addevent_id = nil
+	delete(m.clearedFields, pickemsevent.FieldEventID)
+}
+
+// SetTimestamp sets the "timestamp" field.
+func (m *PickemsEventMutation) SetTimestamp(t time.Time) {
+	m.timestamp = &t
+}
+
+// Timestamp returns the value of the "timestamp" field in the mutation.
+func (m *PickemsEventMutation) Timestamp() (r time.Time, exists bool) {
+	v := m.timestamp
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTimestamp returns the old "timestamp" field's value of the PickemsEvent entity.
+// If the PickemsEvent object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PickemsEventMutation) OldTimestamp(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTimestamp is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTimestamp requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTimestamp: %w", err)
+	}
+	return oldValue.Timestamp, nil
+}
+
+// ResetTimestamp resets all changes to the "timestamp" field.
+func (m *PickemsEventMutation) ResetTimestamp() {
+	m.timestamp = nil
+}
+
+// Where appends a list predicates to the PickemsEventMutation builder.
+func (m *PickemsEventMutation) Where(ps ...predicate.PickemsEvent) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// Op returns the operation name.
+func (m *PickemsEventMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (PickemsEvent).
+func (m *PickemsEventMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *PickemsEventMutation) Fields() []string {
+	fields := make([]string, 0, 2)
+	if m.event_id != nil {
+		fields = append(fields, pickemsevent.FieldEventID)
+	}
+	if m.timestamp != nil {
+		fields = append(fields, pickemsevent.FieldTimestamp)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *PickemsEventMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case pickemsevent.FieldEventID:
+		return m.EventID()
+	case pickemsevent.FieldTimestamp:
+		return m.Timestamp()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *PickemsEventMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case pickemsevent.FieldEventID:
+		return m.OldEventID(ctx)
+	case pickemsevent.FieldTimestamp:
+		return m.OldTimestamp(ctx)
+	}
+	return nil, fmt.Errorf("unknown PickemsEvent field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *PickemsEventMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case pickemsevent.FieldEventID:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEventID(v)
+		return nil
+	case pickemsevent.FieldTimestamp:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTimestamp(v)
+		return nil
+	}
+	return fmt.Errorf("unknown PickemsEvent field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *PickemsEventMutation) AddedFields() []string {
+	var fields []string
+	if m.addevent_id != nil {
+		fields = append(fields, pickemsevent.FieldEventID)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *PickemsEventMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case pickemsevent.FieldEventID:
+		return m.AddedEventID()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *PickemsEventMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case pickemsevent.FieldEventID:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddEventID(v)
+		return nil
+	}
+	return fmt.Errorf("unknown PickemsEvent numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *PickemsEventMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(pickemsevent.FieldEventID) {
+		fields = append(fields, pickemsevent.FieldEventID)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *PickemsEventMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *PickemsEventMutation) ClearField(name string) error {
+	switch name {
+	case pickemsevent.FieldEventID:
+		m.ClearEventID()
+		return nil
+	}
+	return fmt.Errorf("unknown PickemsEvent nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *PickemsEventMutation) ResetField(name string) error {
+	switch name {
+	case pickemsevent.FieldEventID:
+		m.ResetEventID()
+		return nil
+	case pickemsevent.FieldTimestamp:
+		m.ResetTimestamp()
+		return nil
+	}
+	return fmt.Errorf("unknown PickemsEvent field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *PickemsEventMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *PickemsEventMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *PickemsEventMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *PickemsEventMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *PickemsEventMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *PickemsEventMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *PickemsEventMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown PickemsEvent unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *PickemsEventMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown PickemsEvent edge %s", name)
 }
 
 // PinnedCommentMutation represents an operation that mutates the PinnedComment nodes in the graph.

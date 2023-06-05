@@ -26,6 +26,18 @@ var (
 		Columns:    HighlightedCommentsColumns,
 		PrimaryKey: []*schema.Column{HighlightedCommentsColumns[0]},
 	}
+	// PickemsEventsColumns holds the columns for the "pickems_events" table.
+	PickemsEventsColumns = []*schema.Column{
+		{Name: "oid", Type: field.TypeUUID},
+		{Name: "event_id", Type: field.TypeInt, Nullable: true},
+		{Name: "timestamp", Type: field.TypeTime},
+	}
+	// PickemsEventsTable holds the schema information for the "pickems_events" table.
+	PickemsEventsTable = &schema.Table{
+		Name:       "pickems_events",
+		Columns:    PickemsEventsColumns,
+		PrimaryKey: []*schema.Column{PickemsEventsColumns[0]},
+	}
 	// PinnedCommentsColumns holds the columns for the "pinned_comments" table.
 	PinnedCommentsColumns = []*schema.Column{
 		{Name: "oid", Type: field.TypeUUID},
@@ -53,6 +65,7 @@ var (
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		HighlightedCommentsTable,
+		PickemsEventsTable,
 		PinnedCommentsTable,
 		TrackedEventsTable,
 	}

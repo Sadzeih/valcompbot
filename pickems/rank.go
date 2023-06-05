@@ -8,44 +8,18 @@ import (
 	"github.com/Sadzeih/valcompbot/config"
 	"github.com/vartanbeno/go-reddit/v2/reddit"
 	"net/http"
-	"text/template"
 )
 
 const (
 	apiURL          = "https://api.vlr.gg"
-	rankEndpointFmt = `/pickem/rank?reddit_id=%s&event_id=%s`
+	rankEndpointFmt = `/pickem/rank?reddit_id=%s&event_id=%d`
 	tokenFmt        = "&token=%s"
-	rankCommentMd   = `You are ranked [#{{ .Rank.Global }}]({{ .Rank.Link }}) globally on [VLR.gg](https://vlr.gg) with a score of {{ .Rank.Score }}. Which brings you to the top {{ .Rank.Percentile }}% of users!
-
-You are ranked [#{{ .Rank.Local }}]({{ .Rank.Link }}) on the subreddit leaderboards.
-
-[^(Join the subreddit pickems here.)](https://vlr.gg/event/pickem/%s?code=valcomp)`
-
-	unrankedCommentMd = `You either do not have a rank yet or have not joined the subreddit group.
-
-[Join the subreddit pickems here!](https://vlr.gg/event/pickem/%s?code=valcomp)
-`
 )
-
-var (
-	rankTmpl = template.Must(template.New("rankTmpl").Parse(rankCommentMd))
-)
-
-type RankResponse struct {
-	Rank *struct {
-		Global     string `json:"global,omitempty"`
-		Local      string `json:"local,omitempty"`
-		Absolute   string `json:"absolute,omitempty"`
-		Percentile string `json:"percentile,omitempty"`
-		Score      string `json:"score,omitempty"`
-		Link       string `json:"link,omitempty"`
-	} `json:"rank"`
-}
 
 func (s *Service) RankComment(comment *reddit.Comment) error {
 	req, err := http.NewRequest(
 		http.MethodGet,
-		fmt.Sprintf(apiURL+rankEndpointFmt+tokenFmt, comment.Author, s.eventID, config.Get().VLRToken),
+		fmt.Sprintf(apiURL+rankEndpointFmt+tokenFmt, comment.Author, Event, config.Get().VLRToken),
 		nil,
 	)
 	if err != nil {
@@ -65,8 +39,8 @@ func (s *Service) RankComment(comment *reddit.Comment) error {
 	if err := json.NewDecoder(resp.Body).Decode(&rankResp); err != nil {
 		return fmt.Errorf("could not decode json: %w", err)
 	}
-	if rankResp.Rank == nil {
-		_, _, err = s.redditClient.Comment.Submit(context.Background(), comment.FullID, fmt.Sprintf(unrankedCommentMd, s.eventID))
+	if rankResp.Global == nil {
+		_, _, err = s.redditClient.Comment.Submit(context.Background(), comment.FullID, fmt.Sprintf(unrankedCommentMd, Event))
 		if err != nil {
 			return fmt.Errorf("failed creating response to !rank command: %w", err)
 		}
@@ -78,7 +52,7 @@ func (s *Service) RankComment(comment *reddit.Comment) error {
 		return fmt.Errorf("could not format !rank comment: %w", err)
 	}
 
-	_, _, err = s.redditClient.Comment.Submit(context.Background(), comment.FullID, fmt.Sprintf(rankComment, s.eventID))
+	_, _, err = s.redditClient.Comment.Submit(context.Background(), comment.FullID, fmt.Sprintf(rankComment, Event))
 	if err != nil {
 		return fmt.Errorf("failed creating response to !rank command: %w", err)
 	}

@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/Sadzeih/valcompbot/ent/highlightedcomment"
+	"github.com/Sadzeih/valcompbot/ent/pickemsevent"
 	"github.com/Sadzeih/valcompbot/ent/pinnedcomment"
 	"github.com/Sadzeih/valcompbot/ent/trackedevent"
 )
@@ -34,6 +35,7 @@ type OrderFunc func(*sql.Selector)
 func columnChecker(table string) func(string) error {
 	checks := map[string]func(string) bool{
 		highlightedcomment.Table: highlightedcomment.ValidColumn,
+		pickemsevent.Table:       pickemsevent.ValidColumn,
 		pinnedcomment.Table:      pinnedcomment.ValidColumn,
 		trackedevent.Table:       trackedevent.ValidColumn,
 	}
