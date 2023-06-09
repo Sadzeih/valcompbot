@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	leaderboardEndpointFmt = `/pickem/leaderboard?event_id=%d&group_id=cce1904d`
+	leaderboardEndpointFmt = `/pickem/leaderboard?event_id=%d&group_id=valcomp`
 )
 
 type Handler struct {
@@ -104,7 +104,6 @@ func (h *Handler) GetLeaderboards(w http.ResponseWriter, r *http.Request) {
 		utils.WriteError(w, ie)
 		return
 	}
-	fmt.Println(leaderboardsResp)
 
 	result := bytes.Buffer{}
 	err = leaderboardsTmpl.Execute(&result, leaderboardsResp)

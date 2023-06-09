@@ -17,9 +17,12 @@ const (
 )
 
 func (s *Service) RankComment(comment *reddit.Comment) error {
+	if Event == nil {
+		return fmt.Errorf("event is nil")
+	}
 	req, err := http.NewRequest(
 		http.MethodGet,
-		fmt.Sprintf(apiURL+rankEndpointFmt+tokenFmt, comment.Author, Event, config.Get().VLRToken),
+		fmt.Sprintf(apiURL+rankEndpointFmt+tokenFmt, comment.Author, *Event, config.Get().VLRToken),
 		nil,
 	)
 	if err != nil {
@@ -39,8 +42,9 @@ func (s *Service) RankComment(comment *reddit.Comment) error {
 	if err := json.NewDecoder(resp.Body).Decode(&rankResp); err != nil {
 		return fmt.Errorf("could not decode json: %w", err)
 	}
-	if rankResp.Global == nil {
-		_, _, err = s.redditClient.Comment.Submit(context.Background(), comment.FullID, fmt.Sprintf(unrankedCommentMd, Event))
+
+	if rankResp.Rank.Global.Absolute == nil {
+		_, _, err = s.redditClient.Comment.Submit(context.Background(), comment.FullID, fmt.Sprintf(unrankedCommentMd, *Event))
 		if err != nil {
 			return fmt.Errorf("failed creating response to !rank command: %w", err)
 		}
@@ -52,7 +56,7 @@ func (s *Service) RankComment(comment *reddit.Comment) error {
 		return fmt.Errorf("could not format !rank comment: %w", err)
 	}
 
-	_, _, err = s.redditClient.Comment.Submit(context.Background(), comment.FullID, fmt.Sprintf(rankComment, Event))
+	_, _, err = s.redditClient.Comment.Submit(context.Background(), comment.FullID, fmt.Sprintf(rankComment, *Event))
 	if err != nil {
 		return fmt.Errorf("failed creating response to !rank command: %w", err)
 	}
