@@ -11,7 +11,7 @@ import (
 
 const (
 	noEventMd = `There is no pickems event running at the moment. Ask me later!`
-	joinFmtMd = "[Join the subreddit pickems here.](https://vlr.gg/event/pickem/%d?group=valcomp)"
+
 )
 
 var (
@@ -79,7 +79,14 @@ func (s *Service) PickemsComment(comm *reddit.Comment) {
 		s.NoEventRunning(comm)
 		return
 	}
-	_, _, err := s.redditClient.Comment.Submit(context.Background(), comm.FullID, fmt.Sprintf(joinFmtMd, *Event))
+
+	rankResp, err := s.getRankFromVLR(comm)
+	if err != nil {
+		log.Print(err)
+		return
+	}
+
+	_, _, err = s.redditClient.Comment.Submit(context.Background(), comm.FullID, fmt.Sprintf(pickemsFmtMd, comm.Author, *rankResp.Link, *Event))
 	if err != nil {
 		log.Print(fmt.Errorf("could not submit pickems comment: %w", err))
 	}

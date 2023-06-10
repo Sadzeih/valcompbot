@@ -21,6 +21,9 @@ You are ranked [#{{ .Rank.Local.Absolute }}]({{ .Link }}) (top {{ .Rank.Local.Pe
 
 [Join the subreddit pickems here!](https://vlr.gg/event/pickem/%d?group=valcomp)
 `
+	pickemsFmtMd = `[Click here to see /u/%s's pickems](%s)
+	
+[Join the subreddit pickems here.](https://vlr.gg/event/pickem/%d?group=valcomp)`
 )
 
 var (
