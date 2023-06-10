@@ -40,7 +40,7 @@ func (s *Service) getRankFromVLR(comment *reddit.Comment) (*RankResponse, error)
 		return nil, fmt.Errorf("could not decode json: %w", err)
 	}
 
-	return &rankResp, nil
+	return rankResp, nil
 }
 
 func (s *Service) RankComment(comment *reddit.Comment) error {

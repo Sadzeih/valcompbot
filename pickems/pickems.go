@@ -86,7 +86,7 @@ func (s *Service) PickemsComment(comm *reddit.Comment) {
 		return
 	}
 
-	_, _, err := s.redditClient.Comment.Submit(context.Background(), comm.FullID, fmt.Sprintf(pickemsFmtMd, comm.Author, *rankResp.Link, *Event))
+	_, _, err = s.redditClient.Comment.Submit(context.Background(), comm.FullID, fmt.Sprintf(pickemsFmtMd, comm.Author, *rankResp.Link, *Event))
 	if err != nil {
 		log.Print(fmt.Errorf("could not submit pickems comment: %w", err))
 	}
