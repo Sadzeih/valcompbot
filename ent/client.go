@@ -12,6 +12,7 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/Sadzeih/valcompbot/ent/highlightedcomment"
+	"github.com/Sadzeih/valcompbot/ent/pickemsevent"
 	"github.com/Sadzeih/valcompbot/ent/pinnedcomment"
 	"github.com/Sadzeih/valcompbot/ent/trackedevent"
 
@@ -26,6 +27,8 @@ type Client struct {
 	Schema *migrate.Schema
 	// HighlightedComment is the client for interacting with the HighlightedComment builders.
 	HighlightedComment *HighlightedCommentClient
+	// PickemsEvent is the client for interacting with the PickemsEvent builders.
+	PickemsEvent *PickemsEventClient
 	// PinnedComment is the client for interacting with the PinnedComment builders.
 	PinnedComment *PinnedCommentClient
 	// TrackedEvent is the client for interacting with the TrackedEvent builders.
@@ -44,6 +47,7 @@ func NewClient(opts ...Option) *Client {
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.HighlightedComment = NewHighlightedCommentClient(c.config)
+	c.PickemsEvent = NewPickemsEventClient(c.config)
 	c.PinnedComment = NewPinnedCommentClient(c.config)
 	c.TrackedEvent = NewTrackedEventClient(c.config)
 }
@@ -80,6 +84,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		ctx:                ctx,
 		config:             cfg,
 		HighlightedComment: NewHighlightedCommentClient(cfg),
+		PickemsEvent:       NewPickemsEventClient(cfg),
 		PinnedComment:      NewPinnedCommentClient(cfg),
 		TrackedEvent:       NewTrackedEventClient(cfg),
 	}, nil
@@ -102,6 +107,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		ctx:                ctx,
 		config:             cfg,
 		HighlightedComment: NewHighlightedCommentClient(cfg),
+		PickemsEvent:       NewPickemsEventClient(cfg),
 		PinnedComment:      NewPinnedCommentClient(cfg),
 		TrackedEvent:       NewTrackedEventClient(cfg),
 	}, nil
@@ -133,6 +139,7 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	c.HighlightedComment.Use(hooks...)
+	c.PickemsEvent.Use(hooks...)
 	c.PinnedComment.Use(hooks...)
 	c.TrackedEvent.Use(hooks...)
 }
@@ -225,6 +232,96 @@ func (c *HighlightedCommentClient) GetX(ctx context.Context, id uuid.UUID) *High
 // Hooks returns the client hooks.
 func (c *HighlightedCommentClient) Hooks() []Hook {
 	return c.hooks.HighlightedComment
+}
+
+// PickemsEventClient is a client for the PickemsEvent schema.
+type PickemsEventClient struct {
+	config
+}
+
+// NewPickemsEventClient returns a client for the PickemsEvent from the given config.
+func NewPickemsEventClient(c config) *PickemsEventClient {
+	return &PickemsEventClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `pickemsevent.Hooks(f(g(h())))`.
+func (c *PickemsEventClient) Use(hooks ...Hook) {
+	c.hooks.PickemsEvent = append(c.hooks.PickemsEvent, hooks...)
+}
+
+// Create returns a builder for creating a PickemsEvent entity.
+func (c *PickemsEventClient) Create() *PickemsEventCreate {
+	mutation := newPickemsEventMutation(c.config, OpCreate)
+	return &PickemsEventCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of PickemsEvent entities.
+func (c *PickemsEventClient) CreateBulk(builders ...*PickemsEventCreate) *PickemsEventCreateBulk {
+	return &PickemsEventCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for PickemsEvent.
+func (c *PickemsEventClient) Update() *PickemsEventUpdate {
+	mutation := newPickemsEventMutation(c.config, OpUpdate)
+	return &PickemsEventUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *PickemsEventClient) UpdateOne(pe *PickemsEvent) *PickemsEventUpdateOne {
+	mutation := newPickemsEventMutation(c.config, OpUpdateOne, withPickemsEvent(pe))
+	return &PickemsEventUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *PickemsEventClient) UpdateOneID(id uuid.UUID) *PickemsEventUpdateOne {
+	mutation := newPickemsEventMutation(c.config, OpUpdateOne, withPickemsEventID(id))
+	return &PickemsEventUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for PickemsEvent.
+func (c *PickemsEventClient) Delete() *PickemsEventDelete {
+	mutation := newPickemsEventMutation(c.config, OpDelete)
+	return &PickemsEventDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *PickemsEventClient) DeleteOne(pe *PickemsEvent) *PickemsEventDeleteOne {
+	return c.DeleteOneID(pe.ID)
+}
+
+// DeleteOne returns a builder for deleting the given entity by its id.
+func (c *PickemsEventClient) DeleteOneID(id uuid.UUID) *PickemsEventDeleteOne {
+	builder := c.Delete().Where(pickemsevent.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &PickemsEventDeleteOne{builder}
+}
+
+// Query returns a query builder for PickemsEvent.
+func (c *PickemsEventClient) Query() *PickemsEventQuery {
+	return &PickemsEventQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a PickemsEvent entity by its id.
+func (c *PickemsEventClient) Get(ctx context.Context, id uuid.UUID) (*PickemsEvent, error) {
+	return c.Query().Where(pickemsevent.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *PickemsEventClient) GetX(ctx context.Context, id uuid.UUID) *PickemsEvent {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *PickemsEventClient) Hooks() []Hook {
+	return c.hooks.PickemsEvent
 }
 
 // PinnedCommentClient is a client for the PinnedComment schema.

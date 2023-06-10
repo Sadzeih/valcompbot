@@ -22,21 +22,21 @@ const (
 	pmtFlairID = "76154df2-c8c8-11ec-8e35-c21565c22f2e"
 )
 
-type MatchesHandler struct {
+type Handler struct {
 	reddit *reddit.Client
 	ent    *ent.Client
 	ctx    context.Context
 }
 
-func NewHandler(ctx context.Context, r *reddit.Client, e *ent.Client) *MatchesHandler {
-	return &MatchesHandler{
+func NewHandler(ctx context.Context, r *reddit.Client, e *ent.Client) *Handler {
+	return &Handler{
 		reddit: r,
 		ent:    e,
 		ctx:    ctx,
 	}
 }
 
-func (h *MatchesHandler) HandleGetByEventID(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) HandleGetByEventID(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
 	eventID, ok := vars["eventID"]
@@ -96,7 +96,7 @@ func (h *MatchesHandler) HandleGetByEventID(w http.ResponseWriter, r *http.Reque
 	utils.WriteJSON(w, m)
 }
 
-func (h *MatchesHandler) HandleGetMatch(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) HandleGetMatch(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
 	id, ok := vars["ID"]
@@ -116,7 +116,7 @@ func (h *MatchesHandler) HandleGetMatch(w http.ResponseWriter, r *http.Request) 
 	utils.WriteJSON(w, m)
 }
 
-func (h *MatchesHandler) HandlePostMatch(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) HandlePostMatch(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
 	id, ok := vars["ID"]

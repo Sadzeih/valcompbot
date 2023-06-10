@@ -25,6 +25,7 @@ type config struct {
 // hooks per client, for fast access.
 type hooks struct {
 	HighlightedComment []ent.Hook
+	PickemsEvent       []ent.Hook
 	PinnedComment      []ent.Hook
 	TrackedEvent       []ent.Hook
 }

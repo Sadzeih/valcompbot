@@ -2,6 +2,10 @@ package main
 
 import (
 	"context"
+	"fmt"
+	"github.com/Sadzeih/valcompbot/comments"
+	"github.com/Sadzeih/valcompbot/ent/pickemsevent"
+	"github.com/Sadzeih/valcompbot/pickems"
 	"log"
 	"sync"
 
@@ -16,7 +20,8 @@ import (
 
 func main() {
 	if err := config.Parse(); err != nil {
-		log.Fatal(err)
+		log.Print(err)
+		return
 	}
 	credentials := reddit.Credentials{
 		ID:       config.Get().RedditClientID,
@@ -27,12 +32,14 @@ func main() {
 
 	redditClient, err := reddit.NewClient(credentials)
 	if err != nil {
-		log.Fatal(err)
+		log.Print(err)
+		return
 	}
 
 	entClient, err := ent.Open("postgres", config.Get().PostgresString)
 	if err != nil {
-		log.Fatal(err)
+		log.Print(err)
+		return
 	}
 	defer entClient.Close()
 	ctx := context.Background()
@@ -41,7 +48,8 @@ func main() {
 		migrate.WithDropIndex(true),
 		migrate.WithDropColumn(true),
 	); err != nil {
-		log.Fatalf("failed creating schema resources: %v", err)
+		log.Printf("failed creating schema resources: %v", err)
+		return
 	}
 
 	// A wait group for synchronizing routines
@@ -54,30 +62,74 @@ func main() {
 		startSidebar(redditClient)
 	}()
 
+	// Comments topic routine
+	commentsTopic := comments.New(redditClient)
+	go func() {
+		defer wg.Done()
+
+		defer commentsTopic.Close()
+
+		commentsTopic.Run()
+	}()
+
 	// API routine
 	go func() {
 		defer wg.Done()
-		api.Start(redditClient, entClient)
+		err := api.Start(redditClient, entClient)
+		if err != nil {
+			log.Printf("error while running API: %v", err)
+			return
+		}
 	}()
 
-	if config.Get().EnableStickies {
-		// Comment highlighter routine
+	// Pickems routine
+	if config.Get().EnablePickems {
 		go func() {
-			h, err := highlighter.New(context.Background(), redditClient, entClient)
-			if err != nil {
-				log.Fatalf("failed creating highlighter: %v", err)
+			defer wg.Done()
+
+			pickemsEvent, err := entClient.PickemsEvent.Query().
+				Order(ent.Desc(pickemsevent.FieldTimestamp)).
+				Limit(1).
+				Only(ctx)
+			if ent.MaskNotFound(err) != nil {
+				log.Print(fmt.Errorf("could not get latest pickems event"))
+				return
 			}
-			if err := h.Run(); err != nil {
-				log.Fatalf("failed to run highlighter: %v", err)
+			if pickemsEvent != nil {
+				pickems.Event = pickemsEvent.EventID
+			}
+
+			pickemsService := pickems.New(redditClient, commentsTopic.Subscribe())
+			if err := pickemsService.Run(); err != nil {
+				return
 			}
 		}()
 	}
 
+	// Comment highlighter routine
+	if config.Get().EnableStickies {
+		go func() {
+			defer wg.Done()
+
+			h, err := highlighter.New(context.Background(), redditClient, entClient, commentsTopic.Subscribe())
+			if err != nil {
+				log.Printf("failed creating highlighter: %v", err)
+				return
+			}
+			if err := h.Run(); err != nil {
+				log.Printf("failed to run highlighter: %v", err)
+				return
+			}
+		}()
+	}
+
+	// Sentinels routine
 	if config.Get().EnableSentinels {
 		go func() {
 			defer wg.Done()
 			if err := DaysSinceLastSentinelsPost(redditClient); err != nil {
-				log.Fatalf("Error in DaysSinceLastSentinelsPost: %v", err)
+				log.Printf("Error in DaysSinceLastSentinelsPost: %v", err)
+				return
 			}
 		}()
 	}

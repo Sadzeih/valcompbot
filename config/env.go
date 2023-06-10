@@ -15,6 +15,7 @@ type Config struct {
 	VLRToken           string `env:"VLR_TOKEN"`
 	EnableSentinels    bool   `env:"ENABLE_SENTINELS" envDefault:"false"`
 	EnableStickies     bool   `env:"ENABLE_STICKIES" envDefault:"false"`
+	EnablePickems      bool   `env:"ENABLE_PICKEMS" envDefault:"true"`
 	PostgresString     string `env:"POSTGRES_STRING"`
 	AllowOrigin        string `env:"ALLOW_ORIGIN"`
 }

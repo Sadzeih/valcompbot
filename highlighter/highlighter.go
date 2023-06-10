@@ -3,9 +3,9 @@ package highlighter
 import (
 	"context"
 	"fmt"
+	"github.com/Sadzeih/valcompbot/comments"
 	"strings"
 
-	"github.com/Sadzeih/valcompbot/config"
 	"github.com/Sadzeih/valcompbot/ent"
 	"github.com/Sadzeih/valcompbot/ent/highlightedcomment"
 	"github.com/Sadzeih/valcompbot/ent/pinnedcomment"
@@ -14,20 +14,22 @@ import (
 )
 
 type Highlighter struct {
-	ent    *ent.Client
-	reddit *reddit.Client
-	sheets *sheets.Service
+	ent         *ent.Client
+	reddit      *reddit.Client
+	sheets      *sheets.Service
+	commentsSub *comments.Subscriber
 }
 
-func New(ctx context.Context, r *reddit.Client, ent *ent.Client) (*Highlighter, error) {
+func New(ctx context.Context, r *reddit.Client, ent *ent.Client, commentsSub *comments.Subscriber) (*Highlighter, error) {
 	sheets, err := sheets.NewService(ctx)
 	if err != nil {
 		return nil, err
 	}
 	return &Highlighter{
-		reddit: r,
-		sheets: sheets,
-		ent:    ent,
+		reddit:      r,
+		sheets:      sheets,
+		ent:         ent,
+		commentsSub: commentsSub,
 	}, nil
 }
 
@@ -150,14 +152,11 @@ func (h *Highlighter) saveComment(flair *Flair, comment *reddit.Comment) error {
 }
 
 func (h *Highlighter) Run() error {
-	commentsCh, errsCh, closeFunc := h.reddit.Stream.Comments(config.Get().RedditSubreddit, reddit.StreamDiscardInitial)
-	defer closeFunc()
-
 	for {
 		select {
-		case err := <-errsCh:
+		case err := <-h.commentsSub.Errors:
 			return err
-		case comment := <-commentsCh:
+		case comment := <-h.commentsSub.Comments:
 			flair, err := h.ParseFlair(comment.AuthorFlairText)
 			if err != nil {
 				return err
