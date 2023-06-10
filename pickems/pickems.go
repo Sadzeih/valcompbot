@@ -75,7 +75,7 @@ func (s *Service) NoEventRunning(comm *reddit.Comment) {
 }
 
 func (s *Service) PickemsComment(comm *reddit.Comment) {
-	_, _, err := s.redditClient.Comment.Submit(context.Background(), comm.FullID, fmt.Sprintf(joinFmtMd, Event))
+	_, _, err := s.redditClient.Comment.Submit(context.Background(), comm.FullID, fmt.Sprintf(joinFmtMd, *Event))
 	if err != nil {
 		log.Print(fmt.Errorf("could not submit pickems comment: %w", err))
 	}
