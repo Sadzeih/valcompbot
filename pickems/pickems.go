@@ -11,7 +11,7 @@ import (
 
 const (
 	noEventMd = `There is no pickems event running at the moment. Ask me later!`
-	joinFmtMd = "[Join the subreddit pickems here.](https://vlr.gg/event/pickem/%d?group_id=valcomp)"
+	joinFmtMd = "[Join the subreddit pickems here.](https://vlr.gg/event/pickem/%d?group=valcomp)"
 )
 
 var (
