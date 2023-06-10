@@ -43,7 +43,7 @@ func (s *Service) RankComment(comment *reddit.Comment) error {
 		return fmt.Errorf("could not decode json: %w", err)
 	}
 
-	if rankResp.Rank.Global.Absolute == nil {
+	if rankResp.Rank == nil || rankResp.Rank.Global == nil || rankResp.Rank.Global.Absolute == nil {
 		_, _, err = s.redditClient.Comment.Submit(context.Background(), comment.FullID, fmt.Sprintf(unrankedCommentMd, *Event))
 		if err != nil {
 			return fmt.Errorf("failed creating response to !rank command: %w", err)
