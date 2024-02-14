@@ -5,7 +5,7 @@ ADD . /go/src/bot
 
 RUN go build -o bot
 
-FROM gcr.io/distroless/base-debian11
+FROM gcr.io/distroless/base-debian12
 
 COPY --from=build /go/src/bot/bot /
 
