@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/Sadzeih/valcompbot/ent/highlightedcomment"
 	"github.com/google/uuid"
@@ -32,12 +33,13 @@ type HighlightedComment struct {
 	// AuthorType holds the value of the "author_type" field.
 	AuthorType string `json:"author_type,omitempty"`
 	// Timestamp holds the value of the "timestamp" field.
-	Timestamp time.Time `json:"timestamp,omitempty"`
+	Timestamp    time.Time `json:"timestamp,omitempty"`
+	selectValues sql.SelectValues
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
-func (*HighlightedComment) scanValues(columns []string) ([]interface{}, error) {
-	values := make([]interface{}, len(columns))
+func (*HighlightedComment) scanValues(columns []string) ([]any, error) {
+	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
 		case highlightedcomment.FieldCommentID, highlightedcomment.FieldBody, highlightedcomment.FieldAuthor, highlightedcomment.FieldFlair, highlightedcomment.FieldParentID, highlightedcomment.FieldLink, highlightedcomment.FieldAuthorType:
@@ -47,7 +49,7 @@ func (*HighlightedComment) scanValues(columns []string) ([]interface{}, error) {
 		case highlightedcomment.FieldID:
 			values[i] = new(uuid.UUID)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type HighlightedComment", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -55,7 +57,7 @@ func (*HighlightedComment) scanValues(columns []string) ([]interface{}, error) {
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
 // to the HighlightedComment fields.
-func (hc *HighlightedComment) assignValues(columns []string, values []interface{}) error {
+func (hc *HighlightedComment) assignValues(columns []string, values []any) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
@@ -115,16 +117,24 @@ func (hc *HighlightedComment) assignValues(columns []string, values []interface{
 			} else if value.Valid {
 				hc.Timestamp = value.Time
 			}
+		default:
+			hc.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the HighlightedComment.
+// This includes values selected through modifiers, order, etc.
+func (hc *HighlightedComment) Value(name string) (ent.Value, error) {
+	return hc.selectValues.Get(name)
 }
 
 // Update returns a builder for updating this HighlightedComment.
 // Note that you need to call HighlightedComment.Unwrap() before calling this method if this HighlightedComment
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (hc *HighlightedComment) Update() *HighlightedCommentUpdateOne {
-	return (&HighlightedCommentClient{config: hc.config}).UpdateOne(hc)
+	return NewHighlightedCommentClient(hc.config).UpdateOne(hc)
 }
 
 // Unwrap unwraps the HighlightedComment entity that was returned from a transaction after it was closed,
@@ -172,9 +182,3 @@ func (hc *HighlightedComment) String() string {
 
 // HighlightedComments is a parsable slice of HighlightedComment.
 type HighlightedComments []*HighlightedComment
-
-func (hc HighlightedComments) config(cfg config) {
-	for _i := range hc {
-		hc[_i].config = cfg
-	}
-}

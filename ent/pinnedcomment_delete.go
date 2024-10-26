@@ -4,7 +4,6 @@ package ent
 
 import (
 	"context"
-	"fmt"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -28,34 +27,7 @@ func (pcd *PinnedCommentDelete) Where(ps ...predicate.PinnedComment) *PinnedComm
 
 // Exec executes the deletion query and returns how many vertices were deleted.
 func (pcd *PinnedCommentDelete) Exec(ctx context.Context) (int, error) {
-	var (
-		err      error
-		affected int
-	)
-	if len(pcd.hooks) == 0 {
-		affected, err = pcd.sqlExec(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*PinnedCommentMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			pcd.mutation = mutation
-			affected, err = pcd.sqlExec(ctx)
-			mutation.done = true
-			return affected, err
-		})
-		for i := len(pcd.hooks) - 1; i >= 0; i-- {
-			if pcd.hooks[i] == nil {
-				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = pcd.hooks[i](mut)
-		}
-		if _, err := mut.Mutate(ctx, pcd.mutation); err != nil {
-			return 0, err
-		}
-	}
-	return affected, err
+	return withHooks(ctx, pcd.sqlExec, pcd.mutation, pcd.hooks)
 }
 
 // ExecX is like Exec, but panics if an error occurs.
@@ -68,15 +40,7 @@ func (pcd *PinnedCommentDelete) ExecX(ctx context.Context) int {
 }
 
 func (pcd *PinnedCommentDelete) sqlExec(ctx context.Context) (int, error) {
-	_spec := &sqlgraph.DeleteSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table: pinnedcomment.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
-				Column: pinnedcomment.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewDeleteSpec(pinnedcomment.Table, sqlgraph.NewFieldSpec(pinnedcomment.FieldID, field.TypeUUID))
 	if ps := pcd.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -88,12 +52,19 @@ func (pcd *PinnedCommentDelete) sqlExec(ctx context.Context) (int, error) {
 	if err != nil && sqlgraph.IsConstraintError(err) {
 		err = &ConstraintError{msg: err.Error(), wrap: err}
 	}
+	pcd.mutation.done = true
 	return affected, err
 }
 
 // PinnedCommentDeleteOne is the builder for deleting a single PinnedComment entity.
 type PinnedCommentDeleteOne struct {
 	pcd *PinnedCommentDelete
+}
+
+// Where appends a list predicates to the PinnedCommentDelete builder.
+func (pcdo *PinnedCommentDeleteOne) Where(ps ...predicate.PinnedComment) *PinnedCommentDeleteOne {
+	pcdo.pcd.mutation.Where(ps...)
+	return pcdo
 }
 
 // Exec executes the deletion query.
@@ -111,5 +82,7 @@ func (pcdo *PinnedCommentDeleteOne) Exec(ctx context.Context) error {
 
 // ExecX is like Exec, but panics if an error occurs.
 func (pcdo *PinnedCommentDeleteOne) ExecX(ctx context.Context) {
-	pcdo.pcd.ExecX(ctx)
+	if err := pcdo.Exec(ctx); err != nil {
+		panic(err)
+	}
 }

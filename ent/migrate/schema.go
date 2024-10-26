@@ -50,6 +50,26 @@ var (
 		Columns:    PinnedCommentsColumns,
 		PrimaryKey: []*schema.Column{PinnedCommentsColumns[0]},
 	}
+	// ScheduledMatchesColumns holds the columns for the "scheduled_matches" table.
+	ScheduledMatchesColumns = []*schema.Column{
+		{Name: "oid", Type: field.TypeUUID},
+		{Name: "match_id", Type: field.TypeString, Unique: true},
+		{Name: "done_at", Type: field.TypeTime, Nullable: true},
+		{Name: "posted_at", Type: field.TypeTime, Nullable: true},
+	}
+	// ScheduledMatchesTable holds the schema information for the "scheduled_matches" table.
+	ScheduledMatchesTable = &schema.Table{
+		Name:       "scheduled_matches",
+		Columns:    ScheduledMatchesColumns,
+		PrimaryKey: []*schema.Column{ScheduledMatchesColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "scheduledmatch_match_id",
+				Unique:  false,
+				Columns: []*schema.Column{ScheduledMatchesColumns[1]},
+			},
+		},
+	}
 	// TrackedEventsColumns holds the columns for the "tracked_events" table.
 	TrackedEventsColumns = []*schema.Column{
 		{Name: "oid", Type: field.TypeUUID},
@@ -67,6 +87,7 @@ var (
 		HighlightedCommentsTable,
 		PickemsEventsTable,
 		PinnedCommentsTable,
+		ScheduledMatchesTable,
 		TrackedEventsTable,
 	}
 )

@@ -90,50 +90,8 @@ func (hcc *HighlightedCommentCreate) Mutation() *HighlightedCommentMutation {
 
 // Save creates the HighlightedComment in the database.
 func (hcc *HighlightedCommentCreate) Save(ctx context.Context) (*HighlightedComment, error) {
-	var (
-		err  error
-		node *HighlightedComment
-	)
 	hcc.defaults()
-	if len(hcc.hooks) == 0 {
-		if err = hcc.check(); err != nil {
-			return nil, err
-		}
-		node, err = hcc.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*HighlightedCommentMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = hcc.check(); err != nil {
-				return nil, err
-			}
-			hcc.mutation = mutation
-			if node, err = hcc.sqlSave(ctx); err != nil {
-				return nil, err
-			}
-			mutation.id = &node.ID
-			mutation.done = true
-			return node, err
-		})
-		for i := len(hcc.hooks) - 1; i >= 0; i-- {
-			if hcc.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = hcc.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, hcc.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*HighlightedComment)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from HighlightedCommentMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks(ctx, hcc.sqlSave, hcc.mutation, hcc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -196,6 +154,9 @@ func (hcc *HighlightedCommentCreate) check() error {
 }
 
 func (hcc *HighlightedCommentCreate) sqlSave(ctx context.Context) (*HighlightedComment, error) {
+	if err := hcc.check(); err != nil {
+		return nil, err
+	}
 	_node, _spec := hcc.createSpec()
 	if err := sqlgraph.CreateNode(ctx, hcc.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
@@ -210,86 +171,50 @@ func (hcc *HighlightedCommentCreate) sqlSave(ctx context.Context) (*HighlightedC
 			return nil, err
 		}
 	}
+	hcc.mutation.id = &_node.ID
+	hcc.mutation.done = true
 	return _node, nil
 }
 
 func (hcc *HighlightedCommentCreate) createSpec() (*HighlightedComment, *sqlgraph.CreateSpec) {
 	var (
 		_node = &HighlightedComment{config: hcc.config}
-		_spec = &sqlgraph.CreateSpec{
-			Table: highlightedcomment.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
-				Column: highlightedcomment.FieldID,
-			},
-		}
+		_spec = sqlgraph.NewCreateSpec(highlightedcomment.Table, sqlgraph.NewFieldSpec(highlightedcomment.FieldID, field.TypeUUID))
 	)
 	if id, ok := hcc.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = &id
 	}
 	if value, ok := hcc.mutation.CommentID(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: highlightedcomment.FieldCommentID,
-		})
+		_spec.SetField(highlightedcomment.FieldCommentID, field.TypeString, value)
 		_node.CommentID = value
 	}
 	if value, ok := hcc.mutation.Body(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: highlightedcomment.FieldBody,
-		})
+		_spec.SetField(highlightedcomment.FieldBody, field.TypeString, value)
 		_node.Body = value
 	}
 	if value, ok := hcc.mutation.Author(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: highlightedcomment.FieldAuthor,
-		})
+		_spec.SetField(highlightedcomment.FieldAuthor, field.TypeString, value)
 		_node.Author = value
 	}
 	if value, ok := hcc.mutation.Flair(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: highlightedcomment.FieldFlair,
-		})
+		_spec.SetField(highlightedcomment.FieldFlair, field.TypeString, value)
 		_node.Flair = value
 	}
 	if value, ok := hcc.mutation.ParentID(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: highlightedcomment.FieldParentID,
-		})
+		_spec.SetField(highlightedcomment.FieldParentID, field.TypeString, value)
 		_node.ParentID = value
 	}
 	if value, ok := hcc.mutation.Link(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: highlightedcomment.FieldLink,
-		})
+		_spec.SetField(highlightedcomment.FieldLink, field.TypeString, value)
 		_node.Link = value
 	}
 	if value, ok := hcc.mutation.AuthorType(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: highlightedcomment.FieldAuthorType,
-		})
+		_spec.SetField(highlightedcomment.FieldAuthorType, field.TypeString, value)
 		_node.AuthorType = value
 	}
 	if value, ok := hcc.mutation.Timestamp(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: highlightedcomment.FieldTimestamp,
-		})
+		_spec.SetField(highlightedcomment.FieldTimestamp, field.TypeTime, value)
 		_node.Timestamp = value
 	}
 	return _node, _spec
@@ -298,11 +223,15 @@ func (hcc *HighlightedCommentCreate) createSpec() (*HighlightedComment, *sqlgrap
 // HighlightedCommentCreateBulk is the builder for creating many HighlightedComment entities in bulk.
 type HighlightedCommentCreateBulk struct {
 	config
+	err      error
 	builders []*HighlightedCommentCreate
 }
 
 // Save creates the HighlightedComment entities in the database.
 func (hccb *HighlightedCommentCreateBulk) Save(ctx context.Context) ([]*HighlightedComment, error) {
+	if hccb.err != nil {
+		return nil, hccb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(hccb.builders))
 	nodes := make([]*HighlightedComment, len(hccb.builders))
 	mutators := make([]Mutator, len(hccb.builders))
@@ -319,8 +248,8 @@ func (hccb *HighlightedCommentCreateBulk) Save(ctx context.Context) ([]*Highligh
 					return nil, err
 				}
 				builder.mutation = mutation
-				nodes[i], specs[i] = builder.createSpec()
 				var err error
+				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
 					_, err = mutators[i+1].Mutate(root, hccb.builders[i+1].mutation)
 				} else {

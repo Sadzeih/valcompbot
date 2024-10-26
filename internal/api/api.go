@@ -41,6 +41,7 @@ func Start(redditClient *reddit.Client, entClient *ent.Client) error {
 		Methods(http.MethodGet)
 	r.HandleFunc("/match/{ID}", matchesHandler.HandlePostMatch).
 		Methods(http.MethodPost)
+	r.HandleFunc("/match/{ID}", matchesHandler.HandleSchedule)
 
 	pickemsHandler := pickems.NewHandler(ctx, redditClient, entClient)
 	r.HandleFunc("/pickems/event", pickemsHandler.SetEvent).

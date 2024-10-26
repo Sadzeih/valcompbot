@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"strings"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/Sadzeih/valcompbot/ent/trackedevent"
 	"github.com/google/uuid"
@@ -19,12 +20,13 @@ type TrackedEvent struct {
 	// EventID holds the value of the "event_id" field.
 	EventID int `json:"event_id,omitempty"`
 	// Name holds the value of the "name" field.
-	Name string `json:"name,omitempty"`
+	Name         string `json:"name,omitempty"`
+	selectValues sql.SelectValues
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
-func (*TrackedEvent) scanValues(columns []string) ([]interface{}, error) {
-	values := make([]interface{}, len(columns))
+func (*TrackedEvent) scanValues(columns []string) ([]any, error) {
+	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
 		case trackedevent.FieldEventID:
@@ -34,7 +36,7 @@ func (*TrackedEvent) scanValues(columns []string) ([]interface{}, error) {
 		case trackedevent.FieldID:
 			values[i] = new(uuid.UUID)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type TrackedEvent", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -42,7 +44,7 @@ func (*TrackedEvent) scanValues(columns []string) ([]interface{}, error) {
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
 // to the TrackedEvent fields.
-func (te *TrackedEvent) assignValues(columns []string, values []interface{}) error {
+func (te *TrackedEvent) assignValues(columns []string, values []any) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
@@ -66,16 +68,24 @@ func (te *TrackedEvent) assignValues(columns []string, values []interface{}) err
 			} else if value.Valid {
 				te.Name = value.String
 			}
+		default:
+			te.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the TrackedEvent.
+// This includes values selected through modifiers, order, etc.
+func (te *TrackedEvent) Value(name string) (ent.Value, error) {
+	return te.selectValues.Get(name)
 }
 
 // Update returns a builder for updating this TrackedEvent.
 // Note that you need to call TrackedEvent.Unwrap() before calling this method if this TrackedEvent
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (te *TrackedEvent) Update() *TrackedEventUpdateOne {
-	return (&TrackedEventClient{config: te.config}).UpdateOne(te)
+	return NewTrackedEventClient(te.config).UpdateOne(te)
 }
 
 // Unwrap unwraps the TrackedEvent entity that was returned from a transaction after it was closed,
@@ -105,9 +115,3 @@ func (te *TrackedEvent) String() string {
 
 // TrackedEvents is a parsable slice of TrackedEvent.
 type TrackedEvents []*TrackedEvent
-
-func (te TrackedEvents) config(cfg config) {
-	for _i := range te {
-		te[_i].config = cfg
-	}
-}

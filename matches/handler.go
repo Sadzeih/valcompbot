@@ -186,3 +186,33 @@ func (h *Handler) HandlePostMatch(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
+func (h *Handler) HandleScheduleMatch(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+
+	id, ok := vars["ID"]
+	if !ok || id == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	_, err := GetMatch(id)
+	if err != nil {
+		br := utils.BadRequestError
+		br.Context = err.Error()
+		utils.WriteError(w, br)
+		return
+	}
+
+	_, err = h.ent.ScheduledMatch.Create().
+		SetMatchID(id).
+		Save(r.Context())
+	if err != nil {
+		log.Println(err)
+		utils.WriteError(w, utils.InternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusCreated)
+	return
+}

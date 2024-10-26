@@ -33,9 +33,25 @@ func (pcu *PinnedCommentUpdate) SetCommentID(s string) *PinnedCommentUpdate {
 	return pcu
 }
 
+// SetNillableCommentID sets the "comment_id" field if the given value is not nil.
+func (pcu *PinnedCommentUpdate) SetNillableCommentID(s *string) *PinnedCommentUpdate {
+	if s != nil {
+		pcu.SetCommentID(*s)
+	}
+	return pcu
+}
+
 // SetParentID sets the "parent_id" field.
 func (pcu *PinnedCommentUpdate) SetParentID(s string) *PinnedCommentUpdate {
 	pcu.mutation.SetParentID(s)
+	return pcu
+}
+
+// SetNillableParentID sets the "parent_id" field if the given value is not nil.
+func (pcu *PinnedCommentUpdate) SetNillableParentID(s *string) *PinnedCommentUpdate {
+	if s != nil {
+		pcu.SetParentID(*s)
+	}
 	return pcu
 }
 
@@ -46,34 +62,7 @@ func (pcu *PinnedCommentUpdate) Mutation() *PinnedCommentMutation {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (pcu *PinnedCommentUpdate) Save(ctx context.Context) (int, error) {
-	var (
-		err      error
-		affected int
-	)
-	if len(pcu.hooks) == 0 {
-		affected, err = pcu.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*PinnedCommentMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			pcu.mutation = mutation
-			affected, err = pcu.sqlSave(ctx)
-			mutation.done = true
-			return affected, err
-		})
-		for i := len(pcu.hooks) - 1; i >= 0; i-- {
-			if pcu.hooks[i] == nil {
-				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = pcu.hooks[i](mut)
-		}
-		if _, err := mut.Mutate(ctx, pcu.mutation); err != nil {
-			return 0, err
-		}
-	}
-	return affected, err
+	return withHooks(ctx, pcu.sqlSave, pcu.mutation, pcu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -99,16 +88,7 @@ func (pcu *PinnedCommentUpdate) ExecX(ctx context.Context) {
 }
 
 func (pcu *PinnedCommentUpdate) sqlSave(ctx context.Context) (n int, err error) {
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   pinnedcomment.Table,
-			Columns: pinnedcomment.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
-				Column: pinnedcomment.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(pinnedcomment.Table, pinnedcomment.Columns, sqlgraph.NewFieldSpec(pinnedcomment.FieldID, field.TypeUUID))
 	if ps := pcu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -117,18 +97,10 @@ func (pcu *PinnedCommentUpdate) sqlSave(ctx context.Context) (n int, err error) 
 		}
 	}
 	if value, ok := pcu.mutation.CommentID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: pinnedcomment.FieldCommentID,
-		})
+		_spec.SetField(pinnedcomment.FieldCommentID, field.TypeString, value)
 	}
 	if value, ok := pcu.mutation.ParentID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: pinnedcomment.FieldParentID,
-		})
+		_spec.SetField(pinnedcomment.FieldParentID, field.TypeString, value)
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, pcu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -138,6 +110,7 @@ func (pcu *PinnedCommentUpdate) sqlSave(ctx context.Context) (n int, err error) 
 		}
 		return 0, err
 	}
+	pcu.mutation.done = true
 	return n, nil
 }
 
@@ -155,15 +128,37 @@ func (pcuo *PinnedCommentUpdateOne) SetCommentID(s string) *PinnedCommentUpdateO
 	return pcuo
 }
 
+// SetNillableCommentID sets the "comment_id" field if the given value is not nil.
+func (pcuo *PinnedCommentUpdateOne) SetNillableCommentID(s *string) *PinnedCommentUpdateOne {
+	if s != nil {
+		pcuo.SetCommentID(*s)
+	}
+	return pcuo
+}
+
 // SetParentID sets the "parent_id" field.
 func (pcuo *PinnedCommentUpdateOne) SetParentID(s string) *PinnedCommentUpdateOne {
 	pcuo.mutation.SetParentID(s)
 	return pcuo
 }
 
+// SetNillableParentID sets the "parent_id" field if the given value is not nil.
+func (pcuo *PinnedCommentUpdateOne) SetNillableParentID(s *string) *PinnedCommentUpdateOne {
+	if s != nil {
+		pcuo.SetParentID(*s)
+	}
+	return pcuo
+}
+
 // Mutation returns the PinnedCommentMutation object of the builder.
 func (pcuo *PinnedCommentUpdateOne) Mutation() *PinnedCommentMutation {
 	return pcuo.mutation
+}
+
+// Where appends a list predicates to the PinnedCommentUpdate builder.
+func (pcuo *PinnedCommentUpdateOne) Where(ps ...predicate.PinnedComment) *PinnedCommentUpdateOne {
+	pcuo.mutation.Where(ps...)
+	return pcuo
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -175,40 +170,7 @@ func (pcuo *PinnedCommentUpdateOne) Select(field string, fields ...string) *Pinn
 
 // Save executes the query and returns the updated PinnedComment entity.
 func (pcuo *PinnedCommentUpdateOne) Save(ctx context.Context) (*PinnedComment, error) {
-	var (
-		err  error
-		node *PinnedComment
-	)
-	if len(pcuo.hooks) == 0 {
-		node, err = pcuo.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*PinnedCommentMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			pcuo.mutation = mutation
-			node, err = pcuo.sqlSave(ctx)
-			mutation.done = true
-			return node, err
-		})
-		for i := len(pcuo.hooks) - 1; i >= 0; i-- {
-			if pcuo.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = pcuo.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, pcuo.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*PinnedComment)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from PinnedCommentMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks(ctx, pcuo.sqlSave, pcuo.mutation, pcuo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -234,16 +196,7 @@ func (pcuo *PinnedCommentUpdateOne) ExecX(ctx context.Context) {
 }
 
 func (pcuo *PinnedCommentUpdateOne) sqlSave(ctx context.Context) (_node *PinnedComment, err error) {
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   pinnedcomment.Table,
-			Columns: pinnedcomment.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
-				Column: pinnedcomment.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(pinnedcomment.Table, pinnedcomment.Columns, sqlgraph.NewFieldSpec(pinnedcomment.FieldID, field.TypeUUID))
 	id, ok := pcuo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "PinnedComment.id" for update`)}
@@ -269,18 +222,10 @@ func (pcuo *PinnedCommentUpdateOne) sqlSave(ctx context.Context) (_node *PinnedC
 		}
 	}
 	if value, ok := pcuo.mutation.CommentID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: pinnedcomment.FieldCommentID,
-		})
+		_spec.SetField(pinnedcomment.FieldCommentID, field.TypeString, value)
 	}
 	if value, ok := pcuo.mutation.ParentID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: pinnedcomment.FieldParentID,
-		})
+		_spec.SetField(pinnedcomment.FieldParentID, field.TypeString, value)
 	}
 	_node = &PinnedComment{config: pcuo.config}
 	_spec.Assign = _node.assignValues
@@ -293,5 +238,6 @@ func (pcuo *PinnedCommentUpdateOne) sqlSave(ctx context.Context) (_node *PinnedC
 		}
 		return nil, err
 	}
+	pcuo.mutation.done = true
 	return _node, nil
 }

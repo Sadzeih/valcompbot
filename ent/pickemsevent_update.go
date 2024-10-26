@@ -61,6 +61,14 @@ func (peu *PickemsEventUpdate) SetTimestamp(t time.Time) *PickemsEventUpdate {
 	return peu
 }
 
+// SetNillableTimestamp sets the "timestamp" field if the given value is not nil.
+func (peu *PickemsEventUpdate) SetNillableTimestamp(t *time.Time) *PickemsEventUpdate {
+	if t != nil {
+		peu.SetTimestamp(*t)
+	}
+	return peu
+}
+
 // Mutation returns the PickemsEventMutation object of the builder.
 func (peu *PickemsEventUpdate) Mutation() *PickemsEventMutation {
 	return peu.mutation
@@ -68,34 +76,7 @@ func (peu *PickemsEventUpdate) Mutation() *PickemsEventMutation {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (peu *PickemsEventUpdate) Save(ctx context.Context) (int, error) {
-	var (
-		err      error
-		affected int
-	)
-	if len(peu.hooks) == 0 {
-		affected, err = peu.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*PickemsEventMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			peu.mutation = mutation
-			affected, err = peu.sqlSave(ctx)
-			mutation.done = true
-			return affected, err
-		})
-		for i := len(peu.hooks) - 1; i >= 0; i-- {
-			if peu.hooks[i] == nil {
-				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = peu.hooks[i](mut)
-		}
-		if _, err := mut.Mutate(ctx, peu.mutation); err != nil {
-			return 0, err
-		}
-	}
-	return affected, err
+	return withHooks(ctx, peu.sqlSave, peu.mutation, peu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -121,16 +102,7 @@ func (peu *PickemsEventUpdate) ExecX(ctx context.Context) {
 }
 
 func (peu *PickemsEventUpdate) sqlSave(ctx context.Context) (n int, err error) {
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   pickemsevent.Table,
-			Columns: pickemsevent.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
-				Column: pickemsevent.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(pickemsevent.Table, pickemsevent.Columns, sqlgraph.NewFieldSpec(pickemsevent.FieldID, field.TypeUUID))
 	if ps := peu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -139,31 +111,16 @@ func (peu *PickemsEventUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 	}
 	if value, ok := peu.mutation.EventID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: pickemsevent.FieldEventID,
-		})
+		_spec.SetField(pickemsevent.FieldEventID, field.TypeInt, value)
 	}
 	if value, ok := peu.mutation.AddedEventID(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: pickemsevent.FieldEventID,
-		})
+		_spec.AddField(pickemsevent.FieldEventID, field.TypeInt, value)
 	}
 	if peu.mutation.EventIDCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Column: pickemsevent.FieldEventID,
-		})
+		_spec.ClearField(pickemsevent.FieldEventID, field.TypeInt)
 	}
 	if value, ok := peu.mutation.Timestamp(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: pickemsevent.FieldTimestamp,
-		})
+		_spec.SetField(pickemsevent.FieldTimestamp, field.TypeTime, value)
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, peu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -173,6 +130,7 @@ func (peu *PickemsEventUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		return 0, err
 	}
+	peu.mutation.done = true
 	return n, nil
 }
 
@@ -217,9 +175,23 @@ func (peuo *PickemsEventUpdateOne) SetTimestamp(t time.Time) *PickemsEventUpdate
 	return peuo
 }
 
+// SetNillableTimestamp sets the "timestamp" field if the given value is not nil.
+func (peuo *PickemsEventUpdateOne) SetNillableTimestamp(t *time.Time) *PickemsEventUpdateOne {
+	if t != nil {
+		peuo.SetTimestamp(*t)
+	}
+	return peuo
+}
+
 // Mutation returns the PickemsEventMutation object of the builder.
 func (peuo *PickemsEventUpdateOne) Mutation() *PickemsEventMutation {
 	return peuo.mutation
+}
+
+// Where appends a list predicates to the PickemsEventUpdate builder.
+func (peuo *PickemsEventUpdateOne) Where(ps ...predicate.PickemsEvent) *PickemsEventUpdateOne {
+	peuo.mutation.Where(ps...)
+	return peuo
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -231,40 +203,7 @@ func (peuo *PickemsEventUpdateOne) Select(field string, fields ...string) *Picke
 
 // Save executes the query and returns the updated PickemsEvent entity.
 func (peuo *PickemsEventUpdateOne) Save(ctx context.Context) (*PickemsEvent, error) {
-	var (
-		err  error
-		node *PickemsEvent
-	)
-	if len(peuo.hooks) == 0 {
-		node, err = peuo.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*PickemsEventMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			peuo.mutation = mutation
-			node, err = peuo.sqlSave(ctx)
-			mutation.done = true
-			return node, err
-		})
-		for i := len(peuo.hooks) - 1; i >= 0; i-- {
-			if peuo.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = peuo.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, peuo.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*PickemsEvent)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from PickemsEventMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks(ctx, peuo.sqlSave, peuo.mutation, peuo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -290,16 +229,7 @@ func (peuo *PickemsEventUpdateOne) ExecX(ctx context.Context) {
 }
 
 func (peuo *PickemsEventUpdateOne) sqlSave(ctx context.Context) (_node *PickemsEvent, err error) {
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   pickemsevent.Table,
-			Columns: pickemsevent.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
-				Column: pickemsevent.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(pickemsevent.Table, pickemsevent.Columns, sqlgraph.NewFieldSpec(pickemsevent.FieldID, field.TypeUUID))
 	id, ok := peuo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "PickemsEvent.id" for update`)}
@@ -325,31 +255,16 @@ func (peuo *PickemsEventUpdateOne) sqlSave(ctx context.Context) (_node *PickemsE
 		}
 	}
 	if value, ok := peuo.mutation.EventID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: pickemsevent.FieldEventID,
-		})
+		_spec.SetField(pickemsevent.FieldEventID, field.TypeInt, value)
 	}
 	if value, ok := peuo.mutation.AddedEventID(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: pickemsevent.FieldEventID,
-		})
+		_spec.AddField(pickemsevent.FieldEventID, field.TypeInt, value)
 	}
 	if peuo.mutation.EventIDCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Column: pickemsevent.FieldEventID,
-		})
+		_spec.ClearField(pickemsevent.FieldEventID, field.TypeInt)
 	}
 	if value, ok := peuo.mutation.Timestamp(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: pickemsevent.FieldTimestamp,
-		})
+		_spec.SetField(pickemsevent.FieldTimestamp, field.TypeTime, value)
 	}
 	_node = &PickemsEvent{config: peuo.config}
 	_spec.Assign = _node.assignValues
@@ -362,5 +277,6 @@ func (peuo *PickemsEventUpdateOne) sqlSave(ctx context.Context) (_node *PickemsE
 		}
 		return nil, err
 	}
+	peuo.mutation.done = true
 	return _node, nil
 }

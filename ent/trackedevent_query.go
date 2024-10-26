@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -18,11 +19,9 @@ import (
 // TrackedEventQuery is the builder for querying TrackedEvent entities.
 type TrackedEventQuery struct {
 	config
-	limit      *int
-	offset     *int
-	unique     *bool
-	order      []OrderFunc
-	fields     []string
+	ctx        *QueryContext
+	order      []trackedevent.OrderOption
+	inters     []Interceptor
 	predicates []predicate.TrackedEvent
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -35,27 +34,27 @@ func (teq *TrackedEventQuery) Where(ps ...predicate.TrackedEvent) *TrackedEventQ
 	return teq
 }
 
-// Limit adds a limit step to the query.
+// Limit the number of records to be returned by this query.
 func (teq *TrackedEventQuery) Limit(limit int) *TrackedEventQuery {
-	teq.limit = &limit
+	teq.ctx.Limit = &limit
 	return teq
 }
 
-// Offset adds an offset step to the query.
+// Offset to start from.
 func (teq *TrackedEventQuery) Offset(offset int) *TrackedEventQuery {
-	teq.offset = &offset
+	teq.ctx.Offset = &offset
 	return teq
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
 func (teq *TrackedEventQuery) Unique(unique bool) *TrackedEventQuery {
-	teq.unique = &unique
+	teq.ctx.Unique = &unique
 	return teq
 }
 
-// Order adds an order step to the query.
-func (teq *TrackedEventQuery) Order(o ...OrderFunc) *TrackedEventQuery {
+// Order specifies how the records should be ordered.
+func (teq *TrackedEventQuery) Order(o ...trackedevent.OrderOption) *TrackedEventQuery {
 	teq.order = append(teq.order, o...)
 	return teq
 }
@@ -63,7 +62,7 @@ func (teq *TrackedEventQuery) Order(o ...OrderFunc) *TrackedEventQuery {
 // First returns the first TrackedEvent entity from the query.
 // Returns a *NotFoundError when no TrackedEvent was found.
 func (teq *TrackedEventQuery) First(ctx context.Context) (*TrackedEvent, error) {
-	nodes, err := teq.Limit(1).All(ctx)
+	nodes, err := teq.Limit(1).All(setContextOp(ctx, teq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -86,7 +85,7 @@ func (teq *TrackedEventQuery) FirstX(ctx context.Context) *TrackedEvent {
 // Returns a *NotFoundError when no TrackedEvent ID was found.
 func (teq *TrackedEventQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
 	var ids []uuid.UUID
-	if ids, err = teq.Limit(1).IDs(ctx); err != nil {
+	if ids, err = teq.Limit(1).IDs(setContextOp(ctx, teq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -109,7 +108,7 @@ func (teq *TrackedEventQuery) FirstIDX(ctx context.Context) uuid.UUID {
 // Returns a *NotSingularError when more than one TrackedEvent entity is found.
 // Returns a *NotFoundError when no TrackedEvent entities are found.
 func (teq *TrackedEventQuery) Only(ctx context.Context) (*TrackedEvent, error) {
-	nodes, err := teq.Limit(2).All(ctx)
+	nodes, err := teq.Limit(2).All(setContextOp(ctx, teq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -137,7 +136,7 @@ func (teq *TrackedEventQuery) OnlyX(ctx context.Context) *TrackedEvent {
 // Returns a *NotFoundError when no entities are found.
 func (teq *TrackedEventQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
 	var ids []uuid.UUID
-	if ids, err = teq.Limit(2).IDs(ctx); err != nil {
+	if ids, err = teq.Limit(2).IDs(setContextOp(ctx, teq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -162,10 +161,12 @@ func (teq *TrackedEventQuery) OnlyIDX(ctx context.Context) uuid.UUID {
 
 // All executes the query and returns a list of TrackedEvents.
 func (teq *TrackedEventQuery) All(ctx context.Context) ([]*TrackedEvent, error) {
+	ctx = setContextOp(ctx, teq.ctx, ent.OpQueryAll)
 	if err := teq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
-	return teq.sqlAll(ctx)
+	qr := querierAll[[]*TrackedEvent, *TrackedEventQuery]()
+	return withInterceptors[[]*TrackedEvent](ctx, teq, qr, teq.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
@@ -178,9 +179,12 @@ func (teq *TrackedEventQuery) AllX(ctx context.Context) []*TrackedEvent {
 }
 
 // IDs executes the query and returns a list of TrackedEvent IDs.
-func (teq *TrackedEventQuery) IDs(ctx context.Context) ([]uuid.UUID, error) {
-	var ids []uuid.UUID
-	if err := teq.Select(trackedevent.FieldID).Scan(ctx, &ids); err != nil {
+func (teq *TrackedEventQuery) IDs(ctx context.Context) (ids []uuid.UUID, err error) {
+	if teq.ctx.Unique == nil && teq.path != nil {
+		teq.Unique(true)
+	}
+	ctx = setContextOp(ctx, teq.ctx, ent.OpQueryIDs)
+	if err = teq.Select(trackedevent.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
@@ -197,10 +201,11 @@ func (teq *TrackedEventQuery) IDsX(ctx context.Context) []uuid.UUID {
 
 // Count returns the count of the given query.
 func (teq *TrackedEventQuery) Count(ctx context.Context) (int, error) {
+	ctx = setContextOp(ctx, teq.ctx, ent.OpQueryCount)
 	if err := teq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return teq.sqlCount(ctx)
+	return withInterceptors[int](ctx, teq, querierCount[*TrackedEventQuery](), teq.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
@@ -214,10 +219,15 @@ func (teq *TrackedEventQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (teq *TrackedEventQuery) Exist(ctx context.Context) (bool, error) {
-	if err := teq.prepareQuery(ctx); err != nil {
-		return false, err
+	ctx = setContextOp(ctx, teq.ctx, ent.OpQueryExist)
+	switch _, err := teq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
+		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return teq.sqlExist(ctx)
 }
 
 // ExistX is like Exist, but panics if an error occurs.
@@ -237,14 +247,13 @@ func (teq *TrackedEventQuery) Clone() *TrackedEventQuery {
 	}
 	return &TrackedEventQuery{
 		config:     teq.config,
-		limit:      teq.limit,
-		offset:     teq.offset,
-		order:      append([]OrderFunc{}, teq.order...),
+		ctx:        teq.ctx.Clone(),
+		order:      append([]trackedevent.OrderOption{}, teq.order...),
+		inters:     append([]Interceptor{}, teq.inters...),
 		predicates: append([]predicate.TrackedEvent{}, teq.predicates...),
 		// clone intermediate query.
-		sql:    teq.sql.Clone(),
-		path:   teq.path,
-		unique: teq.unique,
+		sql:  teq.sql.Clone(),
+		path: teq.path,
 	}
 }
 
@@ -263,16 +272,11 @@ func (teq *TrackedEventQuery) Clone() *TrackedEventQuery {
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (teq *TrackedEventQuery) GroupBy(field string, fields ...string) *TrackedEventGroupBy {
-	grbuild := &TrackedEventGroupBy{config: teq.config}
-	grbuild.fields = append([]string{field}, fields...)
-	grbuild.path = func(ctx context.Context) (prev *sql.Selector, err error) {
-		if err := teq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		return teq.sqlQuery(ctx), nil
-	}
+	teq.ctx.Fields = append([]string{field}, fields...)
+	grbuild := &TrackedEventGroupBy{build: teq}
+	grbuild.flds = &teq.ctx.Fields
 	grbuild.label = trackedevent.Label
-	grbuild.flds, grbuild.scan = &grbuild.fields, grbuild.Scan
+	grbuild.scan = grbuild.Scan
 	return grbuild
 }
 
@@ -289,15 +293,30 @@ func (teq *TrackedEventQuery) GroupBy(field string, fields ...string) *TrackedEv
 //		Select(trackedevent.FieldEventID).
 //		Scan(ctx, &v)
 func (teq *TrackedEventQuery) Select(fields ...string) *TrackedEventSelect {
-	teq.fields = append(teq.fields, fields...)
-	selbuild := &TrackedEventSelect{TrackedEventQuery: teq}
-	selbuild.label = trackedevent.Label
-	selbuild.flds, selbuild.scan = &teq.fields, selbuild.Scan
-	return selbuild
+	teq.ctx.Fields = append(teq.ctx.Fields, fields...)
+	sbuild := &TrackedEventSelect{TrackedEventQuery: teq}
+	sbuild.label = trackedevent.Label
+	sbuild.flds, sbuild.scan = &teq.ctx.Fields, sbuild.Scan
+	return sbuild
+}
+
+// Aggregate returns a TrackedEventSelect configured with the given aggregations.
+func (teq *TrackedEventQuery) Aggregate(fns ...AggregateFunc) *TrackedEventSelect {
+	return teq.Select().Aggregate(fns...)
 }
 
 func (teq *TrackedEventQuery) prepareQuery(ctx context.Context) error {
-	for _, f := range teq.fields {
+	for _, inter := range teq.inters {
+		if inter == nil {
+			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
+		}
+		if trv, ok := inter.(Traverser); ok {
+			if err := trv.Traverse(ctx, teq); err != nil {
+				return err
+			}
+		}
+	}
+	for _, f := range teq.ctx.Fields {
 		if !trackedevent.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
@@ -317,10 +336,10 @@ func (teq *TrackedEventQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([
 		nodes = []*TrackedEvent{}
 		_spec = teq.querySpec()
 	)
-	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
+	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*TrackedEvent).scanValues(nil, columns)
 	}
-	_spec.Assign = func(columns []string, values []interface{}) error {
+	_spec.Assign = func(columns []string, values []any) error {
 		node := &TrackedEvent{config: teq.config}
 		nodes = append(nodes, node)
 		return node.assignValues(columns, values)
@@ -339,38 +358,22 @@ func (teq *TrackedEventQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([
 
 func (teq *TrackedEventQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := teq.querySpec()
-	_spec.Node.Columns = teq.fields
-	if len(teq.fields) > 0 {
-		_spec.Unique = teq.unique != nil && *teq.unique
+	_spec.Node.Columns = teq.ctx.Fields
+	if len(teq.ctx.Fields) > 0 {
+		_spec.Unique = teq.ctx.Unique != nil && *teq.ctx.Unique
 	}
 	return sqlgraph.CountNodes(ctx, teq.driver, _spec)
 }
 
-func (teq *TrackedEventQuery) sqlExist(ctx context.Context) (bool, error) {
-	n, err := teq.sqlCount(ctx)
-	if err != nil {
-		return false, fmt.Errorf("ent: check existence: %w", err)
-	}
-	return n > 0, nil
-}
-
 func (teq *TrackedEventQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := &sqlgraph.QuerySpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   trackedevent.Table,
-			Columns: trackedevent.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
-				Column: trackedevent.FieldID,
-			},
-		},
-		From:   teq.sql,
-		Unique: true,
-	}
-	if unique := teq.unique; unique != nil {
+	_spec := sqlgraph.NewQuerySpec(trackedevent.Table, trackedevent.Columns, sqlgraph.NewFieldSpec(trackedevent.FieldID, field.TypeUUID))
+	_spec.From = teq.sql
+	if unique := teq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
+	} else if teq.path != nil {
+		_spec.Unique = true
 	}
-	if fields := teq.fields; len(fields) > 0 {
+	if fields := teq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, trackedevent.FieldID)
 		for i := range fields {
@@ -386,10 +389,10 @@ func (teq *TrackedEventQuery) querySpec() *sqlgraph.QuerySpec {
 			}
 		}
 	}
-	if limit := teq.limit; limit != nil {
+	if limit := teq.ctx.Limit; limit != nil {
 		_spec.Limit = *limit
 	}
-	if offset := teq.offset; offset != nil {
+	if offset := teq.ctx.Offset; offset != nil {
 		_spec.Offset = *offset
 	}
 	if ps := teq.order; len(ps) > 0 {
@@ -405,7 +408,7 @@ func (teq *TrackedEventQuery) querySpec() *sqlgraph.QuerySpec {
 func (teq *TrackedEventQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(teq.driver.Dialect())
 	t1 := builder.Table(trackedevent.Table)
-	columns := teq.fields
+	columns := teq.ctx.Fields
 	if len(columns) == 0 {
 		columns = trackedevent.Columns
 	}
@@ -414,7 +417,7 @@ func (teq *TrackedEventQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector = teq.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
-	if teq.unique != nil && *teq.unique {
+	if teq.ctx.Unique != nil && *teq.ctx.Unique {
 		selector.Distinct()
 	}
 	for _, p := range teq.predicates {
@@ -423,12 +426,12 @@ func (teq *TrackedEventQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	for _, p := range teq.order {
 		p(selector)
 	}
-	if offset := teq.offset; offset != nil {
+	if offset := teq.ctx.Offset; offset != nil {
 		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}
-	if limit := teq.limit; limit != nil {
+	if limit := teq.ctx.Limit; limit != nil {
 		selector.Limit(*limit)
 	}
 	return selector
@@ -436,13 +439,8 @@ func (teq *TrackedEventQuery) sqlQuery(ctx context.Context) *sql.Selector {
 
 // TrackedEventGroupBy is the group-by builder for TrackedEvent entities.
 type TrackedEventGroupBy struct {
-	config
 	selector
-	fields []string
-	fns    []AggregateFunc
-	// intermediate query (i.e. traversal path).
-	sql  *sql.Selector
-	path func(context.Context) (*sql.Selector, error)
+	build *TrackedEventQuery
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
@@ -451,74 +449,77 @@ func (tegb *TrackedEventGroupBy) Aggregate(fns ...AggregateFunc) *TrackedEventGr
 	return tegb
 }
 
-// Scan applies the group-by query and scans the result into the given value.
-func (tegb *TrackedEventGroupBy) Scan(ctx context.Context, v interface{}) error {
-	query, err := tegb.path(ctx)
-	if err != nil {
+// Scan applies the selector query and scans the result into the given value.
+func (tegb *TrackedEventGroupBy) Scan(ctx context.Context, v any) error {
+	ctx = setContextOp(ctx, tegb.build.ctx, ent.OpQueryGroupBy)
+	if err := tegb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	tegb.sql = query
-	return tegb.sqlScan(ctx, v)
+	return scanWithInterceptors[*TrackedEventQuery, *TrackedEventGroupBy](ctx, tegb.build, tegb, tegb.build.inters, v)
 }
 
-func (tegb *TrackedEventGroupBy) sqlScan(ctx context.Context, v interface{}) error {
-	for _, f := range tegb.fields {
-		if !trackedevent.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
-		}
+func (tegb *TrackedEventGroupBy) sqlScan(ctx context.Context, root *TrackedEventQuery, v any) error {
+	selector := root.sqlQuery(ctx).Select()
+	aggregation := make([]string, 0, len(tegb.fns))
+	for _, fn := range tegb.fns {
+		aggregation = append(aggregation, fn(selector))
 	}
-	selector := tegb.sqlQuery()
+	if len(selector.SelectedColumns()) == 0 {
+		columns := make([]string, 0, len(*tegb.flds)+len(tegb.fns))
+		for _, f := range *tegb.flds {
+			columns = append(columns, selector.C(f))
+		}
+		columns = append(columns, aggregation...)
+		selector.Select(columns...)
+	}
+	selector.GroupBy(selector.Columns(*tegb.flds...)...)
 	if err := selector.Err(); err != nil {
 		return err
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := tegb.driver.Query(ctx, query, args, rows); err != nil {
+	if err := tegb.build.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
 }
 
-func (tegb *TrackedEventGroupBy) sqlQuery() *sql.Selector {
-	selector := tegb.sql.Select()
-	aggregation := make([]string, 0, len(tegb.fns))
-	for _, fn := range tegb.fns {
-		aggregation = append(aggregation, fn(selector))
-	}
-	// If no columns were selected in a custom aggregation function, the default
-	// selection is the fields used for "group-by", and the aggregation functions.
-	if len(selector.SelectedColumns()) == 0 {
-		columns := make([]string, 0, len(tegb.fields)+len(tegb.fns))
-		for _, f := range tegb.fields {
-			columns = append(columns, selector.C(f))
-		}
-		columns = append(columns, aggregation...)
-		selector.Select(columns...)
-	}
-	return selector.GroupBy(selector.Columns(tegb.fields...)...)
-}
-
 // TrackedEventSelect is the builder for selecting fields of TrackedEvent entities.
 type TrackedEventSelect struct {
 	*TrackedEventQuery
 	selector
-	// intermediate query (i.e. traversal path).
-	sql *sql.Selector
+}
+
+// Aggregate adds the given aggregation functions to the selector query.
+func (tes *TrackedEventSelect) Aggregate(fns ...AggregateFunc) *TrackedEventSelect {
+	tes.fns = append(tes.fns, fns...)
+	return tes
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (tes *TrackedEventSelect) Scan(ctx context.Context, v interface{}) error {
+func (tes *TrackedEventSelect) Scan(ctx context.Context, v any) error {
+	ctx = setContextOp(ctx, tes.ctx, ent.OpQuerySelect)
 	if err := tes.prepareQuery(ctx); err != nil {
 		return err
 	}
-	tes.sql = tes.TrackedEventQuery.sqlQuery(ctx)
-	return tes.sqlScan(ctx, v)
+	return scanWithInterceptors[*TrackedEventQuery, *TrackedEventSelect](ctx, tes.TrackedEventQuery, tes, tes.inters, v)
 }
 
-func (tes *TrackedEventSelect) sqlScan(ctx context.Context, v interface{}) error {
+func (tes *TrackedEventSelect) sqlScan(ctx context.Context, root *TrackedEventQuery, v any) error {
+	selector := root.sqlQuery(ctx)
+	aggregation := make([]string, 0, len(tes.fns))
+	for _, fn := range tes.fns {
+		aggregation = append(aggregation, fn(selector))
+	}
+	switch n := len(*tes.selector.flds); {
+	case n == 0 && len(aggregation) > 0:
+		selector.Select(aggregation...)
+	case n != 0 && len(aggregation) > 0:
+		selector.AppendSelect(aggregation...)
+	}
 	rows := &sql.Rows{}
-	query, args := tes.sql.Query()
+	query, args := selector.Query()
 	if err := tes.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}

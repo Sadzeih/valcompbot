@@ -53,50 +53,8 @@ func (tec *TrackedEventCreate) Mutation() *TrackedEventMutation {
 
 // Save creates the TrackedEvent in the database.
 func (tec *TrackedEventCreate) Save(ctx context.Context) (*TrackedEvent, error) {
-	var (
-		err  error
-		node *TrackedEvent
-	)
 	tec.defaults()
-	if len(tec.hooks) == 0 {
-		if err = tec.check(); err != nil {
-			return nil, err
-		}
-		node, err = tec.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*TrackedEventMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = tec.check(); err != nil {
-				return nil, err
-			}
-			tec.mutation = mutation
-			if node, err = tec.sqlSave(ctx); err != nil {
-				return nil, err
-			}
-			mutation.id = &node.ID
-			mutation.done = true
-			return node, err
-		})
-		for i := len(tec.hooks) - 1; i >= 0; i-- {
-			if tec.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = tec.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, tec.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*TrackedEvent)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from TrackedEventMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks(ctx, tec.sqlSave, tec.mutation, tec.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -141,6 +99,9 @@ func (tec *TrackedEventCreate) check() error {
 }
 
 func (tec *TrackedEventCreate) sqlSave(ctx context.Context) (*TrackedEvent, error) {
+	if err := tec.check(); err != nil {
+		return nil, err
+	}
 	_node, _spec := tec.createSpec()
 	if err := sqlgraph.CreateNode(ctx, tec.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
@@ -155,38 +116,26 @@ func (tec *TrackedEventCreate) sqlSave(ctx context.Context) (*TrackedEvent, erro
 			return nil, err
 		}
 	}
+	tec.mutation.id = &_node.ID
+	tec.mutation.done = true
 	return _node, nil
 }
 
 func (tec *TrackedEventCreate) createSpec() (*TrackedEvent, *sqlgraph.CreateSpec) {
 	var (
 		_node = &TrackedEvent{config: tec.config}
-		_spec = &sqlgraph.CreateSpec{
-			Table: trackedevent.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
-				Column: trackedevent.FieldID,
-			},
-		}
+		_spec = sqlgraph.NewCreateSpec(trackedevent.Table, sqlgraph.NewFieldSpec(trackedevent.FieldID, field.TypeUUID))
 	)
 	if id, ok := tec.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = &id
 	}
 	if value, ok := tec.mutation.EventID(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: trackedevent.FieldEventID,
-		})
+		_spec.SetField(trackedevent.FieldEventID, field.TypeInt, value)
 		_node.EventID = value
 	}
 	if value, ok := tec.mutation.Name(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: trackedevent.FieldName,
-		})
+		_spec.SetField(trackedevent.FieldName, field.TypeString, value)
 		_node.Name = value
 	}
 	return _node, _spec
@@ -195,11 +144,15 @@ func (tec *TrackedEventCreate) createSpec() (*TrackedEvent, *sqlgraph.CreateSpec
 // TrackedEventCreateBulk is the builder for creating many TrackedEvent entities in bulk.
 type TrackedEventCreateBulk struct {
 	config
+	err      error
 	builders []*TrackedEventCreate
 }
 
 // Save creates the TrackedEvent entities in the database.
 func (tecb *TrackedEventCreateBulk) Save(ctx context.Context) ([]*TrackedEvent, error) {
+	if tecb.err != nil {
+		return nil, tecb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(tecb.builders))
 	nodes := make([]*TrackedEvent, len(tecb.builders))
 	mutators := make([]Mutator, len(tecb.builders))
@@ -216,8 +169,8 @@ func (tecb *TrackedEventCreateBulk) Save(ctx context.Context) ([]*TrackedEvent, 
 					return nil, err
 				}
 				builder.mutation = mutation
-				nodes[i], specs[i] = builder.createSpec()
 				var err error
+				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
 					_, err = mutators[i+1].Mutate(root, tecb.builders[i+1].mutation)
 				} else {

@@ -62,50 +62,8 @@ func (pec *PickemsEventCreate) Mutation() *PickemsEventMutation {
 
 // Save creates the PickemsEvent in the database.
 func (pec *PickemsEventCreate) Save(ctx context.Context) (*PickemsEvent, error) {
-	var (
-		err  error
-		node *PickemsEvent
-	)
 	pec.defaults()
-	if len(pec.hooks) == 0 {
-		if err = pec.check(); err != nil {
-			return nil, err
-		}
-		node, err = pec.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*PickemsEventMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = pec.check(); err != nil {
-				return nil, err
-			}
-			pec.mutation = mutation
-			if node, err = pec.sqlSave(ctx); err != nil {
-				return nil, err
-			}
-			mutation.id = &node.ID
-			mutation.done = true
-			return node, err
-		})
-		for i := len(pec.hooks) - 1; i >= 0; i-- {
-			if pec.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = pec.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, pec.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*PickemsEvent)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from PickemsEventMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks(ctx, pec.sqlSave, pec.mutation, pec.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -147,6 +105,9 @@ func (pec *PickemsEventCreate) check() error {
 }
 
 func (pec *PickemsEventCreate) sqlSave(ctx context.Context) (*PickemsEvent, error) {
+	if err := pec.check(); err != nil {
+		return nil, err
+	}
 	_node, _spec := pec.createSpec()
 	if err := sqlgraph.CreateNode(ctx, pec.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
@@ -161,38 +122,26 @@ func (pec *PickemsEventCreate) sqlSave(ctx context.Context) (*PickemsEvent, erro
 			return nil, err
 		}
 	}
+	pec.mutation.id = &_node.ID
+	pec.mutation.done = true
 	return _node, nil
 }
 
 func (pec *PickemsEventCreate) createSpec() (*PickemsEvent, *sqlgraph.CreateSpec) {
 	var (
 		_node = &PickemsEvent{config: pec.config}
-		_spec = &sqlgraph.CreateSpec{
-			Table: pickemsevent.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
-				Column: pickemsevent.FieldID,
-			},
-		}
+		_spec = sqlgraph.NewCreateSpec(pickemsevent.Table, sqlgraph.NewFieldSpec(pickemsevent.FieldID, field.TypeUUID))
 	)
 	if id, ok := pec.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = &id
 	}
 	if value, ok := pec.mutation.EventID(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: pickemsevent.FieldEventID,
-		})
+		_spec.SetField(pickemsevent.FieldEventID, field.TypeInt, value)
 		_node.EventID = &value
 	}
 	if value, ok := pec.mutation.Timestamp(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: pickemsevent.FieldTimestamp,
-		})
+		_spec.SetField(pickemsevent.FieldTimestamp, field.TypeTime, value)
 		_node.Timestamp = value
 	}
 	return _node, _spec
@@ -201,11 +150,15 @@ func (pec *PickemsEventCreate) createSpec() (*PickemsEvent, *sqlgraph.CreateSpec
 // PickemsEventCreateBulk is the builder for creating many PickemsEvent entities in bulk.
 type PickemsEventCreateBulk struct {
 	config
+	err      error
 	builders []*PickemsEventCreate
 }
 
 // Save creates the PickemsEvent entities in the database.
 func (pecb *PickemsEventCreateBulk) Save(ctx context.Context) ([]*PickemsEvent, error) {
+	if pecb.err != nil {
+		return nil, pecb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(pecb.builders))
 	nodes := make([]*PickemsEvent, len(pecb.builders))
 	mutators := make([]Mutator, len(pecb.builders))
@@ -222,8 +175,8 @@ func (pecb *PickemsEventCreateBulk) Save(ctx context.Context) ([]*PickemsEvent, 
 					return nil, err
 				}
 				builder.mutation = mutation
-				nodes[i], specs[i] = builder.createSpec()
 				var err error
+				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
 					_, err = mutators[i+1].Mutate(root, pecb.builders[i+1].mutation)
 				} else {
