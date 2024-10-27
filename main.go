@@ -45,7 +45,7 @@ func main() {
 	}
 	defer entClient.Close()
 	ctx := context.Background()
-	if err := entClient.Schema.Create(
+	if err := entClient.Debug().Schema.Create(
 		ctx,
 		migrate.WithDropIndex(true),
 		migrate.WithDropColumn(true),

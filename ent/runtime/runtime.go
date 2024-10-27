@@ -5,6 +5,6 @@ package runtime
 // The schema-stitching logic is generated in github.com/Sadzeih/valcompbot/ent/runtime.go
 
 const (
-	Version = "v0.14.1"                                         // Version of ent codegen.
-	Sum     = "h1:fUERL506Pqr92EPHJqr8EYxbPioflJo6PudkrEA8a/s=" // Sum of ent codegen.
+	Version = "v0.14.2-0.20241021115653-89ad7fa39de1"           // Version of ent codegen.
+	Sum     = "h1:MGuPJ6s2UfJHw4yOrRAhHW355Pag5qiE0KGS9dkW4+8=" // Sum of ent codegen.
 )

@@ -68,7 +68,7 @@ var (
 				Symbol:     "scheduled_matches_tracked_events_scheduledmatches",
 				Columns:    []*schema.Column{ScheduledMatchesColumns[4]},
 				RefColumns: []*schema.Column{TrackedEventsColumns[0]},
-				OnDelete:   schema.NoAction,
+				OnDelete:   schema.Cascade,
 			},
 		},
 		Indexes: []*schema.Index{

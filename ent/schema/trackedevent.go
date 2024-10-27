@@ -2,6 +2,7 @@ package schema
 
 import (
 	"entgo.io/ent"
+	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"github.com/google/uuid"
@@ -27,6 +28,9 @@ func (TrackedEvent) Fields() []ent.Field {
 // Edges of the TrackedEvent.
 func (TrackedEvent) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("scheduledmatches", ScheduledMatch.Type),
+		edge.To("scheduledmatches", ScheduledMatch.Type).
+			Annotations(
+				entsql.OnDelete(entsql.Cascade),
+			),
 	}
 }
