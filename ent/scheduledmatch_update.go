@@ -13,6 +13,8 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/Sadzeih/valcompbot/ent/predicate"
 	"github.com/Sadzeih/valcompbot/ent/scheduledmatch"
+	"github.com/Sadzeih/valcompbot/ent/trackedevent"
+	"github.com/google/uuid"
 )
 
 // ScheduledMatchUpdate is the builder for updating ScheduledMatch entities.
@@ -82,9 +84,26 @@ func (smu *ScheduledMatchUpdate) ClearPostedAt() *ScheduledMatchUpdate {
 	return smu
 }
 
+// SetEventID sets the "event" edge to the TrackedEvent entity by ID.
+func (smu *ScheduledMatchUpdate) SetEventID(id uuid.UUID) *ScheduledMatchUpdate {
+	smu.mutation.SetEventID(id)
+	return smu
+}
+
+// SetEvent sets the "event" edge to the TrackedEvent entity.
+func (smu *ScheduledMatchUpdate) SetEvent(t *TrackedEvent) *ScheduledMatchUpdate {
+	return smu.SetEventID(t.ID)
+}
+
 // Mutation returns the ScheduledMatchMutation object of the builder.
 func (smu *ScheduledMatchUpdate) Mutation() *ScheduledMatchMutation {
 	return smu.mutation
+}
+
+// ClearEvent clears the "event" edge to the TrackedEvent entity.
+func (smu *ScheduledMatchUpdate) ClearEvent() *ScheduledMatchUpdate {
+	smu.mutation.ClearEvent()
+	return smu
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -114,7 +133,18 @@ func (smu *ScheduledMatchUpdate) ExecX(ctx context.Context) {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (smu *ScheduledMatchUpdate) check() error {
+	if smu.mutation.EventCleared() && len(smu.mutation.EventIDs()) > 0 {
+		return errors.New(`ent: clearing a required unique edge "ScheduledMatch.event"`)
+	}
+	return nil
+}
+
 func (smu *ScheduledMatchUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	if err := smu.check(); err != nil {
+		return n, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(scheduledmatch.Table, scheduledmatch.Columns, sqlgraph.NewFieldSpec(scheduledmatch.FieldID, field.TypeUUID))
 	if ps := smu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
@@ -137,6 +167,35 @@ func (smu *ScheduledMatchUpdate) sqlSave(ctx context.Context) (n int, err error)
 	}
 	if smu.mutation.PostedAtCleared() {
 		_spec.ClearField(scheduledmatch.FieldPostedAt, field.TypeTime)
+	}
+	if smu.mutation.EventCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   scheduledmatch.EventTable,
+			Columns: []string{scheduledmatch.EventColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(trackedevent.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := smu.mutation.EventIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   scheduledmatch.EventTable,
+			Columns: []string{scheduledmatch.EventColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(trackedevent.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, smu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -212,9 +271,26 @@ func (smuo *ScheduledMatchUpdateOne) ClearPostedAt() *ScheduledMatchUpdateOne {
 	return smuo
 }
 
+// SetEventID sets the "event" edge to the TrackedEvent entity by ID.
+func (smuo *ScheduledMatchUpdateOne) SetEventID(id uuid.UUID) *ScheduledMatchUpdateOne {
+	smuo.mutation.SetEventID(id)
+	return smuo
+}
+
+// SetEvent sets the "event" edge to the TrackedEvent entity.
+func (smuo *ScheduledMatchUpdateOne) SetEvent(t *TrackedEvent) *ScheduledMatchUpdateOne {
+	return smuo.SetEventID(t.ID)
+}
+
 // Mutation returns the ScheduledMatchMutation object of the builder.
 func (smuo *ScheduledMatchUpdateOne) Mutation() *ScheduledMatchMutation {
 	return smuo.mutation
+}
+
+// ClearEvent clears the "event" edge to the TrackedEvent entity.
+func (smuo *ScheduledMatchUpdateOne) ClearEvent() *ScheduledMatchUpdateOne {
+	smuo.mutation.ClearEvent()
+	return smuo
 }
 
 // Where appends a list predicates to the ScheduledMatchUpdate builder.
@@ -257,7 +333,18 @@ func (smuo *ScheduledMatchUpdateOne) ExecX(ctx context.Context) {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (smuo *ScheduledMatchUpdateOne) check() error {
+	if smuo.mutation.EventCleared() && len(smuo.mutation.EventIDs()) > 0 {
+		return errors.New(`ent: clearing a required unique edge "ScheduledMatch.event"`)
+	}
+	return nil
+}
+
 func (smuo *ScheduledMatchUpdateOne) sqlSave(ctx context.Context) (_node *ScheduledMatch, err error) {
+	if err := smuo.check(); err != nil {
+		return _node, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(scheduledmatch.Table, scheduledmatch.Columns, sqlgraph.NewFieldSpec(scheduledmatch.FieldID, field.TypeUUID))
 	id, ok := smuo.mutation.ID()
 	if !ok {
@@ -297,6 +384,35 @@ func (smuo *ScheduledMatchUpdateOne) sqlSave(ctx context.Context) (_node *Schedu
 	}
 	if smuo.mutation.PostedAtCleared() {
 		_spec.ClearField(scheduledmatch.FieldPostedAt, field.TypeTime)
+	}
+	if smuo.mutation.EventCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   scheduledmatch.EventTable,
+			Columns: []string{scheduledmatch.EventColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(trackedevent.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := smuo.mutation.EventIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   scheduledmatch.EventTable,
+			Columns: []string{scheduledmatch.EventColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(trackedevent.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_node = &ScheduledMatch{config: smuo.config}
 	_spec.Assign = _node.assignValues

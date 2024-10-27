@@ -4,6 +4,7 @@ package scheduledmatch
 
 import (
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/google/uuid"
 )
 
@@ -18,8 +19,17 @@ const (
 	FieldDoneAt = "done_at"
 	// FieldPostedAt holds the string denoting the posted_at field in the database.
 	FieldPostedAt = "posted_at"
+	// EdgeEvent holds the string denoting the event edge name in mutations.
+	EdgeEvent = "event"
 	// Table holds the table name of the scheduledmatch in the database.
 	Table = "scheduled_matches"
+	// EventTable is the table that holds the event relation/edge.
+	EventTable = "scheduled_matches"
+	// EventInverseTable is the table name for the TrackedEvent entity.
+	// It exists in this package in order to avoid circular dependency with the "trackedevent" package.
+	EventInverseTable = "tracked_events"
+	// EventColumn is the table column denoting the event relation/edge.
+	EventColumn = "tracked_event_scheduledmatches"
 )
 
 // Columns holds all SQL columns for scheduledmatch fields.
@@ -30,10 +40,21 @@ var Columns = []string{
 	FieldPostedAt,
 }
 
+// ForeignKeys holds the SQL foreign-keys that are owned by the "scheduled_matches"
+// table and are not defined as standalone fields in the schema.
+var ForeignKeys = []string{
+	"tracked_event_scheduledmatches",
+}
+
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {
 	for i := range Columns {
 		if column == Columns[i] {
+			return true
+		}
+	}
+	for i := range ForeignKeys {
+		if column == ForeignKeys[i] {
 			return true
 		}
 	}
@@ -66,4 +87,18 @@ func ByDoneAt(opts ...sql.OrderTermOption) OrderOption {
 // ByPostedAt orders the results by the posted_at field.
 func ByPostedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldPostedAt, opts...).ToFunc()
+}
+
+// ByEventField orders the results by event field.
+func ByEventField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newEventStep(), sql.OrderByField(field, opts...))
+	}
+}
+func newEventStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(EventInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, EventTable, EventColumn),
+	)
 }

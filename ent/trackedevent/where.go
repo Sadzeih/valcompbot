@@ -4,6 +4,7 @@ package trackedevent
 
 import (
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/Sadzeih/valcompbot/ent/predicate"
 	"github.com/google/uuid"
 )
@@ -166,6 +167,29 @@ func NameEqualFold(v string) predicate.TrackedEvent {
 // NameContainsFold applies the ContainsFold predicate on the "name" field.
 func NameContainsFold(v string) predicate.TrackedEvent {
 	return predicate.TrackedEvent(sql.FieldContainsFold(FieldName, v))
+}
+
+// HasScheduledmatches applies the HasEdge predicate on the "scheduledmatches" edge.
+func HasScheduledmatches() predicate.TrackedEvent {
+	return predicate.TrackedEvent(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ScheduledmatchesTable, ScheduledmatchesColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasScheduledmatchesWith applies the HasEdge predicate on the "scheduledmatches" edge with a given conditions (other predicates).
+func HasScheduledmatchesWith(preds ...predicate.ScheduledMatch) predicate.TrackedEvent {
+	return predicate.TrackedEvent(func(s *sql.Selector) {
+		step := newScheduledmatchesStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
 }
 
 // And groups predicates with the AND operator between them.

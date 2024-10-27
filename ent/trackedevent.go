@@ -20,8 +20,29 @@ type TrackedEvent struct {
 	// EventID holds the value of the "event_id" field.
 	EventID int `json:"event_id,omitempty"`
 	// Name holds the value of the "name" field.
-	Name         string `json:"name,omitempty"`
+	Name string `json:"name,omitempty"`
+	// Edges holds the relations/edges for other nodes in the graph.
+	// The values are being populated by the TrackedEventQuery when eager-loading is set.
+	Edges        TrackedEventEdges `json:"edges"`
 	selectValues sql.SelectValues
+}
+
+// TrackedEventEdges holds the relations/edges for other nodes in the graph.
+type TrackedEventEdges struct {
+	// Scheduledmatches holds the value of the scheduledmatches edge.
+	Scheduledmatches []*ScheduledMatch `json:"scheduledmatches,omitempty"`
+	// loadedTypes holds the information for reporting if a
+	// type was loaded (or requested) in eager-loading or not.
+	loadedTypes [1]bool
+}
+
+// ScheduledmatchesOrErr returns the Scheduledmatches value or an error if the edge
+// was not loaded in eager-loading.
+func (e TrackedEventEdges) ScheduledmatchesOrErr() ([]*ScheduledMatch, error) {
+	if e.loadedTypes[0] {
+		return e.Scheduledmatches, nil
+	}
+	return nil, &NotLoadedError{edge: "scheduledmatches"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -79,6 +100,11 @@ func (te *TrackedEvent) assignValues(columns []string, values []any) error {
 // This includes values selected through modifiers, order, etc.
 func (te *TrackedEvent) Value(name string) (ent.Value, error) {
 	return te.selectValues.Get(name)
+}
+
+// QueryScheduledmatches queries the "scheduledmatches" edge of the TrackedEvent entity.
+func (te *TrackedEvent) QueryScheduledmatches() *ScheduledMatchQuery {
+	return NewTrackedEventClient(te.config).QueryScheduledmatches(te)
 }
 
 // Update returns a builder for updating this TrackedEvent.

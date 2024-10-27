@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"database/sql/driver"
 	"fmt"
 	"math"
 
@@ -12,6 +13,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/Sadzeih/valcompbot/ent/predicate"
+	"github.com/Sadzeih/valcompbot/ent/scheduledmatch"
 	"github.com/Sadzeih/valcompbot/ent/trackedevent"
 	"github.com/google/uuid"
 )
@@ -19,10 +21,11 @@ import (
 // TrackedEventQuery is the builder for querying TrackedEvent entities.
 type TrackedEventQuery struct {
 	config
-	ctx        *QueryContext
-	order      []trackedevent.OrderOption
-	inters     []Interceptor
-	predicates []predicate.TrackedEvent
+	ctx                  *QueryContext
+	order                []trackedevent.OrderOption
+	inters               []Interceptor
+	predicates           []predicate.TrackedEvent
+	withScheduledmatches *ScheduledMatchQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -57,6 +60,28 @@ func (teq *TrackedEventQuery) Unique(unique bool) *TrackedEventQuery {
 func (teq *TrackedEventQuery) Order(o ...trackedevent.OrderOption) *TrackedEventQuery {
 	teq.order = append(teq.order, o...)
 	return teq
+}
+
+// QueryScheduledmatches chains the current query on the "scheduledmatches" edge.
+func (teq *TrackedEventQuery) QueryScheduledmatches() *ScheduledMatchQuery {
+	query := (&ScheduledMatchClient{config: teq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := teq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := teq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(trackedevent.Table, trackedevent.FieldID, selector),
+			sqlgraph.To(scheduledmatch.Table, scheduledmatch.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, trackedevent.ScheduledmatchesTable, trackedevent.ScheduledmatchesColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(teq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // First returns the first TrackedEvent entity from the query.
@@ -246,15 +271,27 @@ func (teq *TrackedEventQuery) Clone() *TrackedEventQuery {
 		return nil
 	}
 	return &TrackedEventQuery{
-		config:     teq.config,
-		ctx:        teq.ctx.Clone(),
-		order:      append([]trackedevent.OrderOption{}, teq.order...),
-		inters:     append([]Interceptor{}, teq.inters...),
-		predicates: append([]predicate.TrackedEvent{}, teq.predicates...),
+		config:               teq.config,
+		ctx:                  teq.ctx.Clone(),
+		order:                append([]trackedevent.OrderOption{}, teq.order...),
+		inters:               append([]Interceptor{}, teq.inters...),
+		predicates:           append([]predicate.TrackedEvent{}, teq.predicates...),
+		withScheduledmatches: teq.withScheduledmatches.Clone(),
 		// clone intermediate query.
 		sql:  teq.sql.Clone(),
 		path: teq.path,
 	}
+}
+
+// WithScheduledmatches tells the query-builder to eager-load the nodes that are connected to
+// the "scheduledmatches" edge. The optional arguments are used to configure the query builder of the edge.
+func (teq *TrackedEventQuery) WithScheduledmatches(opts ...func(*ScheduledMatchQuery)) *TrackedEventQuery {
+	query := (&ScheduledMatchClient{config: teq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	teq.withScheduledmatches = query
+	return teq
 }
 
 // GroupBy is used to group vertices by one or more fields/columns.
@@ -333,8 +370,11 @@ func (teq *TrackedEventQuery) prepareQuery(ctx context.Context) error {
 
 func (teq *TrackedEventQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*TrackedEvent, error) {
 	var (
-		nodes = []*TrackedEvent{}
-		_spec = teq.querySpec()
+		nodes       = []*TrackedEvent{}
+		_spec       = teq.querySpec()
+		loadedTypes = [1]bool{
+			teq.withScheduledmatches != nil,
+		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*TrackedEvent).scanValues(nil, columns)
@@ -342,6 +382,7 @@ func (teq *TrackedEventQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([
 	_spec.Assign = func(columns []string, values []any) error {
 		node := &TrackedEvent{config: teq.config}
 		nodes = append(nodes, node)
+		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
 	for i := range hooks {
@@ -353,7 +394,48 @@ func (teq *TrackedEventQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
+	if query := teq.withScheduledmatches; query != nil {
+		if err := teq.loadScheduledmatches(ctx, query, nodes,
+			func(n *TrackedEvent) { n.Edges.Scheduledmatches = []*ScheduledMatch{} },
+			func(n *TrackedEvent, e *ScheduledMatch) {
+				n.Edges.Scheduledmatches = append(n.Edges.Scheduledmatches, e)
+			}); err != nil {
+			return nil, err
+		}
+	}
 	return nodes, nil
+}
+
+func (teq *TrackedEventQuery) loadScheduledmatches(ctx context.Context, query *ScheduledMatchQuery, nodes []*TrackedEvent, init func(*TrackedEvent), assign func(*TrackedEvent, *ScheduledMatch)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[uuid.UUID]*TrackedEvent)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.ScheduledMatch(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(trackedevent.ScheduledmatchesColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.tracked_event_scheduledmatches
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "tracked_event_scheduledmatches" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "tracked_event_scheduledmatches" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
 }
 
 func (teq *TrackedEventQuery) sqlCount(ctx context.Context) (int, error) {

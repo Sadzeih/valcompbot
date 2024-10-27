@@ -3,11 +3,13 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/Sadzeih/valcompbot/comments"
-	"github.com/Sadzeih/valcompbot/ent/pickemsevent"
-	"github.com/Sadzeih/valcompbot/pickems"
 	"log"
 	"sync"
+
+	"github.com/Sadzeih/valcompbot/comments"
+	"github.com/Sadzeih/valcompbot/ent/pickemsevent"
+	"github.com/Sadzeih/valcompbot/matches"
+	"github.com/Sadzeih/valcompbot/pickems"
 
 	"github.com/Sadzeih/valcompbot/config"
 	"github.com/Sadzeih/valcompbot/ent"
@@ -70,6 +72,13 @@ func main() {
 		defer commentsTopic.Close()
 
 		commentsTopic.Run()
+	}()
+
+	// PMT scheduler
+	scheduler := matches.NewScheduler(entClient, redditClient)
+	go func() {
+		defer wg.Done()
+		scheduler.Start(ctx)
 	}()
 
 	// API routine

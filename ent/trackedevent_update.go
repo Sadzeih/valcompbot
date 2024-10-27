@@ -11,7 +11,9 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/Sadzeih/valcompbot/ent/predicate"
+	"github.com/Sadzeih/valcompbot/ent/scheduledmatch"
 	"github.com/Sadzeih/valcompbot/ent/trackedevent"
+	"github.com/google/uuid"
 )
 
 // TrackedEventUpdate is the builder for updating TrackedEvent entities.
@@ -62,9 +64,45 @@ func (teu *TrackedEventUpdate) SetNillableName(s *string) *TrackedEventUpdate {
 	return teu
 }
 
+// AddScheduledmatchIDs adds the "scheduledmatches" edge to the ScheduledMatch entity by IDs.
+func (teu *TrackedEventUpdate) AddScheduledmatchIDs(ids ...uuid.UUID) *TrackedEventUpdate {
+	teu.mutation.AddScheduledmatchIDs(ids...)
+	return teu
+}
+
+// AddScheduledmatches adds the "scheduledmatches" edges to the ScheduledMatch entity.
+func (teu *TrackedEventUpdate) AddScheduledmatches(s ...*ScheduledMatch) *TrackedEventUpdate {
+	ids := make([]uuid.UUID, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return teu.AddScheduledmatchIDs(ids...)
+}
+
 // Mutation returns the TrackedEventMutation object of the builder.
 func (teu *TrackedEventUpdate) Mutation() *TrackedEventMutation {
 	return teu.mutation
+}
+
+// ClearScheduledmatches clears all "scheduledmatches" edges to the ScheduledMatch entity.
+func (teu *TrackedEventUpdate) ClearScheduledmatches() *TrackedEventUpdate {
+	teu.mutation.ClearScheduledmatches()
+	return teu
+}
+
+// RemoveScheduledmatchIDs removes the "scheduledmatches" edge to ScheduledMatch entities by IDs.
+func (teu *TrackedEventUpdate) RemoveScheduledmatchIDs(ids ...uuid.UUID) *TrackedEventUpdate {
+	teu.mutation.RemoveScheduledmatchIDs(ids...)
+	return teu
+}
+
+// RemoveScheduledmatches removes "scheduledmatches" edges to ScheduledMatch entities.
+func (teu *TrackedEventUpdate) RemoveScheduledmatches(s ...*ScheduledMatch) *TrackedEventUpdate {
+	ids := make([]uuid.UUID, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return teu.RemoveScheduledmatchIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -111,6 +149,51 @@ func (teu *TrackedEventUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := teu.mutation.Name(); ok {
 		_spec.SetField(trackedevent.FieldName, field.TypeString, value)
+	}
+	if teu.mutation.ScheduledmatchesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   trackedevent.ScheduledmatchesTable,
+			Columns: []string{trackedevent.ScheduledmatchesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(scheduledmatch.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := teu.mutation.RemovedScheduledmatchesIDs(); len(nodes) > 0 && !teu.mutation.ScheduledmatchesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   trackedevent.ScheduledmatchesTable,
+			Columns: []string{trackedevent.ScheduledmatchesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(scheduledmatch.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := teu.mutation.ScheduledmatchesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   trackedevent.ScheduledmatchesTable,
+			Columns: []string{trackedevent.ScheduledmatchesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(scheduledmatch.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, teu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -167,9 +250,45 @@ func (teuo *TrackedEventUpdateOne) SetNillableName(s *string) *TrackedEventUpdat
 	return teuo
 }
 
+// AddScheduledmatchIDs adds the "scheduledmatches" edge to the ScheduledMatch entity by IDs.
+func (teuo *TrackedEventUpdateOne) AddScheduledmatchIDs(ids ...uuid.UUID) *TrackedEventUpdateOne {
+	teuo.mutation.AddScheduledmatchIDs(ids...)
+	return teuo
+}
+
+// AddScheduledmatches adds the "scheduledmatches" edges to the ScheduledMatch entity.
+func (teuo *TrackedEventUpdateOne) AddScheduledmatches(s ...*ScheduledMatch) *TrackedEventUpdateOne {
+	ids := make([]uuid.UUID, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return teuo.AddScheduledmatchIDs(ids...)
+}
+
 // Mutation returns the TrackedEventMutation object of the builder.
 func (teuo *TrackedEventUpdateOne) Mutation() *TrackedEventMutation {
 	return teuo.mutation
+}
+
+// ClearScheduledmatches clears all "scheduledmatches" edges to the ScheduledMatch entity.
+func (teuo *TrackedEventUpdateOne) ClearScheduledmatches() *TrackedEventUpdateOne {
+	teuo.mutation.ClearScheduledmatches()
+	return teuo
+}
+
+// RemoveScheduledmatchIDs removes the "scheduledmatches" edge to ScheduledMatch entities by IDs.
+func (teuo *TrackedEventUpdateOne) RemoveScheduledmatchIDs(ids ...uuid.UUID) *TrackedEventUpdateOne {
+	teuo.mutation.RemoveScheduledmatchIDs(ids...)
+	return teuo
+}
+
+// RemoveScheduledmatches removes "scheduledmatches" edges to ScheduledMatch entities.
+func (teuo *TrackedEventUpdateOne) RemoveScheduledmatches(s ...*ScheduledMatch) *TrackedEventUpdateOne {
+	ids := make([]uuid.UUID, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return teuo.RemoveScheduledmatchIDs(ids...)
 }
 
 // Where appends a list predicates to the TrackedEventUpdate builder.
@@ -246,6 +365,51 @@ func (teuo *TrackedEventUpdateOne) sqlSave(ctx context.Context) (_node *TrackedE
 	}
 	if value, ok := teuo.mutation.Name(); ok {
 		_spec.SetField(trackedevent.FieldName, field.TypeString, value)
+	}
+	if teuo.mutation.ScheduledmatchesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   trackedevent.ScheduledmatchesTable,
+			Columns: []string{trackedevent.ScheduledmatchesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(scheduledmatch.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := teuo.mutation.RemovedScheduledmatchesIDs(); len(nodes) > 0 && !teuo.mutation.ScheduledmatchesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   trackedevent.ScheduledmatchesTable,
+			Columns: []string{trackedevent.ScheduledmatchesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(scheduledmatch.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := teuo.mutation.ScheduledmatchesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   trackedevent.ScheduledmatchesTable,
+			Columns: []string{trackedevent.ScheduledmatchesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(scheduledmatch.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_node = &TrackedEvent{config: teuo.config}
 	_spec.Assign = _node.assignValues

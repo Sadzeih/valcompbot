@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/Sadzeih/valcompbot/ent"
+	"github.com/Sadzeih/valcompbot/ent/scheduledmatch"
 	"github.com/Sadzeih/valcompbot/ent/trackedevent"
 	"github.com/Sadzeih/valcompbot/utils"
 	"github.com/google/uuid"
@@ -53,7 +54,15 @@ func (h *EventsHandler) HandleTrackEvent(w http.ResponseWriter, r *http.Request)
 }
 
 func (h *EventsHandler) HandleGetTrackedEvents(w http.ResponseWriter, r *http.Request) {
-	e, err := h.client.TrackedEvent.Query().All(h.ctx)
+	e, err := h.client.TrackedEvent.Query().WithScheduledmatches(
+		func(smq *ent.ScheduledMatchQuery) {
+			smq.
+				Where(
+					scheduledmatch.PostedAtIsNil(),
+				)
+		},
+	).
+		All(h.ctx)
 	if err != nil {
 		log.Panic(err)
 		utils.WriteError(w, utils.InternalServerError)

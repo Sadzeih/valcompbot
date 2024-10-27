@@ -1587,6 +1587,8 @@ type ScheduledMatchMutation struct {
 	done_at       *time.Time
 	posted_at     *time.Time
 	clearedFields map[string]struct{}
+	event         *uuid.UUID
+	clearedevent  bool
 	done          bool
 	oldValue      func(context.Context) (*ScheduledMatch, error)
 	predicates    []predicate.ScheduledMatch
@@ -1749,7 +1751,7 @@ func (m *ScheduledMatchMutation) DoneAt() (r time.Time, exists bool) {
 // OldDoneAt returns the old "done_at" field's value of the ScheduledMatch entity.
 // If the ScheduledMatch object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ScheduledMatchMutation) OldDoneAt(ctx context.Context) (v time.Time, err error) {
+func (m *ScheduledMatchMutation) OldDoneAt(ctx context.Context) (v *time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldDoneAt is only allowed on UpdateOne operations")
 	}
@@ -1798,7 +1800,7 @@ func (m *ScheduledMatchMutation) PostedAt() (r time.Time, exists bool) {
 // OldPostedAt returns the old "posted_at" field's value of the ScheduledMatch entity.
 // If the ScheduledMatch object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ScheduledMatchMutation) OldPostedAt(ctx context.Context) (v time.Time, err error) {
+func (m *ScheduledMatchMutation) OldPostedAt(ctx context.Context) (v *time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldPostedAt is only allowed on UpdateOne operations")
 	}
@@ -1828,6 +1830,45 @@ func (m *ScheduledMatchMutation) PostedAtCleared() bool {
 func (m *ScheduledMatchMutation) ResetPostedAt() {
 	m.posted_at = nil
 	delete(m.clearedFields, scheduledmatch.FieldPostedAt)
+}
+
+// SetEventID sets the "event" edge to the TrackedEvent entity by id.
+func (m *ScheduledMatchMutation) SetEventID(id uuid.UUID) {
+	m.event = &id
+}
+
+// ClearEvent clears the "event" edge to the TrackedEvent entity.
+func (m *ScheduledMatchMutation) ClearEvent() {
+	m.clearedevent = true
+}
+
+// EventCleared reports if the "event" edge to the TrackedEvent entity was cleared.
+func (m *ScheduledMatchMutation) EventCleared() bool {
+	return m.clearedevent
+}
+
+// EventID returns the "event" edge ID in the mutation.
+func (m *ScheduledMatchMutation) EventID() (id uuid.UUID, exists bool) {
+	if m.event != nil {
+		return *m.event, true
+	}
+	return
+}
+
+// EventIDs returns the "event" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// EventID instead. It exists only for internal usage by the builders.
+func (m *ScheduledMatchMutation) EventIDs() (ids []uuid.UUID) {
+	if id := m.event; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetEvent resets all changes to the "event" edge.
+func (m *ScheduledMatchMutation) ResetEvent() {
+	m.event = nil
+	m.clearedevent = false
 }
 
 // Where appends a list predicates to the ScheduledMatchMutation builder.
@@ -2012,19 +2053,28 @@ func (m *ScheduledMatchMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *ScheduledMatchMutation) AddedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.event != nil {
+		edges = append(edges, scheduledmatch.EdgeEvent)
+	}
 	return edges
 }
 
 // AddedIDs returns all IDs (to other nodes) that were added for the given edge
 // name in this mutation.
 func (m *ScheduledMatchMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case scheduledmatch.EdgeEvent:
+		if id := m.event; id != nil {
+			return []ent.Value{*id}
+		}
+	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *ScheduledMatchMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
 	return edges
 }
 
@@ -2036,41 +2086,61 @@ func (m *ScheduledMatchMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *ScheduledMatchMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.clearedevent {
+		edges = append(edges, scheduledmatch.EdgeEvent)
+	}
 	return edges
 }
 
 // EdgeCleared returns a boolean which indicates if the edge with the given name
 // was cleared in this mutation.
 func (m *ScheduledMatchMutation) EdgeCleared(name string) bool {
+	switch name {
+	case scheduledmatch.EdgeEvent:
+		return m.clearedevent
+	}
 	return false
 }
 
 // ClearEdge clears the value of the edge with the given name. It returns an error
 // if that edge is not defined in the schema.
 func (m *ScheduledMatchMutation) ClearEdge(name string) error {
+	switch name {
+	case scheduledmatch.EdgeEvent:
+		m.ClearEvent()
+		return nil
+	}
 	return fmt.Errorf("unknown ScheduledMatch unique edge %s", name)
 }
 
 // ResetEdge resets all changes to the edge with the given name in this mutation.
 // It returns an error if the edge is not defined in the schema.
 func (m *ScheduledMatchMutation) ResetEdge(name string) error {
+	switch name {
+	case scheduledmatch.EdgeEvent:
+		m.ResetEvent()
+		return nil
+	}
 	return fmt.Errorf("unknown ScheduledMatch edge %s", name)
 }
 
 // TrackedEventMutation represents an operation that mutates the TrackedEvent nodes in the graph.
 type TrackedEventMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *uuid.UUID
-	event_id      *int
-	addevent_id   *int
-	name          *string
-	clearedFields map[string]struct{}
-	done          bool
-	oldValue      func(context.Context) (*TrackedEvent, error)
-	predicates    []predicate.TrackedEvent
+	op                      Op
+	typ                     string
+	id                      *uuid.UUID
+	event_id                *int
+	addevent_id             *int
+	name                    *string
+	clearedFields           map[string]struct{}
+	scheduledmatches        map[uuid.UUID]struct{}
+	removedscheduledmatches map[uuid.UUID]struct{}
+	clearedscheduledmatches bool
+	done                    bool
+	oldValue                func(context.Context) (*TrackedEvent, error)
+	predicates              []predicate.TrackedEvent
 }
 
 var _ ent.Mutation = (*TrackedEventMutation)(nil)
@@ -2269,6 +2339,60 @@ func (m *TrackedEventMutation) ResetName() {
 	m.name = nil
 }
 
+// AddScheduledmatchIDs adds the "scheduledmatches" edge to the ScheduledMatch entity by ids.
+func (m *TrackedEventMutation) AddScheduledmatchIDs(ids ...uuid.UUID) {
+	if m.scheduledmatches == nil {
+		m.scheduledmatches = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		m.scheduledmatches[ids[i]] = struct{}{}
+	}
+}
+
+// ClearScheduledmatches clears the "scheduledmatches" edge to the ScheduledMatch entity.
+func (m *TrackedEventMutation) ClearScheduledmatches() {
+	m.clearedscheduledmatches = true
+}
+
+// ScheduledmatchesCleared reports if the "scheduledmatches" edge to the ScheduledMatch entity was cleared.
+func (m *TrackedEventMutation) ScheduledmatchesCleared() bool {
+	return m.clearedscheduledmatches
+}
+
+// RemoveScheduledmatchIDs removes the "scheduledmatches" edge to the ScheduledMatch entity by IDs.
+func (m *TrackedEventMutation) RemoveScheduledmatchIDs(ids ...uuid.UUID) {
+	if m.removedscheduledmatches == nil {
+		m.removedscheduledmatches = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		delete(m.scheduledmatches, ids[i])
+		m.removedscheduledmatches[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedScheduledmatches returns the removed IDs of the "scheduledmatches" edge to the ScheduledMatch entity.
+func (m *TrackedEventMutation) RemovedScheduledmatchesIDs() (ids []uuid.UUID) {
+	for id := range m.removedscheduledmatches {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ScheduledmatchesIDs returns the "scheduledmatches" edge IDs in the mutation.
+func (m *TrackedEventMutation) ScheduledmatchesIDs() (ids []uuid.UUID) {
+	for id := range m.scheduledmatches {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetScheduledmatches resets all changes to the "scheduledmatches" edge.
+func (m *TrackedEventMutation) ResetScheduledmatches() {
+	m.scheduledmatches = nil
+	m.clearedscheduledmatches = false
+	m.removedscheduledmatches = nil
+}
+
 // Where appends a list predicates to the TrackedEventMutation builder.
 func (m *TrackedEventMutation) Where(ps ...predicate.TrackedEvent) {
 	m.predicates = append(m.predicates, ps...)
@@ -2434,48 +2558,84 @@ func (m *TrackedEventMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *TrackedEventMutation) AddedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.scheduledmatches != nil {
+		edges = append(edges, trackedevent.EdgeScheduledmatches)
+	}
 	return edges
 }
 
 // AddedIDs returns all IDs (to other nodes) that were added for the given edge
 // name in this mutation.
 func (m *TrackedEventMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case trackedevent.EdgeScheduledmatches:
+		ids := make([]ent.Value, 0, len(m.scheduledmatches))
+		for id := range m.scheduledmatches {
+			ids = append(ids, id)
+		}
+		return ids
+	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *TrackedEventMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.removedscheduledmatches != nil {
+		edges = append(edges, trackedevent.EdgeScheduledmatches)
+	}
 	return edges
 }
 
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
 func (m *TrackedEventMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case trackedevent.EdgeScheduledmatches:
+		ids := make([]ent.Value, 0, len(m.removedscheduledmatches))
+		for id := range m.removedscheduledmatches {
+			ids = append(ids, id)
+		}
+		return ids
+	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *TrackedEventMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.clearedscheduledmatches {
+		edges = append(edges, trackedevent.EdgeScheduledmatches)
+	}
 	return edges
 }
 
 // EdgeCleared returns a boolean which indicates if the edge with the given name
 // was cleared in this mutation.
 func (m *TrackedEventMutation) EdgeCleared(name string) bool {
+	switch name {
+	case trackedevent.EdgeScheduledmatches:
+		return m.clearedscheduledmatches
+	}
 	return false
 }
 
 // ClearEdge clears the value of the edge with the given name. It returns an error
 // if that edge is not defined in the schema.
 func (m *TrackedEventMutation) ClearEdge(name string) error {
+	switch name {
+	}
 	return fmt.Errorf("unknown TrackedEvent unique edge %s", name)
 }
 
 // ResetEdge resets all changes to the edge with the given name in this mutation.
 // It returns an error if the edge is not defined in the schema.
 func (m *TrackedEventMutation) ResetEdge(name string) error {
+	switch name {
+	case trackedevent.EdgeScheduledmatches:
+		m.ResetScheduledmatches()
+		return nil
+	}
 	return fmt.Errorf("unknown TrackedEvent edge %s", name)
 }

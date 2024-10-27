@@ -56,12 +56,21 @@ var (
 		{Name: "match_id", Type: field.TypeString, Unique: true},
 		{Name: "done_at", Type: field.TypeTime, Nullable: true},
 		{Name: "posted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "tracked_event_scheduledmatches", Type: field.TypeUUID},
 	}
 	// ScheduledMatchesTable holds the schema information for the "scheduled_matches" table.
 	ScheduledMatchesTable = &schema.Table{
 		Name:       "scheduled_matches",
 		Columns:    ScheduledMatchesColumns,
 		PrimaryKey: []*schema.Column{ScheduledMatchesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "scheduled_matches_tracked_events_scheduledmatches",
+				Columns:    []*schema.Column{ScheduledMatchesColumns[4]},
+				RefColumns: []*schema.Column{TrackedEventsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
 		Indexes: []*schema.Index{
 			{
 				Name:    "scheduledmatch_match_id",
@@ -93,4 +102,5 @@ var (
 )
 
 func init() {
+	ScheduledMatchesTable.ForeignKeys[0].RefTable = TrackedEventsTable
 }

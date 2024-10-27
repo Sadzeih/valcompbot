@@ -15,6 +15,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/Sadzeih/valcompbot/ent/highlightedcomment"
 	"github.com/Sadzeih/valcompbot/ent/pickemsevent"
 	"github.com/Sadzeih/valcompbot/ent/pinnedcomment"
@@ -744,6 +745,22 @@ func (c *ScheduledMatchClient) GetX(ctx context.Context, id uuid.UUID) *Schedule
 	return obj
 }
 
+// QueryEvent queries the event edge of a ScheduledMatch.
+func (c *ScheduledMatchClient) QueryEvent(sm *ScheduledMatch) *TrackedEventQuery {
+	query := (&TrackedEventClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := sm.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(scheduledmatch.Table, scheduledmatch.FieldID, id),
+			sqlgraph.To(trackedevent.Table, trackedevent.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, scheduledmatch.EventTable, scheduledmatch.EventColumn),
+		)
+		fromV = sqlgraph.Neighbors(sm.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *ScheduledMatchClient) Hooks() []Hook {
 	return c.hooks.ScheduledMatch
@@ -875,6 +892,22 @@ func (c *TrackedEventClient) GetX(ctx context.Context, id uuid.UUID) *TrackedEve
 		panic(err)
 	}
 	return obj
+}
+
+// QueryScheduledmatches queries the scheduledmatches edge of a TrackedEvent.
+func (c *TrackedEventClient) QueryScheduledmatches(te *TrackedEvent) *ScheduledMatchQuery {
+	query := (&ScheduledMatchClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := te.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(trackedevent.Table, trackedevent.FieldID, id),
+			sqlgraph.To(scheduledmatch.Table, scheduledmatch.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, trackedevent.ScheduledmatchesTable, trackedevent.ScheduledmatchesColumn),
+		)
+		fromV = sqlgraph.Neighbors(te.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
 }
 
 // Hooks returns the client hooks.

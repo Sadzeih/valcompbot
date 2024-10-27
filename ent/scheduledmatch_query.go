@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/Sadzeih/valcompbot/ent/predicate"
 	"github.com/Sadzeih/valcompbot/ent/scheduledmatch"
+	"github.com/Sadzeih/valcompbot/ent/trackedevent"
 	"github.com/google/uuid"
 )
 
@@ -23,6 +24,8 @@ type ScheduledMatchQuery struct {
 	order      []scheduledmatch.OrderOption
 	inters     []Interceptor
 	predicates []predicate.ScheduledMatch
+	withEvent  *TrackedEventQuery
+	withFKs    bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -57,6 +60,28 @@ func (smq *ScheduledMatchQuery) Unique(unique bool) *ScheduledMatchQuery {
 func (smq *ScheduledMatchQuery) Order(o ...scheduledmatch.OrderOption) *ScheduledMatchQuery {
 	smq.order = append(smq.order, o...)
 	return smq
+}
+
+// QueryEvent chains the current query on the "event" edge.
+func (smq *ScheduledMatchQuery) QueryEvent() *TrackedEventQuery {
+	query := (&TrackedEventClient{config: smq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := smq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := smq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(scheduledmatch.Table, scheduledmatch.FieldID, selector),
+			sqlgraph.To(trackedevent.Table, trackedevent.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, scheduledmatch.EventTable, scheduledmatch.EventColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(smq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // First returns the first ScheduledMatch entity from the query.
@@ -251,10 +276,22 @@ func (smq *ScheduledMatchQuery) Clone() *ScheduledMatchQuery {
 		order:      append([]scheduledmatch.OrderOption{}, smq.order...),
 		inters:     append([]Interceptor{}, smq.inters...),
 		predicates: append([]predicate.ScheduledMatch{}, smq.predicates...),
+		withEvent:  smq.withEvent.Clone(),
 		// clone intermediate query.
 		sql:  smq.sql.Clone(),
 		path: smq.path,
 	}
+}
+
+// WithEvent tells the query-builder to eager-load the nodes that are connected to
+// the "event" edge. The optional arguments are used to configure the query builder of the edge.
+func (smq *ScheduledMatchQuery) WithEvent(opts ...func(*TrackedEventQuery)) *ScheduledMatchQuery {
+	query := (&TrackedEventClient{config: smq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	smq.withEvent = query
+	return smq
 }
 
 // GroupBy is used to group vertices by one or more fields/columns.
@@ -333,15 +370,26 @@ func (smq *ScheduledMatchQuery) prepareQuery(ctx context.Context) error {
 
 func (smq *ScheduledMatchQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*ScheduledMatch, error) {
 	var (
-		nodes = []*ScheduledMatch{}
-		_spec = smq.querySpec()
+		nodes       = []*ScheduledMatch{}
+		withFKs     = smq.withFKs
+		_spec       = smq.querySpec()
+		loadedTypes = [1]bool{
+			smq.withEvent != nil,
+		}
 	)
+	if smq.withEvent != nil {
+		withFKs = true
+	}
+	if withFKs {
+		_spec.Node.Columns = append(_spec.Node.Columns, scheduledmatch.ForeignKeys...)
+	}
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*ScheduledMatch).scanValues(nil, columns)
 	}
 	_spec.Assign = func(columns []string, values []any) error {
 		node := &ScheduledMatch{config: smq.config}
 		nodes = append(nodes, node)
+		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
 	for i := range hooks {
@@ -353,7 +401,46 @@ func (smq *ScheduledMatchQuery) sqlAll(ctx context.Context, hooks ...queryHook) 
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
+	if query := smq.withEvent; query != nil {
+		if err := smq.loadEvent(ctx, query, nodes, nil,
+			func(n *ScheduledMatch, e *TrackedEvent) { n.Edges.Event = e }); err != nil {
+			return nil, err
+		}
+	}
 	return nodes, nil
+}
+
+func (smq *ScheduledMatchQuery) loadEvent(ctx context.Context, query *TrackedEventQuery, nodes []*ScheduledMatch, init func(*ScheduledMatch), assign func(*ScheduledMatch, *TrackedEvent)) error {
+	ids := make([]uuid.UUID, 0, len(nodes))
+	nodeids := make(map[uuid.UUID][]*ScheduledMatch)
+	for i := range nodes {
+		if nodes[i].tracked_event_scheduledmatches == nil {
+			continue
+		}
+		fk := *nodes[i].tracked_event_scheduledmatches
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(trackedevent.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "tracked_event_scheduledmatches" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
 }
 
 func (smq *ScheduledMatchQuery) sqlCount(ctx context.Context) (int, error) {

@@ -9,6 +9,7 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/Sadzeih/valcompbot/ent/scheduledmatch"
 	"github.com/Sadzeih/valcompbot/ent/trackedevent"
 	"github.com/google/uuid"
 )
@@ -44,6 +45,21 @@ func (tec *TrackedEventCreate) SetNillableID(u *uuid.UUID) *TrackedEventCreate {
 		tec.SetID(*u)
 	}
 	return tec
+}
+
+// AddScheduledmatchIDs adds the "scheduledmatches" edge to the ScheduledMatch entity by IDs.
+func (tec *TrackedEventCreate) AddScheduledmatchIDs(ids ...uuid.UUID) *TrackedEventCreate {
+	tec.mutation.AddScheduledmatchIDs(ids...)
+	return tec
+}
+
+// AddScheduledmatches adds the "scheduledmatches" edges to the ScheduledMatch entity.
+func (tec *TrackedEventCreate) AddScheduledmatches(s ...*ScheduledMatch) *TrackedEventCreate {
+	ids := make([]uuid.UUID, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return tec.AddScheduledmatchIDs(ids...)
 }
 
 // Mutation returns the TrackedEventMutation object of the builder.
@@ -137,6 +153,22 @@ func (tec *TrackedEventCreate) createSpec() (*TrackedEvent, *sqlgraph.CreateSpec
 	if value, ok := tec.mutation.Name(); ok {
 		_spec.SetField(trackedevent.FieldName, field.TypeString, value)
 		_node.Name = value
+	}
+	if nodes := tec.mutation.ScheduledmatchesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   trackedevent.ScheduledmatchesTable,
+			Columns: []string{trackedevent.ScheduledmatchesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(scheduledmatch.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }

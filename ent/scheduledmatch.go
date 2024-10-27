@@ -10,6 +10,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/Sadzeih/valcompbot/ent/scheduledmatch"
+	"github.com/Sadzeih/valcompbot/ent/trackedevent"
 	"github.com/google/uuid"
 )
 
@@ -21,10 +22,34 @@ type ScheduledMatch struct {
 	// MatchID holds the value of the "match_id" field.
 	MatchID string `json:"match_id,omitempty"`
 	// DoneAt holds the value of the "done_at" field.
-	DoneAt time.Time `json:"done_at,omitempty"`
+	DoneAt *time.Time `json:"done_at,omitempty"`
 	// PostedAt holds the value of the "posted_at" field.
-	PostedAt     time.Time `json:"posted_at,omitempty"`
-	selectValues sql.SelectValues
+	PostedAt *time.Time `json:"posted_at,omitempty"`
+	// Edges holds the relations/edges for other nodes in the graph.
+	// The values are being populated by the ScheduledMatchQuery when eager-loading is set.
+	Edges                          ScheduledMatchEdges `json:"edges"`
+	tracked_event_scheduledmatches *uuid.UUID
+	selectValues                   sql.SelectValues
+}
+
+// ScheduledMatchEdges holds the relations/edges for other nodes in the graph.
+type ScheduledMatchEdges struct {
+	// Event holds the value of the event edge.
+	Event *TrackedEvent `json:"event,omitempty"`
+	// loadedTypes holds the information for reporting if a
+	// type was loaded (or requested) in eager-loading or not.
+	loadedTypes [1]bool
+}
+
+// EventOrErr returns the Event value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e ScheduledMatchEdges) EventOrErr() (*TrackedEvent, error) {
+	if e.Event != nil {
+		return e.Event, nil
+	} else if e.loadedTypes[0] {
+		return nil, &NotFoundError{label: trackedevent.Label}
+	}
+	return nil, &NotLoadedError{edge: "event"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -38,6 +63,8 @@ func (*ScheduledMatch) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullTime)
 		case scheduledmatch.FieldID:
 			values[i] = new(uuid.UUID)
+		case scheduledmatch.ForeignKeys[0]: // tracked_event_scheduledmatches
+			values[i] = &sql.NullScanner{S: new(uuid.UUID)}
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -69,13 +96,22 @@ func (sm *ScheduledMatch) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field done_at", values[i])
 			} else if value.Valid {
-				sm.DoneAt = value.Time
+				sm.DoneAt = new(time.Time)
+				*sm.DoneAt = value.Time
 			}
 		case scheduledmatch.FieldPostedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field posted_at", values[i])
 			} else if value.Valid {
-				sm.PostedAt = value.Time
+				sm.PostedAt = new(time.Time)
+				*sm.PostedAt = value.Time
+			}
+		case scheduledmatch.ForeignKeys[0]:
+			if value, ok := values[i].(*sql.NullScanner); !ok {
+				return fmt.Errorf("unexpected type %T for field tracked_event_scheduledmatches", values[i])
+			} else if value.Valid {
+				sm.tracked_event_scheduledmatches = new(uuid.UUID)
+				*sm.tracked_event_scheduledmatches = *value.S.(*uuid.UUID)
 			}
 		default:
 			sm.selectValues.Set(columns[i], values[i])
@@ -88,6 +124,11 @@ func (sm *ScheduledMatch) assignValues(columns []string, values []any) error {
 // This includes values selected through modifiers, order, etc.
 func (sm *ScheduledMatch) Value(name string) (ent.Value, error) {
 	return sm.selectValues.Get(name)
+}
+
+// QueryEvent queries the "event" edge of the ScheduledMatch entity.
+func (sm *ScheduledMatch) QueryEvent() *TrackedEventQuery {
+	return NewScheduledMatchClient(sm.config).QueryEvent(sm)
 }
 
 // Update returns a builder for updating this ScheduledMatch.
@@ -116,11 +157,15 @@ func (sm *ScheduledMatch) String() string {
 	builder.WriteString("match_id=")
 	builder.WriteString(sm.MatchID)
 	builder.WriteString(", ")
-	builder.WriteString("done_at=")
-	builder.WriteString(sm.DoneAt.Format(time.ANSIC))
+	if v := sm.DoneAt; v != nil {
+		builder.WriteString("done_at=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
 	builder.WriteString(", ")
-	builder.WriteString("posted_at=")
-	builder.WriteString(sm.PostedAt.Format(time.ANSIC))
+	if v := sm.PostedAt; v != nil {
+		builder.WriteString("posted_at=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
 	builder.WriteByte(')')
 	return builder.String()
 }

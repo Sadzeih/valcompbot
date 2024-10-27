@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/Sadzeih/valcompbot/ent/scheduledmatch"
+	"github.com/Sadzeih/valcompbot/ent/trackedevent"
 	"github.com/google/uuid"
 )
 
@@ -69,6 +70,17 @@ func (smc *ScheduledMatchCreate) SetNillableID(u *uuid.UUID) *ScheduledMatchCrea
 	return smc
 }
 
+// SetEventID sets the "event" edge to the TrackedEvent entity by ID.
+func (smc *ScheduledMatchCreate) SetEventID(id uuid.UUID) *ScheduledMatchCreate {
+	smc.mutation.SetEventID(id)
+	return smc
+}
+
+// SetEvent sets the "event" edge to the TrackedEvent entity.
+func (smc *ScheduledMatchCreate) SetEvent(t *TrackedEvent) *ScheduledMatchCreate {
+	return smc.SetEventID(t.ID)
+}
+
 // Mutation returns the ScheduledMatchMutation object of the builder.
 func (smc *ScheduledMatchCreate) Mutation() *ScheduledMatchMutation {
 	return smc.mutation
@@ -115,6 +127,9 @@ func (smc *ScheduledMatchCreate) check() error {
 	if _, ok := smc.mutation.MatchID(); !ok {
 		return &ValidationError{Name: "match_id", err: errors.New(`ent: missing required field "ScheduledMatch.match_id"`)}
 	}
+	if len(smc.mutation.EventIDs()) == 0 {
+		return &ValidationError{Name: "event", err: errors.New(`ent: missing required edge "ScheduledMatch.event"`)}
+	}
 	return nil
 }
 
@@ -156,11 +171,28 @@ func (smc *ScheduledMatchCreate) createSpec() (*ScheduledMatch, *sqlgraph.Create
 	}
 	if value, ok := smc.mutation.DoneAt(); ok {
 		_spec.SetField(scheduledmatch.FieldDoneAt, field.TypeTime, value)
-		_node.DoneAt = value
+		_node.DoneAt = &value
 	}
 	if value, ok := smc.mutation.PostedAt(); ok {
 		_spec.SetField(scheduledmatch.FieldPostedAt, field.TypeTime, value)
-		_node.PostedAt = value
+		_node.PostedAt = &value
+	}
+	if nodes := smc.mutation.EventIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   scheduledmatch.EventTable,
+			Columns: []string{scheduledmatch.EventColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(trackedevent.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.tracked_event_scheduledmatches = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }

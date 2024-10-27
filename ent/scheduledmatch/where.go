@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/Sadzeih/valcompbot/ent/predicate"
 	"github.com/google/uuid"
 )
@@ -233,6 +234,29 @@ func PostedAtIsNil() predicate.ScheduledMatch {
 // PostedAtNotNil applies the NotNil predicate on the "posted_at" field.
 func PostedAtNotNil() predicate.ScheduledMatch {
 	return predicate.ScheduledMatch(sql.FieldNotNull(FieldPostedAt))
+}
+
+// HasEvent applies the HasEdge predicate on the "event" edge.
+func HasEvent() predicate.ScheduledMatch {
+	return predicate.ScheduledMatch(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, EventTable, EventColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasEventWith applies the HasEdge predicate on the "event" edge with a given conditions (other predicates).
+func HasEventWith(preds ...predicate.TrackedEvent) predicate.ScheduledMatch {
+	return predicate.ScheduledMatch(func(s *sql.Selector) {
+		step := newEventStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
 }
 
 // And groups predicates with the AND operator between them.
