@@ -36,8 +36,8 @@ func PostMatch(ctx context.Context, vm *Match, ent *ent.Client, redditClient *re
 		Subreddit: config.Get().RedditSubreddit,
 		Title:     title,
 		Text:      md,
-		// FlairID:   pmtFlairID,
-		Spoiler: true,
+		FlairID:   pmtFlairID,
+		Spoiler:   true,
 	})
 	if err != nil {
 		return err
