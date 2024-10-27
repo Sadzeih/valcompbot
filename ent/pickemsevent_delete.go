@@ -4,7 +4,6 @@ package ent
 
 import (
 	"context"
-	"fmt"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -28,34 +27,7 @@ func (ped *PickemsEventDelete) Where(ps ...predicate.PickemsEvent) *PickemsEvent
 
 // Exec executes the deletion query and returns how many vertices were deleted.
 func (ped *PickemsEventDelete) Exec(ctx context.Context) (int, error) {
-	var (
-		err      error
-		affected int
-	)
-	if len(ped.hooks) == 0 {
-		affected, err = ped.sqlExec(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*PickemsEventMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			ped.mutation = mutation
-			affected, err = ped.sqlExec(ctx)
-			mutation.done = true
-			return affected, err
-		})
-		for i := len(ped.hooks) - 1; i >= 0; i-- {
-			if ped.hooks[i] == nil {
-				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = ped.hooks[i](mut)
-		}
-		if _, err := mut.Mutate(ctx, ped.mutation); err != nil {
-			return 0, err
-		}
-	}
-	return affected, err
+	return withHooks(ctx, ped.sqlExec, ped.mutation, ped.hooks)
 }
 
 // ExecX is like Exec, but panics if an error occurs.
@@ -68,15 +40,7 @@ func (ped *PickemsEventDelete) ExecX(ctx context.Context) int {
 }
 
 func (ped *PickemsEventDelete) sqlExec(ctx context.Context) (int, error) {
-	_spec := &sqlgraph.DeleteSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table: pickemsevent.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
-				Column: pickemsevent.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewDeleteSpec(pickemsevent.Table, sqlgraph.NewFieldSpec(pickemsevent.FieldID, field.TypeUUID))
 	if ps := ped.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -88,12 +52,19 @@ func (ped *PickemsEventDelete) sqlExec(ctx context.Context) (int, error) {
 	if err != nil && sqlgraph.IsConstraintError(err) {
 		err = &ConstraintError{msg: err.Error(), wrap: err}
 	}
+	ped.mutation.done = true
 	return affected, err
 }
 
 // PickemsEventDeleteOne is the builder for deleting a single PickemsEvent entity.
 type PickemsEventDeleteOne struct {
 	ped *PickemsEventDelete
+}
+
+// Where appends a list predicates to the PickemsEventDelete builder.
+func (pedo *PickemsEventDeleteOne) Where(ps ...predicate.PickemsEvent) *PickemsEventDeleteOne {
+	pedo.ped.mutation.Where(ps...)
+	return pedo
 }
 
 // Exec executes the deletion query.
@@ -111,5 +82,7 @@ func (pedo *PickemsEventDeleteOne) Exec(ctx context.Context) error {
 
 // ExecX is like Exec, but panics if an error occurs.
 func (pedo *PickemsEventDeleteOne) ExecX(ctx context.Context) {
-	pedo.ped.ExecX(ctx)
+	if err := pedo.Exec(ctx); err != nil {
+		panic(err)
+	}
 }

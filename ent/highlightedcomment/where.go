@@ -12,916 +12,595 @@ import (
 
 // ID filters vertices based on their ID field.
 func ID(id uuid.UUID) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldID), id))
-	})
+	return predicate.HighlightedComment(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
 func IDEQ(id uuid.UUID) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldID), id))
-	})
+	return predicate.HighlightedComment(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
 func IDNEQ(id uuid.UUID) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldID), id))
-	})
+	return predicate.HighlightedComment(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
 func IDIn(ids ...uuid.UUID) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		v := make([]interface{}, len(ids))
-		for i := range v {
-			v[i] = ids[i]
-		}
-		s.Where(sql.In(s.C(FieldID), v...))
-	})
+	return predicate.HighlightedComment(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
 func IDNotIn(ids ...uuid.UUID) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		v := make([]interface{}, len(ids))
-		for i := range v {
-			v[i] = ids[i]
-		}
-		s.Where(sql.NotIn(s.C(FieldID), v...))
-	})
+	return predicate.HighlightedComment(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
 func IDGT(id uuid.UUID) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldID), id))
-	})
+	return predicate.HighlightedComment(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
 func IDGTE(id uuid.UUID) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldID), id))
-	})
+	return predicate.HighlightedComment(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
 func IDLT(id uuid.UUID) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldID), id))
-	})
+	return predicate.HighlightedComment(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
 func IDLTE(id uuid.UUID) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldID), id))
-	})
+	return predicate.HighlightedComment(sql.FieldLTE(FieldID, id))
 }
 
 // CommentID applies equality check predicate on the "comment_id" field. It's identical to CommentIDEQ.
 func CommentID(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCommentID), v))
-	})
+	return predicate.HighlightedComment(sql.FieldEQ(FieldCommentID, v))
 }
 
 // Body applies equality check predicate on the "body" field. It's identical to BodyEQ.
 func Body(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldBody), v))
-	})
+	return predicate.HighlightedComment(sql.FieldEQ(FieldBody, v))
 }
 
 // Author applies equality check predicate on the "author" field. It's identical to AuthorEQ.
 func Author(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldAuthor), v))
-	})
+	return predicate.HighlightedComment(sql.FieldEQ(FieldAuthor, v))
 }
 
 // Flair applies equality check predicate on the "flair" field. It's identical to FlairEQ.
 func Flair(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldFlair), v))
-	})
+	return predicate.HighlightedComment(sql.FieldEQ(FieldFlair, v))
 }
 
 // ParentID applies equality check predicate on the "parent_id" field. It's identical to ParentIDEQ.
 func ParentID(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldParentID), v))
-	})
+	return predicate.HighlightedComment(sql.FieldEQ(FieldParentID, v))
 }
 
 // Link applies equality check predicate on the "link" field. It's identical to LinkEQ.
 func Link(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldLink), v))
-	})
+	return predicate.HighlightedComment(sql.FieldEQ(FieldLink, v))
 }
 
 // AuthorType applies equality check predicate on the "author_type" field. It's identical to AuthorTypeEQ.
 func AuthorType(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldAuthorType), v))
-	})
+	return predicate.HighlightedComment(sql.FieldEQ(FieldAuthorType, v))
 }
 
 // Timestamp applies equality check predicate on the "timestamp" field. It's identical to TimestampEQ.
 func Timestamp(v time.Time) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldTimestamp), v))
-	})
+	return predicate.HighlightedComment(sql.FieldEQ(FieldTimestamp, v))
 }
 
 // CommentIDEQ applies the EQ predicate on the "comment_id" field.
 func CommentIDEQ(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCommentID), v))
-	})
+	return predicate.HighlightedComment(sql.FieldEQ(FieldCommentID, v))
 }
 
 // CommentIDNEQ applies the NEQ predicate on the "comment_id" field.
 func CommentIDNEQ(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldCommentID), v))
-	})
+	return predicate.HighlightedComment(sql.FieldNEQ(FieldCommentID, v))
 }
 
 // CommentIDIn applies the In predicate on the "comment_id" field.
 func CommentIDIn(vs ...string) predicate.HighlightedComment {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldCommentID), v...))
-	})
+	return predicate.HighlightedComment(sql.FieldIn(FieldCommentID, vs...))
 }
 
 // CommentIDNotIn applies the NotIn predicate on the "comment_id" field.
 func CommentIDNotIn(vs ...string) predicate.HighlightedComment {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldCommentID), v...))
-	})
+	return predicate.HighlightedComment(sql.FieldNotIn(FieldCommentID, vs...))
 }
 
 // CommentIDGT applies the GT predicate on the "comment_id" field.
 func CommentIDGT(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldCommentID), v))
-	})
+	return predicate.HighlightedComment(sql.FieldGT(FieldCommentID, v))
 }
 
 // CommentIDGTE applies the GTE predicate on the "comment_id" field.
 func CommentIDGTE(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldCommentID), v))
-	})
+	return predicate.HighlightedComment(sql.FieldGTE(FieldCommentID, v))
 }
 
 // CommentIDLT applies the LT predicate on the "comment_id" field.
 func CommentIDLT(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldCommentID), v))
-	})
+	return predicate.HighlightedComment(sql.FieldLT(FieldCommentID, v))
 }
 
 // CommentIDLTE applies the LTE predicate on the "comment_id" field.
 func CommentIDLTE(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldCommentID), v))
-	})
+	return predicate.HighlightedComment(sql.FieldLTE(FieldCommentID, v))
 }
 
 // CommentIDContains applies the Contains predicate on the "comment_id" field.
 func CommentIDContains(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldCommentID), v))
-	})
+	return predicate.HighlightedComment(sql.FieldContains(FieldCommentID, v))
 }
 
 // CommentIDHasPrefix applies the HasPrefix predicate on the "comment_id" field.
 func CommentIDHasPrefix(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldCommentID), v))
-	})
+	return predicate.HighlightedComment(sql.FieldHasPrefix(FieldCommentID, v))
 }
 
 // CommentIDHasSuffix applies the HasSuffix predicate on the "comment_id" field.
 func CommentIDHasSuffix(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldCommentID), v))
-	})
+	return predicate.HighlightedComment(sql.FieldHasSuffix(FieldCommentID, v))
 }
 
 // CommentIDEqualFold applies the EqualFold predicate on the "comment_id" field.
 func CommentIDEqualFold(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldCommentID), v))
-	})
+	return predicate.HighlightedComment(sql.FieldEqualFold(FieldCommentID, v))
 }
 
 // CommentIDContainsFold applies the ContainsFold predicate on the "comment_id" field.
 func CommentIDContainsFold(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldCommentID), v))
-	})
+	return predicate.HighlightedComment(sql.FieldContainsFold(FieldCommentID, v))
 }
 
 // BodyEQ applies the EQ predicate on the "body" field.
 func BodyEQ(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldBody), v))
-	})
+	return predicate.HighlightedComment(sql.FieldEQ(FieldBody, v))
 }
 
 // BodyNEQ applies the NEQ predicate on the "body" field.
 func BodyNEQ(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldBody), v))
-	})
+	return predicate.HighlightedComment(sql.FieldNEQ(FieldBody, v))
 }
 
 // BodyIn applies the In predicate on the "body" field.
 func BodyIn(vs ...string) predicate.HighlightedComment {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldBody), v...))
-	})
+	return predicate.HighlightedComment(sql.FieldIn(FieldBody, vs...))
 }
 
 // BodyNotIn applies the NotIn predicate on the "body" field.
 func BodyNotIn(vs ...string) predicate.HighlightedComment {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldBody), v...))
-	})
+	return predicate.HighlightedComment(sql.FieldNotIn(FieldBody, vs...))
 }
 
 // BodyGT applies the GT predicate on the "body" field.
 func BodyGT(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldBody), v))
-	})
+	return predicate.HighlightedComment(sql.FieldGT(FieldBody, v))
 }
 
 // BodyGTE applies the GTE predicate on the "body" field.
 func BodyGTE(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldBody), v))
-	})
+	return predicate.HighlightedComment(sql.FieldGTE(FieldBody, v))
 }
 
 // BodyLT applies the LT predicate on the "body" field.
 func BodyLT(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldBody), v))
-	})
+	return predicate.HighlightedComment(sql.FieldLT(FieldBody, v))
 }
 
 // BodyLTE applies the LTE predicate on the "body" field.
 func BodyLTE(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldBody), v))
-	})
+	return predicate.HighlightedComment(sql.FieldLTE(FieldBody, v))
 }
 
 // BodyContains applies the Contains predicate on the "body" field.
 func BodyContains(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldBody), v))
-	})
+	return predicate.HighlightedComment(sql.FieldContains(FieldBody, v))
 }
 
 // BodyHasPrefix applies the HasPrefix predicate on the "body" field.
 func BodyHasPrefix(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldBody), v))
-	})
+	return predicate.HighlightedComment(sql.FieldHasPrefix(FieldBody, v))
 }
 
 // BodyHasSuffix applies the HasSuffix predicate on the "body" field.
 func BodyHasSuffix(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldBody), v))
-	})
+	return predicate.HighlightedComment(sql.FieldHasSuffix(FieldBody, v))
 }
 
 // BodyEqualFold applies the EqualFold predicate on the "body" field.
 func BodyEqualFold(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldBody), v))
-	})
+	return predicate.HighlightedComment(sql.FieldEqualFold(FieldBody, v))
 }
 
 // BodyContainsFold applies the ContainsFold predicate on the "body" field.
 func BodyContainsFold(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldBody), v))
-	})
+	return predicate.HighlightedComment(sql.FieldContainsFold(FieldBody, v))
 }
 
 // AuthorEQ applies the EQ predicate on the "author" field.
 func AuthorEQ(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldAuthor), v))
-	})
+	return predicate.HighlightedComment(sql.FieldEQ(FieldAuthor, v))
 }
 
 // AuthorNEQ applies the NEQ predicate on the "author" field.
 func AuthorNEQ(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldAuthor), v))
-	})
+	return predicate.HighlightedComment(sql.FieldNEQ(FieldAuthor, v))
 }
 
 // AuthorIn applies the In predicate on the "author" field.
 func AuthorIn(vs ...string) predicate.HighlightedComment {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldAuthor), v...))
-	})
+	return predicate.HighlightedComment(sql.FieldIn(FieldAuthor, vs...))
 }
 
 // AuthorNotIn applies the NotIn predicate on the "author" field.
 func AuthorNotIn(vs ...string) predicate.HighlightedComment {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldAuthor), v...))
-	})
+	return predicate.HighlightedComment(sql.FieldNotIn(FieldAuthor, vs...))
 }
 
 // AuthorGT applies the GT predicate on the "author" field.
 func AuthorGT(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldAuthor), v))
-	})
+	return predicate.HighlightedComment(sql.FieldGT(FieldAuthor, v))
 }
 
 // AuthorGTE applies the GTE predicate on the "author" field.
 func AuthorGTE(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldAuthor), v))
-	})
+	return predicate.HighlightedComment(sql.FieldGTE(FieldAuthor, v))
 }
 
 // AuthorLT applies the LT predicate on the "author" field.
 func AuthorLT(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldAuthor), v))
-	})
+	return predicate.HighlightedComment(sql.FieldLT(FieldAuthor, v))
 }
 
 // AuthorLTE applies the LTE predicate on the "author" field.
 func AuthorLTE(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldAuthor), v))
-	})
+	return predicate.HighlightedComment(sql.FieldLTE(FieldAuthor, v))
 }
 
 // AuthorContains applies the Contains predicate on the "author" field.
 func AuthorContains(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldAuthor), v))
-	})
+	return predicate.HighlightedComment(sql.FieldContains(FieldAuthor, v))
 }
 
 // AuthorHasPrefix applies the HasPrefix predicate on the "author" field.
 func AuthorHasPrefix(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldAuthor), v))
-	})
+	return predicate.HighlightedComment(sql.FieldHasPrefix(FieldAuthor, v))
 }
 
 // AuthorHasSuffix applies the HasSuffix predicate on the "author" field.
 func AuthorHasSuffix(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldAuthor), v))
-	})
+	return predicate.HighlightedComment(sql.FieldHasSuffix(FieldAuthor, v))
 }
 
 // AuthorEqualFold applies the EqualFold predicate on the "author" field.
 func AuthorEqualFold(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldAuthor), v))
-	})
+	return predicate.HighlightedComment(sql.FieldEqualFold(FieldAuthor, v))
 }
 
 // AuthorContainsFold applies the ContainsFold predicate on the "author" field.
 func AuthorContainsFold(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldAuthor), v))
-	})
+	return predicate.HighlightedComment(sql.FieldContainsFold(FieldAuthor, v))
 }
 
 // FlairEQ applies the EQ predicate on the "flair" field.
 func FlairEQ(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldFlair), v))
-	})
+	return predicate.HighlightedComment(sql.FieldEQ(FieldFlair, v))
 }
 
 // FlairNEQ applies the NEQ predicate on the "flair" field.
 func FlairNEQ(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldFlair), v))
-	})
+	return predicate.HighlightedComment(sql.FieldNEQ(FieldFlair, v))
 }
 
 // FlairIn applies the In predicate on the "flair" field.
 func FlairIn(vs ...string) predicate.HighlightedComment {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldFlair), v...))
-	})
+	return predicate.HighlightedComment(sql.FieldIn(FieldFlair, vs...))
 }
 
 // FlairNotIn applies the NotIn predicate on the "flair" field.
 func FlairNotIn(vs ...string) predicate.HighlightedComment {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldFlair), v...))
-	})
+	return predicate.HighlightedComment(sql.FieldNotIn(FieldFlair, vs...))
 }
 
 // FlairGT applies the GT predicate on the "flair" field.
 func FlairGT(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldFlair), v))
-	})
+	return predicate.HighlightedComment(sql.FieldGT(FieldFlair, v))
 }
 
 // FlairGTE applies the GTE predicate on the "flair" field.
 func FlairGTE(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldFlair), v))
-	})
+	return predicate.HighlightedComment(sql.FieldGTE(FieldFlair, v))
 }
 
 // FlairLT applies the LT predicate on the "flair" field.
 func FlairLT(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldFlair), v))
-	})
+	return predicate.HighlightedComment(sql.FieldLT(FieldFlair, v))
 }
 
 // FlairLTE applies the LTE predicate on the "flair" field.
 func FlairLTE(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldFlair), v))
-	})
+	return predicate.HighlightedComment(sql.FieldLTE(FieldFlair, v))
 }
 
 // FlairContains applies the Contains predicate on the "flair" field.
 func FlairContains(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldFlair), v))
-	})
+	return predicate.HighlightedComment(sql.FieldContains(FieldFlair, v))
 }
 
 // FlairHasPrefix applies the HasPrefix predicate on the "flair" field.
 func FlairHasPrefix(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldFlair), v))
-	})
+	return predicate.HighlightedComment(sql.FieldHasPrefix(FieldFlair, v))
 }
 
 // FlairHasSuffix applies the HasSuffix predicate on the "flair" field.
 func FlairHasSuffix(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldFlair), v))
-	})
+	return predicate.HighlightedComment(sql.FieldHasSuffix(FieldFlair, v))
 }
 
 // FlairEqualFold applies the EqualFold predicate on the "flair" field.
 func FlairEqualFold(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldFlair), v))
-	})
+	return predicate.HighlightedComment(sql.FieldEqualFold(FieldFlair, v))
 }
 
 // FlairContainsFold applies the ContainsFold predicate on the "flair" field.
 func FlairContainsFold(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldFlair), v))
-	})
+	return predicate.HighlightedComment(sql.FieldContainsFold(FieldFlair, v))
 }
 
 // ParentIDEQ applies the EQ predicate on the "parent_id" field.
 func ParentIDEQ(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldParentID), v))
-	})
+	return predicate.HighlightedComment(sql.FieldEQ(FieldParentID, v))
 }
 
 // ParentIDNEQ applies the NEQ predicate on the "parent_id" field.
 func ParentIDNEQ(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldParentID), v))
-	})
+	return predicate.HighlightedComment(sql.FieldNEQ(FieldParentID, v))
 }
 
 // ParentIDIn applies the In predicate on the "parent_id" field.
 func ParentIDIn(vs ...string) predicate.HighlightedComment {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldParentID), v...))
-	})
+	return predicate.HighlightedComment(sql.FieldIn(FieldParentID, vs...))
 }
 
 // ParentIDNotIn applies the NotIn predicate on the "parent_id" field.
 func ParentIDNotIn(vs ...string) predicate.HighlightedComment {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldParentID), v...))
-	})
+	return predicate.HighlightedComment(sql.FieldNotIn(FieldParentID, vs...))
 }
 
 // ParentIDGT applies the GT predicate on the "parent_id" field.
 func ParentIDGT(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldParentID), v))
-	})
+	return predicate.HighlightedComment(sql.FieldGT(FieldParentID, v))
 }
 
 // ParentIDGTE applies the GTE predicate on the "parent_id" field.
 func ParentIDGTE(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldParentID), v))
-	})
+	return predicate.HighlightedComment(sql.FieldGTE(FieldParentID, v))
 }
 
 // ParentIDLT applies the LT predicate on the "parent_id" field.
 func ParentIDLT(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldParentID), v))
-	})
+	return predicate.HighlightedComment(sql.FieldLT(FieldParentID, v))
 }
 
 // ParentIDLTE applies the LTE predicate on the "parent_id" field.
 func ParentIDLTE(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldParentID), v))
-	})
+	return predicate.HighlightedComment(sql.FieldLTE(FieldParentID, v))
 }
 
 // ParentIDContains applies the Contains predicate on the "parent_id" field.
 func ParentIDContains(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldParentID), v))
-	})
+	return predicate.HighlightedComment(sql.FieldContains(FieldParentID, v))
 }
 
 // ParentIDHasPrefix applies the HasPrefix predicate on the "parent_id" field.
 func ParentIDHasPrefix(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldParentID), v))
-	})
+	return predicate.HighlightedComment(sql.FieldHasPrefix(FieldParentID, v))
 }
 
 // ParentIDHasSuffix applies the HasSuffix predicate on the "parent_id" field.
 func ParentIDHasSuffix(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldParentID), v))
-	})
+	return predicate.HighlightedComment(sql.FieldHasSuffix(FieldParentID, v))
 }
 
 // ParentIDEqualFold applies the EqualFold predicate on the "parent_id" field.
 func ParentIDEqualFold(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldParentID), v))
-	})
+	return predicate.HighlightedComment(sql.FieldEqualFold(FieldParentID, v))
 }
 
 // ParentIDContainsFold applies the ContainsFold predicate on the "parent_id" field.
 func ParentIDContainsFold(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldParentID), v))
-	})
+	return predicate.HighlightedComment(sql.FieldContainsFold(FieldParentID, v))
 }
 
 // LinkEQ applies the EQ predicate on the "link" field.
 func LinkEQ(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldLink), v))
-	})
+	return predicate.HighlightedComment(sql.FieldEQ(FieldLink, v))
 }
 
 // LinkNEQ applies the NEQ predicate on the "link" field.
 func LinkNEQ(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldLink), v))
-	})
+	return predicate.HighlightedComment(sql.FieldNEQ(FieldLink, v))
 }
 
 // LinkIn applies the In predicate on the "link" field.
 func LinkIn(vs ...string) predicate.HighlightedComment {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldLink), v...))
-	})
+	return predicate.HighlightedComment(sql.FieldIn(FieldLink, vs...))
 }
 
 // LinkNotIn applies the NotIn predicate on the "link" field.
 func LinkNotIn(vs ...string) predicate.HighlightedComment {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldLink), v...))
-	})
+	return predicate.HighlightedComment(sql.FieldNotIn(FieldLink, vs...))
 }
 
 // LinkGT applies the GT predicate on the "link" field.
 func LinkGT(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldLink), v))
-	})
+	return predicate.HighlightedComment(sql.FieldGT(FieldLink, v))
 }
 
 // LinkGTE applies the GTE predicate on the "link" field.
 func LinkGTE(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldLink), v))
-	})
+	return predicate.HighlightedComment(sql.FieldGTE(FieldLink, v))
 }
 
 // LinkLT applies the LT predicate on the "link" field.
 func LinkLT(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldLink), v))
-	})
+	return predicate.HighlightedComment(sql.FieldLT(FieldLink, v))
 }
 
 // LinkLTE applies the LTE predicate on the "link" field.
 func LinkLTE(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldLink), v))
-	})
+	return predicate.HighlightedComment(sql.FieldLTE(FieldLink, v))
 }
 
 // LinkContains applies the Contains predicate on the "link" field.
 func LinkContains(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldLink), v))
-	})
+	return predicate.HighlightedComment(sql.FieldContains(FieldLink, v))
 }
 
 // LinkHasPrefix applies the HasPrefix predicate on the "link" field.
 func LinkHasPrefix(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldLink), v))
-	})
+	return predicate.HighlightedComment(sql.FieldHasPrefix(FieldLink, v))
 }
 
 // LinkHasSuffix applies the HasSuffix predicate on the "link" field.
 func LinkHasSuffix(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldLink), v))
-	})
+	return predicate.HighlightedComment(sql.FieldHasSuffix(FieldLink, v))
 }
 
 // LinkEqualFold applies the EqualFold predicate on the "link" field.
 func LinkEqualFold(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldLink), v))
-	})
+	return predicate.HighlightedComment(sql.FieldEqualFold(FieldLink, v))
 }
 
 // LinkContainsFold applies the ContainsFold predicate on the "link" field.
 func LinkContainsFold(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldLink), v))
-	})
+	return predicate.HighlightedComment(sql.FieldContainsFold(FieldLink, v))
 }
 
 // AuthorTypeEQ applies the EQ predicate on the "author_type" field.
 func AuthorTypeEQ(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldAuthorType), v))
-	})
+	return predicate.HighlightedComment(sql.FieldEQ(FieldAuthorType, v))
 }
 
 // AuthorTypeNEQ applies the NEQ predicate on the "author_type" field.
 func AuthorTypeNEQ(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldAuthorType), v))
-	})
+	return predicate.HighlightedComment(sql.FieldNEQ(FieldAuthorType, v))
 }
 
 // AuthorTypeIn applies the In predicate on the "author_type" field.
 func AuthorTypeIn(vs ...string) predicate.HighlightedComment {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldAuthorType), v...))
-	})
+	return predicate.HighlightedComment(sql.FieldIn(FieldAuthorType, vs...))
 }
 
 // AuthorTypeNotIn applies the NotIn predicate on the "author_type" field.
 func AuthorTypeNotIn(vs ...string) predicate.HighlightedComment {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldAuthorType), v...))
-	})
+	return predicate.HighlightedComment(sql.FieldNotIn(FieldAuthorType, vs...))
 }
 
 // AuthorTypeGT applies the GT predicate on the "author_type" field.
 func AuthorTypeGT(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldAuthorType), v))
-	})
+	return predicate.HighlightedComment(sql.FieldGT(FieldAuthorType, v))
 }
 
 // AuthorTypeGTE applies the GTE predicate on the "author_type" field.
 func AuthorTypeGTE(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldAuthorType), v))
-	})
+	return predicate.HighlightedComment(sql.FieldGTE(FieldAuthorType, v))
 }
 
 // AuthorTypeLT applies the LT predicate on the "author_type" field.
 func AuthorTypeLT(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldAuthorType), v))
-	})
+	return predicate.HighlightedComment(sql.FieldLT(FieldAuthorType, v))
 }
 
 // AuthorTypeLTE applies the LTE predicate on the "author_type" field.
 func AuthorTypeLTE(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldAuthorType), v))
-	})
+	return predicate.HighlightedComment(sql.FieldLTE(FieldAuthorType, v))
 }
 
 // AuthorTypeContains applies the Contains predicate on the "author_type" field.
 func AuthorTypeContains(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldAuthorType), v))
-	})
+	return predicate.HighlightedComment(sql.FieldContains(FieldAuthorType, v))
 }
 
 // AuthorTypeHasPrefix applies the HasPrefix predicate on the "author_type" field.
 func AuthorTypeHasPrefix(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldAuthorType), v))
-	})
+	return predicate.HighlightedComment(sql.FieldHasPrefix(FieldAuthorType, v))
 }
 
 // AuthorTypeHasSuffix applies the HasSuffix predicate on the "author_type" field.
 func AuthorTypeHasSuffix(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldAuthorType), v))
-	})
+	return predicate.HighlightedComment(sql.FieldHasSuffix(FieldAuthorType, v))
 }
 
 // AuthorTypeEqualFold applies the EqualFold predicate on the "author_type" field.
 func AuthorTypeEqualFold(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldAuthorType), v))
-	})
+	return predicate.HighlightedComment(sql.FieldEqualFold(FieldAuthorType, v))
 }
 
 // AuthorTypeContainsFold applies the ContainsFold predicate on the "author_type" field.
 func AuthorTypeContainsFold(v string) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldAuthorType), v))
-	})
+	return predicate.HighlightedComment(sql.FieldContainsFold(FieldAuthorType, v))
 }
 
 // TimestampEQ applies the EQ predicate on the "timestamp" field.
 func TimestampEQ(v time.Time) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldTimestamp), v))
-	})
+	return predicate.HighlightedComment(sql.FieldEQ(FieldTimestamp, v))
 }
 
 // TimestampNEQ applies the NEQ predicate on the "timestamp" field.
 func TimestampNEQ(v time.Time) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldTimestamp), v))
-	})
+	return predicate.HighlightedComment(sql.FieldNEQ(FieldTimestamp, v))
 }
 
 // TimestampIn applies the In predicate on the "timestamp" field.
 func TimestampIn(vs ...time.Time) predicate.HighlightedComment {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldTimestamp), v...))
-	})
+	return predicate.HighlightedComment(sql.FieldIn(FieldTimestamp, vs...))
 }
 
 // TimestampNotIn applies the NotIn predicate on the "timestamp" field.
 func TimestampNotIn(vs ...time.Time) predicate.HighlightedComment {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldTimestamp), v...))
-	})
+	return predicate.HighlightedComment(sql.FieldNotIn(FieldTimestamp, vs...))
 }
 
 // TimestampGT applies the GT predicate on the "timestamp" field.
 func TimestampGT(v time.Time) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldTimestamp), v))
-	})
+	return predicate.HighlightedComment(sql.FieldGT(FieldTimestamp, v))
 }
 
 // TimestampGTE applies the GTE predicate on the "timestamp" field.
 func TimestampGTE(v time.Time) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldTimestamp), v))
-	})
+	return predicate.HighlightedComment(sql.FieldGTE(FieldTimestamp, v))
 }
 
 // TimestampLT applies the LT predicate on the "timestamp" field.
 func TimestampLT(v time.Time) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldTimestamp), v))
-	})
+	return predicate.HighlightedComment(sql.FieldLT(FieldTimestamp, v))
 }
 
 // TimestampLTE applies the LTE predicate on the "timestamp" field.
 func TimestampLTE(v time.Time) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldTimestamp), v))
-	})
+	return predicate.HighlightedComment(sql.FieldLTE(FieldTimestamp, v))
 }
 
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.HighlightedComment) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s1 := s.Clone().SetP(nil)
-		for _, p := range predicates {
-			p(s1)
-		}
-		s.Where(s1.P())
-	})
+	return predicate.HighlightedComment(sql.AndPredicates(predicates...))
 }
 
 // Or groups predicates with the OR operator between them.
 func Or(predicates ...predicate.HighlightedComment) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		s1 := s.Clone().SetP(nil)
-		for i, p := range predicates {
-			if i > 0 {
-				s1.Or()
-			}
-			p(s1)
-		}
-		s.Where(s1.P())
-	})
+	return predicate.HighlightedComment(sql.OrPredicates(predicates...))
 }
 
 // Not applies the not operator on the given predicate.
 func Not(p predicate.HighlightedComment) predicate.HighlightedComment {
-	return predicate.HighlightedComment(func(s *sql.Selector) {
-		p(s.Not())
-	})
+	return predicate.HighlightedComment(sql.NotPredicates(p))
 }

@@ -3,14 +3,13 @@ package matches
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"strconv"
 	"time"
 
-	"github.com/Sadzeih/valcompbot/config"
 	"github.com/Sadzeih/valcompbot/ent"
+	"github.com/Sadzeih/valcompbot/ent/scheduledmatch"
 	"github.com/Sadzeih/valcompbot/ent/trackedevent"
 	"github.com/Sadzeih/valcompbot/utils"
 	"github.com/gorilla/mux"
@@ -146,43 +145,79 @@ func (h *Handler) HandlePostMatch(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	eID, err := strconv.Atoi(m.Info.EventID)
+	if err := PostMatch(r.Context(), m, h.ent, h.reddit); err != nil {
+		log.Println(err)
+		utils.WriteError(w, utils.InternalServerError)
+		return
+	}
+}
+
+func (h *Handler) HandleSchedule(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+
+	id, ok := vars["ID"]
+	if !ok || id == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	m, err := h.ent.ScheduledMatch.Query().
+		Where(
+			scheduledmatch.MatchID(id),
+		).Only(r.Context())
+	if err != nil {
+		if !ent.IsNotFound(err) {
+			utils.WriteError(w, utils.InternalServerError)
+			return
+		}
+	}
+	if m != nil {
+		br := utils.BadRequestError
+		br.Context = "Match was already scheduled"
+		utils.WriteError(w, br)
+		return
+	}
+
+	vm, err := GetMatch(id)
+	if err != nil {
+		br := utils.BadRequestError
+		br.Context = err.Error()
+		utils.WriteError(w, br)
+		return
+	}
+
+	eID, err := strconv.Atoi(vm.Info.EventID)
 	if err != nil {
 		utils.WriteError(w, utils.InternalServerError)
 		return
 	}
 
-	e, err := h.ent.TrackedEvent.
-		Query().
-		Where(trackedevent.EventID(eID)).
-		Only(h.ctx)
+	event, err := h.ent.TrackedEvent.Query().
+		Where(
+			trackedevent.EventID(eID),
+		).Only(r.Context())
 	if err != nil {
+		log.Println(err)
 		utils.WriteError(w, utils.InternalServerError)
 		return
 	}
-
-	title := fmt.Sprintf(titleFmt, m.Teams[0].Name, m.Teams[1].Name, e.Name, m.Info.Series)
-	if bodyJson.Title != "" {
-		title = bodyJson.Title
+	if event == nil {
+		br := utils.BadRequestError
+		br.Context = "Cannot schedule Match from an event that is not tracked"
+		utils.WriteError(w, br)
+		return
 	}
 
-	md, err := m.ToMarkdown()
+	_, err = h.ent.ScheduledMatch.Create().
+		SetMatchID(id).
+		SetEventID(event.ID).
+		Save(r.Context())
 	if err != nil {
 		log.Println(err)
 		utils.WriteError(w, utils.InternalServerError)
 		return
 	}
 
-	_, _, err = h.reddit.Post.SubmitText(h.ctx, reddit.SubmitTextRequest{
-		Subreddit: config.Get().RedditSubreddit,
-		Title:     title,
-		Text:      md,
-		FlairID:   pmtFlairID,
-		Spoiler:   true,
-	})
-	if err != nil {
-		log.Println(err)
-		utils.WriteError(w, utils.InternalServerError)
-		return
-	}
+	w.WriteHeader(http.StatusCreated)
+	return
 }

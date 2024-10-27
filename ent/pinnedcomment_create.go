@@ -53,50 +53,8 @@ func (pcc *PinnedCommentCreate) Mutation() *PinnedCommentMutation {
 
 // Save creates the PinnedComment in the database.
 func (pcc *PinnedCommentCreate) Save(ctx context.Context) (*PinnedComment, error) {
-	var (
-		err  error
-		node *PinnedComment
-	)
 	pcc.defaults()
-	if len(pcc.hooks) == 0 {
-		if err = pcc.check(); err != nil {
-			return nil, err
-		}
-		node, err = pcc.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*PinnedCommentMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = pcc.check(); err != nil {
-				return nil, err
-			}
-			pcc.mutation = mutation
-			if node, err = pcc.sqlSave(ctx); err != nil {
-				return nil, err
-			}
-			mutation.id = &node.ID
-			mutation.done = true
-			return node, err
-		})
-		for i := len(pcc.hooks) - 1; i >= 0; i-- {
-			if pcc.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = pcc.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, pcc.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*PinnedComment)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from PinnedCommentMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks(ctx, pcc.sqlSave, pcc.mutation, pcc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -141,6 +99,9 @@ func (pcc *PinnedCommentCreate) check() error {
 }
 
 func (pcc *PinnedCommentCreate) sqlSave(ctx context.Context) (*PinnedComment, error) {
+	if err := pcc.check(); err != nil {
+		return nil, err
+	}
 	_node, _spec := pcc.createSpec()
 	if err := sqlgraph.CreateNode(ctx, pcc.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
@@ -155,38 +116,26 @@ func (pcc *PinnedCommentCreate) sqlSave(ctx context.Context) (*PinnedComment, er
 			return nil, err
 		}
 	}
+	pcc.mutation.id = &_node.ID
+	pcc.mutation.done = true
 	return _node, nil
 }
 
 func (pcc *PinnedCommentCreate) createSpec() (*PinnedComment, *sqlgraph.CreateSpec) {
 	var (
 		_node = &PinnedComment{config: pcc.config}
-		_spec = &sqlgraph.CreateSpec{
-			Table: pinnedcomment.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
-				Column: pinnedcomment.FieldID,
-			},
-		}
+		_spec = sqlgraph.NewCreateSpec(pinnedcomment.Table, sqlgraph.NewFieldSpec(pinnedcomment.FieldID, field.TypeUUID))
 	)
 	if id, ok := pcc.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = &id
 	}
 	if value, ok := pcc.mutation.CommentID(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: pinnedcomment.FieldCommentID,
-		})
+		_spec.SetField(pinnedcomment.FieldCommentID, field.TypeString, value)
 		_node.CommentID = value
 	}
 	if value, ok := pcc.mutation.ParentID(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: pinnedcomment.FieldParentID,
-		})
+		_spec.SetField(pinnedcomment.FieldParentID, field.TypeString, value)
 		_node.ParentID = value
 	}
 	return _node, _spec
@@ -195,11 +144,15 @@ func (pcc *PinnedCommentCreate) createSpec() (*PinnedComment, *sqlgraph.CreateSp
 // PinnedCommentCreateBulk is the builder for creating many PinnedComment entities in bulk.
 type PinnedCommentCreateBulk struct {
 	config
+	err      error
 	builders []*PinnedCommentCreate
 }
 
 // Save creates the PinnedComment entities in the database.
 func (pccb *PinnedCommentCreateBulk) Save(ctx context.Context) ([]*PinnedComment, error) {
+	if pccb.err != nil {
+		return nil, pccb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(pccb.builders))
 	nodes := make([]*PinnedComment, len(pccb.builders))
 	mutators := make([]Mutator, len(pccb.builders))
@@ -216,8 +169,8 @@ func (pccb *PinnedCommentCreateBulk) Save(ctx context.Context) ([]*PinnedComment
 					return nil, err
 				}
 				builder.mutation = mutation
-				nodes[i], specs[i] = builder.createSpec()
 				var err error
+				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
 					_, err = mutators[i+1].Mutate(root, pccb.builders[i+1].mutation)
 				} else {

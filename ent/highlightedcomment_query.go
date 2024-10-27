@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -18,11 +19,9 @@ import (
 // HighlightedCommentQuery is the builder for querying HighlightedComment entities.
 type HighlightedCommentQuery struct {
 	config
-	limit      *int
-	offset     *int
-	unique     *bool
-	order      []OrderFunc
-	fields     []string
+	ctx        *QueryContext
+	order      []highlightedcomment.OrderOption
+	inters     []Interceptor
 	predicates []predicate.HighlightedComment
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -35,27 +34,27 @@ func (hcq *HighlightedCommentQuery) Where(ps ...predicate.HighlightedComment) *H
 	return hcq
 }
 
-// Limit adds a limit step to the query.
+// Limit the number of records to be returned by this query.
 func (hcq *HighlightedCommentQuery) Limit(limit int) *HighlightedCommentQuery {
-	hcq.limit = &limit
+	hcq.ctx.Limit = &limit
 	return hcq
 }
 
-// Offset adds an offset step to the query.
+// Offset to start from.
 func (hcq *HighlightedCommentQuery) Offset(offset int) *HighlightedCommentQuery {
-	hcq.offset = &offset
+	hcq.ctx.Offset = &offset
 	return hcq
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
 func (hcq *HighlightedCommentQuery) Unique(unique bool) *HighlightedCommentQuery {
-	hcq.unique = &unique
+	hcq.ctx.Unique = &unique
 	return hcq
 }
 
-// Order adds an order step to the query.
-func (hcq *HighlightedCommentQuery) Order(o ...OrderFunc) *HighlightedCommentQuery {
+// Order specifies how the records should be ordered.
+func (hcq *HighlightedCommentQuery) Order(o ...highlightedcomment.OrderOption) *HighlightedCommentQuery {
 	hcq.order = append(hcq.order, o...)
 	return hcq
 }
@@ -63,7 +62,7 @@ func (hcq *HighlightedCommentQuery) Order(o ...OrderFunc) *HighlightedCommentQue
 // First returns the first HighlightedComment entity from the query.
 // Returns a *NotFoundError when no HighlightedComment was found.
 func (hcq *HighlightedCommentQuery) First(ctx context.Context) (*HighlightedComment, error) {
-	nodes, err := hcq.Limit(1).All(ctx)
+	nodes, err := hcq.Limit(1).All(setContextOp(ctx, hcq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -86,7 +85,7 @@ func (hcq *HighlightedCommentQuery) FirstX(ctx context.Context) *HighlightedComm
 // Returns a *NotFoundError when no HighlightedComment ID was found.
 func (hcq *HighlightedCommentQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
 	var ids []uuid.UUID
-	if ids, err = hcq.Limit(1).IDs(ctx); err != nil {
+	if ids, err = hcq.Limit(1).IDs(setContextOp(ctx, hcq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -109,7 +108,7 @@ func (hcq *HighlightedCommentQuery) FirstIDX(ctx context.Context) uuid.UUID {
 // Returns a *NotSingularError when more than one HighlightedComment entity is found.
 // Returns a *NotFoundError when no HighlightedComment entities are found.
 func (hcq *HighlightedCommentQuery) Only(ctx context.Context) (*HighlightedComment, error) {
-	nodes, err := hcq.Limit(2).All(ctx)
+	nodes, err := hcq.Limit(2).All(setContextOp(ctx, hcq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -137,7 +136,7 @@ func (hcq *HighlightedCommentQuery) OnlyX(ctx context.Context) *HighlightedComme
 // Returns a *NotFoundError when no entities are found.
 func (hcq *HighlightedCommentQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
 	var ids []uuid.UUID
-	if ids, err = hcq.Limit(2).IDs(ctx); err != nil {
+	if ids, err = hcq.Limit(2).IDs(setContextOp(ctx, hcq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -162,10 +161,12 @@ func (hcq *HighlightedCommentQuery) OnlyIDX(ctx context.Context) uuid.UUID {
 
 // All executes the query and returns a list of HighlightedComments.
 func (hcq *HighlightedCommentQuery) All(ctx context.Context) ([]*HighlightedComment, error) {
+	ctx = setContextOp(ctx, hcq.ctx, ent.OpQueryAll)
 	if err := hcq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
-	return hcq.sqlAll(ctx)
+	qr := querierAll[[]*HighlightedComment, *HighlightedCommentQuery]()
+	return withInterceptors[[]*HighlightedComment](ctx, hcq, qr, hcq.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
@@ -178,9 +179,12 @@ func (hcq *HighlightedCommentQuery) AllX(ctx context.Context) []*HighlightedComm
 }
 
 // IDs executes the query and returns a list of HighlightedComment IDs.
-func (hcq *HighlightedCommentQuery) IDs(ctx context.Context) ([]uuid.UUID, error) {
-	var ids []uuid.UUID
-	if err := hcq.Select(highlightedcomment.FieldID).Scan(ctx, &ids); err != nil {
+func (hcq *HighlightedCommentQuery) IDs(ctx context.Context) (ids []uuid.UUID, err error) {
+	if hcq.ctx.Unique == nil && hcq.path != nil {
+		hcq.Unique(true)
+	}
+	ctx = setContextOp(ctx, hcq.ctx, ent.OpQueryIDs)
+	if err = hcq.Select(highlightedcomment.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
@@ -197,10 +201,11 @@ func (hcq *HighlightedCommentQuery) IDsX(ctx context.Context) []uuid.UUID {
 
 // Count returns the count of the given query.
 func (hcq *HighlightedCommentQuery) Count(ctx context.Context) (int, error) {
+	ctx = setContextOp(ctx, hcq.ctx, ent.OpQueryCount)
 	if err := hcq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return hcq.sqlCount(ctx)
+	return withInterceptors[int](ctx, hcq, querierCount[*HighlightedCommentQuery](), hcq.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
@@ -214,10 +219,15 @@ func (hcq *HighlightedCommentQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (hcq *HighlightedCommentQuery) Exist(ctx context.Context) (bool, error) {
-	if err := hcq.prepareQuery(ctx); err != nil {
-		return false, err
+	ctx = setContextOp(ctx, hcq.ctx, ent.OpQueryExist)
+	switch _, err := hcq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
+		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return hcq.sqlExist(ctx)
 }
 
 // ExistX is like Exist, but panics if an error occurs.
@@ -237,14 +247,13 @@ func (hcq *HighlightedCommentQuery) Clone() *HighlightedCommentQuery {
 	}
 	return &HighlightedCommentQuery{
 		config:     hcq.config,
-		limit:      hcq.limit,
-		offset:     hcq.offset,
-		order:      append([]OrderFunc{}, hcq.order...),
+		ctx:        hcq.ctx.Clone(),
+		order:      append([]highlightedcomment.OrderOption{}, hcq.order...),
+		inters:     append([]Interceptor{}, hcq.inters...),
 		predicates: append([]predicate.HighlightedComment{}, hcq.predicates...),
 		// clone intermediate query.
-		sql:    hcq.sql.Clone(),
-		path:   hcq.path,
-		unique: hcq.unique,
+		sql:  hcq.sql.Clone(),
+		path: hcq.path,
 	}
 }
 
@@ -263,16 +272,11 @@ func (hcq *HighlightedCommentQuery) Clone() *HighlightedCommentQuery {
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (hcq *HighlightedCommentQuery) GroupBy(field string, fields ...string) *HighlightedCommentGroupBy {
-	grbuild := &HighlightedCommentGroupBy{config: hcq.config}
-	grbuild.fields = append([]string{field}, fields...)
-	grbuild.path = func(ctx context.Context) (prev *sql.Selector, err error) {
-		if err := hcq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		return hcq.sqlQuery(ctx), nil
-	}
+	hcq.ctx.Fields = append([]string{field}, fields...)
+	grbuild := &HighlightedCommentGroupBy{build: hcq}
+	grbuild.flds = &hcq.ctx.Fields
 	grbuild.label = highlightedcomment.Label
-	grbuild.flds, grbuild.scan = &grbuild.fields, grbuild.Scan
+	grbuild.scan = grbuild.Scan
 	return grbuild
 }
 
@@ -289,15 +293,30 @@ func (hcq *HighlightedCommentQuery) GroupBy(field string, fields ...string) *Hig
 //		Select(highlightedcomment.FieldCommentID).
 //		Scan(ctx, &v)
 func (hcq *HighlightedCommentQuery) Select(fields ...string) *HighlightedCommentSelect {
-	hcq.fields = append(hcq.fields, fields...)
-	selbuild := &HighlightedCommentSelect{HighlightedCommentQuery: hcq}
-	selbuild.label = highlightedcomment.Label
-	selbuild.flds, selbuild.scan = &hcq.fields, selbuild.Scan
-	return selbuild
+	hcq.ctx.Fields = append(hcq.ctx.Fields, fields...)
+	sbuild := &HighlightedCommentSelect{HighlightedCommentQuery: hcq}
+	sbuild.label = highlightedcomment.Label
+	sbuild.flds, sbuild.scan = &hcq.ctx.Fields, sbuild.Scan
+	return sbuild
+}
+
+// Aggregate returns a HighlightedCommentSelect configured with the given aggregations.
+func (hcq *HighlightedCommentQuery) Aggregate(fns ...AggregateFunc) *HighlightedCommentSelect {
+	return hcq.Select().Aggregate(fns...)
 }
 
 func (hcq *HighlightedCommentQuery) prepareQuery(ctx context.Context) error {
-	for _, f := range hcq.fields {
+	for _, inter := range hcq.inters {
+		if inter == nil {
+			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
+		}
+		if trv, ok := inter.(Traverser); ok {
+			if err := trv.Traverse(ctx, hcq); err != nil {
+				return err
+			}
+		}
+	}
+	for _, f := range hcq.ctx.Fields {
 		if !highlightedcomment.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
@@ -317,10 +336,10 @@ func (hcq *HighlightedCommentQuery) sqlAll(ctx context.Context, hooks ...queryHo
 		nodes = []*HighlightedComment{}
 		_spec = hcq.querySpec()
 	)
-	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
+	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*HighlightedComment).scanValues(nil, columns)
 	}
-	_spec.Assign = func(columns []string, values []interface{}) error {
+	_spec.Assign = func(columns []string, values []any) error {
 		node := &HighlightedComment{config: hcq.config}
 		nodes = append(nodes, node)
 		return node.assignValues(columns, values)
@@ -339,38 +358,22 @@ func (hcq *HighlightedCommentQuery) sqlAll(ctx context.Context, hooks ...queryHo
 
 func (hcq *HighlightedCommentQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := hcq.querySpec()
-	_spec.Node.Columns = hcq.fields
-	if len(hcq.fields) > 0 {
-		_spec.Unique = hcq.unique != nil && *hcq.unique
+	_spec.Node.Columns = hcq.ctx.Fields
+	if len(hcq.ctx.Fields) > 0 {
+		_spec.Unique = hcq.ctx.Unique != nil && *hcq.ctx.Unique
 	}
 	return sqlgraph.CountNodes(ctx, hcq.driver, _spec)
 }
 
-func (hcq *HighlightedCommentQuery) sqlExist(ctx context.Context) (bool, error) {
-	n, err := hcq.sqlCount(ctx)
-	if err != nil {
-		return false, fmt.Errorf("ent: check existence: %w", err)
-	}
-	return n > 0, nil
-}
-
 func (hcq *HighlightedCommentQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := &sqlgraph.QuerySpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   highlightedcomment.Table,
-			Columns: highlightedcomment.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
-				Column: highlightedcomment.FieldID,
-			},
-		},
-		From:   hcq.sql,
-		Unique: true,
-	}
-	if unique := hcq.unique; unique != nil {
+	_spec := sqlgraph.NewQuerySpec(highlightedcomment.Table, highlightedcomment.Columns, sqlgraph.NewFieldSpec(highlightedcomment.FieldID, field.TypeUUID))
+	_spec.From = hcq.sql
+	if unique := hcq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
+	} else if hcq.path != nil {
+		_spec.Unique = true
 	}
-	if fields := hcq.fields; len(fields) > 0 {
+	if fields := hcq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, highlightedcomment.FieldID)
 		for i := range fields {
@@ -386,10 +389,10 @@ func (hcq *HighlightedCommentQuery) querySpec() *sqlgraph.QuerySpec {
 			}
 		}
 	}
-	if limit := hcq.limit; limit != nil {
+	if limit := hcq.ctx.Limit; limit != nil {
 		_spec.Limit = *limit
 	}
-	if offset := hcq.offset; offset != nil {
+	if offset := hcq.ctx.Offset; offset != nil {
 		_spec.Offset = *offset
 	}
 	if ps := hcq.order; len(ps) > 0 {
@@ -405,7 +408,7 @@ func (hcq *HighlightedCommentQuery) querySpec() *sqlgraph.QuerySpec {
 func (hcq *HighlightedCommentQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(hcq.driver.Dialect())
 	t1 := builder.Table(highlightedcomment.Table)
-	columns := hcq.fields
+	columns := hcq.ctx.Fields
 	if len(columns) == 0 {
 		columns = highlightedcomment.Columns
 	}
@@ -414,7 +417,7 @@ func (hcq *HighlightedCommentQuery) sqlQuery(ctx context.Context) *sql.Selector 
 		selector = hcq.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
-	if hcq.unique != nil && *hcq.unique {
+	if hcq.ctx.Unique != nil && *hcq.ctx.Unique {
 		selector.Distinct()
 	}
 	for _, p := range hcq.predicates {
@@ -423,12 +426,12 @@ func (hcq *HighlightedCommentQuery) sqlQuery(ctx context.Context) *sql.Selector 
 	for _, p := range hcq.order {
 		p(selector)
 	}
-	if offset := hcq.offset; offset != nil {
+	if offset := hcq.ctx.Offset; offset != nil {
 		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}
-	if limit := hcq.limit; limit != nil {
+	if limit := hcq.ctx.Limit; limit != nil {
 		selector.Limit(*limit)
 	}
 	return selector
@@ -436,13 +439,8 @@ func (hcq *HighlightedCommentQuery) sqlQuery(ctx context.Context) *sql.Selector 
 
 // HighlightedCommentGroupBy is the group-by builder for HighlightedComment entities.
 type HighlightedCommentGroupBy struct {
-	config
 	selector
-	fields []string
-	fns    []AggregateFunc
-	// intermediate query (i.e. traversal path).
-	sql  *sql.Selector
-	path func(context.Context) (*sql.Selector, error)
+	build *HighlightedCommentQuery
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
@@ -451,74 +449,77 @@ func (hcgb *HighlightedCommentGroupBy) Aggregate(fns ...AggregateFunc) *Highligh
 	return hcgb
 }
 
-// Scan applies the group-by query and scans the result into the given value.
-func (hcgb *HighlightedCommentGroupBy) Scan(ctx context.Context, v interface{}) error {
-	query, err := hcgb.path(ctx)
-	if err != nil {
+// Scan applies the selector query and scans the result into the given value.
+func (hcgb *HighlightedCommentGroupBy) Scan(ctx context.Context, v any) error {
+	ctx = setContextOp(ctx, hcgb.build.ctx, ent.OpQueryGroupBy)
+	if err := hcgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	hcgb.sql = query
-	return hcgb.sqlScan(ctx, v)
+	return scanWithInterceptors[*HighlightedCommentQuery, *HighlightedCommentGroupBy](ctx, hcgb.build, hcgb, hcgb.build.inters, v)
 }
 
-func (hcgb *HighlightedCommentGroupBy) sqlScan(ctx context.Context, v interface{}) error {
-	for _, f := range hcgb.fields {
-		if !highlightedcomment.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
-		}
+func (hcgb *HighlightedCommentGroupBy) sqlScan(ctx context.Context, root *HighlightedCommentQuery, v any) error {
+	selector := root.sqlQuery(ctx).Select()
+	aggregation := make([]string, 0, len(hcgb.fns))
+	for _, fn := range hcgb.fns {
+		aggregation = append(aggregation, fn(selector))
 	}
-	selector := hcgb.sqlQuery()
+	if len(selector.SelectedColumns()) == 0 {
+		columns := make([]string, 0, len(*hcgb.flds)+len(hcgb.fns))
+		for _, f := range *hcgb.flds {
+			columns = append(columns, selector.C(f))
+		}
+		columns = append(columns, aggregation...)
+		selector.Select(columns...)
+	}
+	selector.GroupBy(selector.Columns(*hcgb.flds...)...)
 	if err := selector.Err(); err != nil {
 		return err
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := hcgb.driver.Query(ctx, query, args, rows); err != nil {
+	if err := hcgb.build.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
 }
 
-func (hcgb *HighlightedCommentGroupBy) sqlQuery() *sql.Selector {
-	selector := hcgb.sql.Select()
-	aggregation := make([]string, 0, len(hcgb.fns))
-	for _, fn := range hcgb.fns {
-		aggregation = append(aggregation, fn(selector))
-	}
-	// If no columns were selected in a custom aggregation function, the default
-	// selection is the fields used for "group-by", and the aggregation functions.
-	if len(selector.SelectedColumns()) == 0 {
-		columns := make([]string, 0, len(hcgb.fields)+len(hcgb.fns))
-		for _, f := range hcgb.fields {
-			columns = append(columns, selector.C(f))
-		}
-		columns = append(columns, aggregation...)
-		selector.Select(columns...)
-	}
-	return selector.GroupBy(selector.Columns(hcgb.fields...)...)
-}
-
 // HighlightedCommentSelect is the builder for selecting fields of HighlightedComment entities.
 type HighlightedCommentSelect struct {
 	*HighlightedCommentQuery
 	selector
-	// intermediate query (i.e. traversal path).
-	sql *sql.Selector
+}
+
+// Aggregate adds the given aggregation functions to the selector query.
+func (hcs *HighlightedCommentSelect) Aggregate(fns ...AggregateFunc) *HighlightedCommentSelect {
+	hcs.fns = append(hcs.fns, fns...)
+	return hcs
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (hcs *HighlightedCommentSelect) Scan(ctx context.Context, v interface{}) error {
+func (hcs *HighlightedCommentSelect) Scan(ctx context.Context, v any) error {
+	ctx = setContextOp(ctx, hcs.ctx, ent.OpQuerySelect)
 	if err := hcs.prepareQuery(ctx); err != nil {
 		return err
 	}
-	hcs.sql = hcs.HighlightedCommentQuery.sqlQuery(ctx)
-	return hcs.sqlScan(ctx, v)
+	return scanWithInterceptors[*HighlightedCommentQuery, *HighlightedCommentSelect](ctx, hcs.HighlightedCommentQuery, hcs, hcs.inters, v)
 }
 
-func (hcs *HighlightedCommentSelect) sqlScan(ctx context.Context, v interface{}) error {
+func (hcs *HighlightedCommentSelect) sqlScan(ctx context.Context, root *HighlightedCommentQuery, v any) error {
+	selector := root.sqlQuery(ctx)
+	aggregation := make([]string, 0, len(hcs.fns))
+	for _, fn := range hcs.fns {
+		aggregation = append(aggregation, fn(selector))
+	}
+	switch n := len(*hcs.selector.flds); {
+	case n == 0 && len(aggregation) > 0:
+		selector.Select(aggregation...)
+	case n != 0 && len(aggregation) > 0:
+		selector.AppendSelect(aggregation...)
+	}
 	rows := &sql.Rows{}
-	query, args := hcs.sql.Query()
+	query, args := selector.Query()
 	if err := hcs.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}

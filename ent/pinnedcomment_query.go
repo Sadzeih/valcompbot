@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -18,11 +19,9 @@ import (
 // PinnedCommentQuery is the builder for querying PinnedComment entities.
 type PinnedCommentQuery struct {
 	config
-	limit      *int
-	offset     *int
-	unique     *bool
-	order      []OrderFunc
-	fields     []string
+	ctx        *QueryContext
+	order      []pinnedcomment.OrderOption
+	inters     []Interceptor
 	predicates []predicate.PinnedComment
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -35,27 +34,27 @@ func (pcq *PinnedCommentQuery) Where(ps ...predicate.PinnedComment) *PinnedComme
 	return pcq
 }
 
-// Limit adds a limit step to the query.
+// Limit the number of records to be returned by this query.
 func (pcq *PinnedCommentQuery) Limit(limit int) *PinnedCommentQuery {
-	pcq.limit = &limit
+	pcq.ctx.Limit = &limit
 	return pcq
 }
 
-// Offset adds an offset step to the query.
+// Offset to start from.
 func (pcq *PinnedCommentQuery) Offset(offset int) *PinnedCommentQuery {
-	pcq.offset = &offset
+	pcq.ctx.Offset = &offset
 	return pcq
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
 func (pcq *PinnedCommentQuery) Unique(unique bool) *PinnedCommentQuery {
-	pcq.unique = &unique
+	pcq.ctx.Unique = &unique
 	return pcq
 }
 
-// Order adds an order step to the query.
-func (pcq *PinnedCommentQuery) Order(o ...OrderFunc) *PinnedCommentQuery {
+// Order specifies how the records should be ordered.
+func (pcq *PinnedCommentQuery) Order(o ...pinnedcomment.OrderOption) *PinnedCommentQuery {
 	pcq.order = append(pcq.order, o...)
 	return pcq
 }
@@ -63,7 +62,7 @@ func (pcq *PinnedCommentQuery) Order(o ...OrderFunc) *PinnedCommentQuery {
 // First returns the first PinnedComment entity from the query.
 // Returns a *NotFoundError when no PinnedComment was found.
 func (pcq *PinnedCommentQuery) First(ctx context.Context) (*PinnedComment, error) {
-	nodes, err := pcq.Limit(1).All(ctx)
+	nodes, err := pcq.Limit(1).All(setContextOp(ctx, pcq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -86,7 +85,7 @@ func (pcq *PinnedCommentQuery) FirstX(ctx context.Context) *PinnedComment {
 // Returns a *NotFoundError when no PinnedComment ID was found.
 func (pcq *PinnedCommentQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
 	var ids []uuid.UUID
-	if ids, err = pcq.Limit(1).IDs(ctx); err != nil {
+	if ids, err = pcq.Limit(1).IDs(setContextOp(ctx, pcq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -109,7 +108,7 @@ func (pcq *PinnedCommentQuery) FirstIDX(ctx context.Context) uuid.UUID {
 // Returns a *NotSingularError when more than one PinnedComment entity is found.
 // Returns a *NotFoundError when no PinnedComment entities are found.
 func (pcq *PinnedCommentQuery) Only(ctx context.Context) (*PinnedComment, error) {
-	nodes, err := pcq.Limit(2).All(ctx)
+	nodes, err := pcq.Limit(2).All(setContextOp(ctx, pcq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -137,7 +136,7 @@ func (pcq *PinnedCommentQuery) OnlyX(ctx context.Context) *PinnedComment {
 // Returns a *NotFoundError when no entities are found.
 func (pcq *PinnedCommentQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
 	var ids []uuid.UUID
-	if ids, err = pcq.Limit(2).IDs(ctx); err != nil {
+	if ids, err = pcq.Limit(2).IDs(setContextOp(ctx, pcq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -162,10 +161,12 @@ func (pcq *PinnedCommentQuery) OnlyIDX(ctx context.Context) uuid.UUID {
 
 // All executes the query and returns a list of PinnedComments.
 func (pcq *PinnedCommentQuery) All(ctx context.Context) ([]*PinnedComment, error) {
+	ctx = setContextOp(ctx, pcq.ctx, ent.OpQueryAll)
 	if err := pcq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
-	return pcq.sqlAll(ctx)
+	qr := querierAll[[]*PinnedComment, *PinnedCommentQuery]()
+	return withInterceptors[[]*PinnedComment](ctx, pcq, qr, pcq.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
@@ -178,9 +179,12 @@ func (pcq *PinnedCommentQuery) AllX(ctx context.Context) []*PinnedComment {
 }
 
 // IDs executes the query and returns a list of PinnedComment IDs.
-func (pcq *PinnedCommentQuery) IDs(ctx context.Context) ([]uuid.UUID, error) {
-	var ids []uuid.UUID
-	if err := pcq.Select(pinnedcomment.FieldID).Scan(ctx, &ids); err != nil {
+func (pcq *PinnedCommentQuery) IDs(ctx context.Context) (ids []uuid.UUID, err error) {
+	if pcq.ctx.Unique == nil && pcq.path != nil {
+		pcq.Unique(true)
+	}
+	ctx = setContextOp(ctx, pcq.ctx, ent.OpQueryIDs)
+	if err = pcq.Select(pinnedcomment.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
@@ -197,10 +201,11 @@ func (pcq *PinnedCommentQuery) IDsX(ctx context.Context) []uuid.UUID {
 
 // Count returns the count of the given query.
 func (pcq *PinnedCommentQuery) Count(ctx context.Context) (int, error) {
+	ctx = setContextOp(ctx, pcq.ctx, ent.OpQueryCount)
 	if err := pcq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return pcq.sqlCount(ctx)
+	return withInterceptors[int](ctx, pcq, querierCount[*PinnedCommentQuery](), pcq.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
@@ -214,10 +219,15 @@ func (pcq *PinnedCommentQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (pcq *PinnedCommentQuery) Exist(ctx context.Context) (bool, error) {
-	if err := pcq.prepareQuery(ctx); err != nil {
-		return false, err
+	ctx = setContextOp(ctx, pcq.ctx, ent.OpQueryExist)
+	switch _, err := pcq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
+		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return pcq.sqlExist(ctx)
 }
 
 // ExistX is like Exist, but panics if an error occurs.
@@ -237,14 +247,13 @@ func (pcq *PinnedCommentQuery) Clone() *PinnedCommentQuery {
 	}
 	return &PinnedCommentQuery{
 		config:     pcq.config,
-		limit:      pcq.limit,
-		offset:     pcq.offset,
-		order:      append([]OrderFunc{}, pcq.order...),
+		ctx:        pcq.ctx.Clone(),
+		order:      append([]pinnedcomment.OrderOption{}, pcq.order...),
+		inters:     append([]Interceptor{}, pcq.inters...),
 		predicates: append([]predicate.PinnedComment{}, pcq.predicates...),
 		// clone intermediate query.
-		sql:    pcq.sql.Clone(),
-		path:   pcq.path,
-		unique: pcq.unique,
+		sql:  pcq.sql.Clone(),
+		path: pcq.path,
 	}
 }
 
@@ -263,16 +272,11 @@ func (pcq *PinnedCommentQuery) Clone() *PinnedCommentQuery {
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (pcq *PinnedCommentQuery) GroupBy(field string, fields ...string) *PinnedCommentGroupBy {
-	grbuild := &PinnedCommentGroupBy{config: pcq.config}
-	grbuild.fields = append([]string{field}, fields...)
-	grbuild.path = func(ctx context.Context) (prev *sql.Selector, err error) {
-		if err := pcq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		return pcq.sqlQuery(ctx), nil
-	}
+	pcq.ctx.Fields = append([]string{field}, fields...)
+	grbuild := &PinnedCommentGroupBy{build: pcq}
+	grbuild.flds = &pcq.ctx.Fields
 	grbuild.label = pinnedcomment.Label
-	grbuild.flds, grbuild.scan = &grbuild.fields, grbuild.Scan
+	grbuild.scan = grbuild.Scan
 	return grbuild
 }
 
@@ -289,15 +293,30 @@ func (pcq *PinnedCommentQuery) GroupBy(field string, fields ...string) *PinnedCo
 //		Select(pinnedcomment.FieldCommentID).
 //		Scan(ctx, &v)
 func (pcq *PinnedCommentQuery) Select(fields ...string) *PinnedCommentSelect {
-	pcq.fields = append(pcq.fields, fields...)
-	selbuild := &PinnedCommentSelect{PinnedCommentQuery: pcq}
-	selbuild.label = pinnedcomment.Label
-	selbuild.flds, selbuild.scan = &pcq.fields, selbuild.Scan
-	return selbuild
+	pcq.ctx.Fields = append(pcq.ctx.Fields, fields...)
+	sbuild := &PinnedCommentSelect{PinnedCommentQuery: pcq}
+	sbuild.label = pinnedcomment.Label
+	sbuild.flds, sbuild.scan = &pcq.ctx.Fields, sbuild.Scan
+	return sbuild
+}
+
+// Aggregate returns a PinnedCommentSelect configured with the given aggregations.
+func (pcq *PinnedCommentQuery) Aggregate(fns ...AggregateFunc) *PinnedCommentSelect {
+	return pcq.Select().Aggregate(fns...)
 }
 
 func (pcq *PinnedCommentQuery) prepareQuery(ctx context.Context) error {
-	for _, f := range pcq.fields {
+	for _, inter := range pcq.inters {
+		if inter == nil {
+			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
+		}
+		if trv, ok := inter.(Traverser); ok {
+			if err := trv.Traverse(ctx, pcq); err != nil {
+				return err
+			}
+		}
+	}
+	for _, f := range pcq.ctx.Fields {
 		if !pinnedcomment.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
@@ -317,10 +336,10 @@ func (pcq *PinnedCommentQuery) sqlAll(ctx context.Context, hooks ...queryHook) (
 		nodes = []*PinnedComment{}
 		_spec = pcq.querySpec()
 	)
-	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
+	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*PinnedComment).scanValues(nil, columns)
 	}
-	_spec.Assign = func(columns []string, values []interface{}) error {
+	_spec.Assign = func(columns []string, values []any) error {
 		node := &PinnedComment{config: pcq.config}
 		nodes = append(nodes, node)
 		return node.assignValues(columns, values)
@@ -339,38 +358,22 @@ func (pcq *PinnedCommentQuery) sqlAll(ctx context.Context, hooks ...queryHook) (
 
 func (pcq *PinnedCommentQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := pcq.querySpec()
-	_spec.Node.Columns = pcq.fields
-	if len(pcq.fields) > 0 {
-		_spec.Unique = pcq.unique != nil && *pcq.unique
+	_spec.Node.Columns = pcq.ctx.Fields
+	if len(pcq.ctx.Fields) > 0 {
+		_spec.Unique = pcq.ctx.Unique != nil && *pcq.ctx.Unique
 	}
 	return sqlgraph.CountNodes(ctx, pcq.driver, _spec)
 }
 
-func (pcq *PinnedCommentQuery) sqlExist(ctx context.Context) (bool, error) {
-	n, err := pcq.sqlCount(ctx)
-	if err != nil {
-		return false, fmt.Errorf("ent: check existence: %w", err)
-	}
-	return n > 0, nil
-}
-
 func (pcq *PinnedCommentQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := &sqlgraph.QuerySpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   pinnedcomment.Table,
-			Columns: pinnedcomment.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
-				Column: pinnedcomment.FieldID,
-			},
-		},
-		From:   pcq.sql,
-		Unique: true,
-	}
-	if unique := pcq.unique; unique != nil {
+	_spec := sqlgraph.NewQuerySpec(pinnedcomment.Table, pinnedcomment.Columns, sqlgraph.NewFieldSpec(pinnedcomment.FieldID, field.TypeUUID))
+	_spec.From = pcq.sql
+	if unique := pcq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
+	} else if pcq.path != nil {
+		_spec.Unique = true
 	}
-	if fields := pcq.fields; len(fields) > 0 {
+	if fields := pcq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, pinnedcomment.FieldID)
 		for i := range fields {
@@ -386,10 +389,10 @@ func (pcq *PinnedCommentQuery) querySpec() *sqlgraph.QuerySpec {
 			}
 		}
 	}
-	if limit := pcq.limit; limit != nil {
+	if limit := pcq.ctx.Limit; limit != nil {
 		_spec.Limit = *limit
 	}
-	if offset := pcq.offset; offset != nil {
+	if offset := pcq.ctx.Offset; offset != nil {
 		_spec.Offset = *offset
 	}
 	if ps := pcq.order; len(ps) > 0 {
@@ -405,7 +408,7 @@ func (pcq *PinnedCommentQuery) querySpec() *sqlgraph.QuerySpec {
 func (pcq *PinnedCommentQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(pcq.driver.Dialect())
 	t1 := builder.Table(pinnedcomment.Table)
-	columns := pcq.fields
+	columns := pcq.ctx.Fields
 	if len(columns) == 0 {
 		columns = pinnedcomment.Columns
 	}
@@ -414,7 +417,7 @@ func (pcq *PinnedCommentQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector = pcq.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
-	if pcq.unique != nil && *pcq.unique {
+	if pcq.ctx.Unique != nil && *pcq.ctx.Unique {
 		selector.Distinct()
 	}
 	for _, p := range pcq.predicates {
@@ -423,12 +426,12 @@ func (pcq *PinnedCommentQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	for _, p := range pcq.order {
 		p(selector)
 	}
-	if offset := pcq.offset; offset != nil {
+	if offset := pcq.ctx.Offset; offset != nil {
 		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}
-	if limit := pcq.limit; limit != nil {
+	if limit := pcq.ctx.Limit; limit != nil {
 		selector.Limit(*limit)
 	}
 	return selector
@@ -436,13 +439,8 @@ func (pcq *PinnedCommentQuery) sqlQuery(ctx context.Context) *sql.Selector {
 
 // PinnedCommentGroupBy is the group-by builder for PinnedComment entities.
 type PinnedCommentGroupBy struct {
-	config
 	selector
-	fields []string
-	fns    []AggregateFunc
-	// intermediate query (i.e. traversal path).
-	sql  *sql.Selector
-	path func(context.Context) (*sql.Selector, error)
+	build *PinnedCommentQuery
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
@@ -451,74 +449,77 @@ func (pcgb *PinnedCommentGroupBy) Aggregate(fns ...AggregateFunc) *PinnedComment
 	return pcgb
 }
 
-// Scan applies the group-by query and scans the result into the given value.
-func (pcgb *PinnedCommentGroupBy) Scan(ctx context.Context, v interface{}) error {
-	query, err := pcgb.path(ctx)
-	if err != nil {
+// Scan applies the selector query and scans the result into the given value.
+func (pcgb *PinnedCommentGroupBy) Scan(ctx context.Context, v any) error {
+	ctx = setContextOp(ctx, pcgb.build.ctx, ent.OpQueryGroupBy)
+	if err := pcgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	pcgb.sql = query
-	return pcgb.sqlScan(ctx, v)
+	return scanWithInterceptors[*PinnedCommentQuery, *PinnedCommentGroupBy](ctx, pcgb.build, pcgb, pcgb.build.inters, v)
 }
 
-func (pcgb *PinnedCommentGroupBy) sqlScan(ctx context.Context, v interface{}) error {
-	for _, f := range pcgb.fields {
-		if !pinnedcomment.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
-		}
+func (pcgb *PinnedCommentGroupBy) sqlScan(ctx context.Context, root *PinnedCommentQuery, v any) error {
+	selector := root.sqlQuery(ctx).Select()
+	aggregation := make([]string, 0, len(pcgb.fns))
+	for _, fn := range pcgb.fns {
+		aggregation = append(aggregation, fn(selector))
 	}
-	selector := pcgb.sqlQuery()
+	if len(selector.SelectedColumns()) == 0 {
+		columns := make([]string, 0, len(*pcgb.flds)+len(pcgb.fns))
+		for _, f := range *pcgb.flds {
+			columns = append(columns, selector.C(f))
+		}
+		columns = append(columns, aggregation...)
+		selector.Select(columns...)
+	}
+	selector.GroupBy(selector.Columns(*pcgb.flds...)...)
 	if err := selector.Err(); err != nil {
 		return err
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := pcgb.driver.Query(ctx, query, args, rows); err != nil {
+	if err := pcgb.build.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
 }
 
-func (pcgb *PinnedCommentGroupBy) sqlQuery() *sql.Selector {
-	selector := pcgb.sql.Select()
-	aggregation := make([]string, 0, len(pcgb.fns))
-	for _, fn := range pcgb.fns {
-		aggregation = append(aggregation, fn(selector))
-	}
-	// If no columns were selected in a custom aggregation function, the default
-	// selection is the fields used for "group-by", and the aggregation functions.
-	if len(selector.SelectedColumns()) == 0 {
-		columns := make([]string, 0, len(pcgb.fields)+len(pcgb.fns))
-		for _, f := range pcgb.fields {
-			columns = append(columns, selector.C(f))
-		}
-		columns = append(columns, aggregation...)
-		selector.Select(columns...)
-	}
-	return selector.GroupBy(selector.Columns(pcgb.fields...)...)
-}
-
 // PinnedCommentSelect is the builder for selecting fields of PinnedComment entities.
 type PinnedCommentSelect struct {
 	*PinnedCommentQuery
 	selector
-	// intermediate query (i.e. traversal path).
-	sql *sql.Selector
+}
+
+// Aggregate adds the given aggregation functions to the selector query.
+func (pcs *PinnedCommentSelect) Aggregate(fns ...AggregateFunc) *PinnedCommentSelect {
+	pcs.fns = append(pcs.fns, fns...)
+	return pcs
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (pcs *PinnedCommentSelect) Scan(ctx context.Context, v interface{}) error {
+func (pcs *PinnedCommentSelect) Scan(ctx context.Context, v any) error {
+	ctx = setContextOp(ctx, pcs.ctx, ent.OpQuerySelect)
 	if err := pcs.prepareQuery(ctx); err != nil {
 		return err
 	}
-	pcs.sql = pcs.PinnedCommentQuery.sqlQuery(ctx)
-	return pcs.sqlScan(ctx, v)
+	return scanWithInterceptors[*PinnedCommentQuery, *PinnedCommentSelect](ctx, pcs.PinnedCommentQuery, pcs, pcs.inters, v)
 }
 
-func (pcs *PinnedCommentSelect) sqlScan(ctx context.Context, v interface{}) error {
+func (pcs *PinnedCommentSelect) sqlScan(ctx context.Context, root *PinnedCommentQuery, v any) error {
+	selector := root.sqlQuery(ctx)
+	aggregation := make([]string, 0, len(pcs.fns))
+	for _, fn := range pcs.fns {
+		aggregation = append(aggregation, fn(selector))
+	}
+	switch n := len(*pcs.selector.flds); {
+	case n == 0 && len(aggregation) > 0:
+		selector.Select(aggregation...)
+	case n != 0 && len(aggregation) > 0:
+		selector.AppendSelect(aggregation...)
+	}
 	rows := &sql.Rows{}
-	query, args := pcs.sql.Query()
+	query, args := selector.Query()
 	if err := pcs.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}

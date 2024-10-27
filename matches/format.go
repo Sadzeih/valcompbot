@@ -29,19 +29,22 @@ const (
 {{- range $index, $map := .Maps }}
 {{- if ne (index .Teams 0).IsWinner (index .Teams 1).IsWinner }}
 # Map {{ $index | AddOne }}: {{ $map.Name | Title }}
+
 {{- if eq (Add (index .Teams 0).RoundsWonAttack (index .Teams 1).RoundsWonDefense) 12 }}
 | **Team** | **ATK** | **DEF** | **Total** |
-|:----|:-----|:----|---|
-| **{{(index .Teams 0).Name | Trim }}** | {{ (index .Teams 0).RoundsWonAttack }} |  {{ (index .Teams 0).RoundsWonDefense }} | {{ (index .Teams 0).RoundsWon }}
-|              |          **DEF**            |            **ATK**          |
-| **{{(index .Teams 1).Name | Trim }}** | {{ (index .Teams 1).RoundsWonDefense }} |  {{ (index .Teams 1).RoundsWonAttack }} | {{ (index .Teams 1).RoundsWon }}
+|----------|---------|---------|-----------|
+| **{{(index .Teams 0).Name | Trim }}** | {{ (index .Teams 0).RoundsWonAttack }} |  {{ (index .Teams 0).RoundsWonDefense }} | {{ (index .Teams 0).RoundsWon }} |
+|| **DEF** | **ATK** ||
+| **{{(index .Teams 1).Name | Trim }}** | {{ (index .Teams 1).RoundsWonDefense }} |  {{ (index .Teams 1).RoundsWonAttack }} | {{ (index .Teams 1).RoundsWon }} |
 {{- else }}
 | **Team** | **DEF** | **ATK** | **Total** |
-| **{{(index .Teams 0).Name | Trim }}** | {{ (index .Teams 0).RoundsWonDefense }} |  {{ (index .Teams 0).RoundsWonAttack }} | {{ (index .Teams 0).RoundsWon }}
-|              |          **ATK**            |            **DEF**          |
-| **{{(index .Teams 1).Name | Trim }}** | {{ (index .Teams 1).RoundsWonAttack }} |  {{ (index .Teams 1).RoundsWonDefense }} | {{ (index .Teams 1).RoundsWon }}
+|----------|---------|---------|-----------|
+| **{{(index .Teams 0).Name | Trim }}** | {{ (index .Teams 0).RoundsWonDefense }} |  {{ (index .Teams 0).RoundsWonAttack }} | {{ (index .Teams 0).RoundsWon }} |
+|| **ATK** | **DEF** ||
+| **{{(index .Teams 1).Name | Trim }}** | {{ (index .Teams 1).RoundsWonAttack }} |  {{ (index .Teams 1).RoundsWonDefense }} | {{ (index .Teams 1).RoundsWon }} |
 {{- end }}
----
+
+#### Map Stats
 
 | **{{(index .Teams 0).Name | Trim }}** | **ACS** | **K** | **D** | **A** |
 |------------------|---------|-------|-------|-------|
@@ -49,7 +52,6 @@ const (
 | [{{ $player.Alias }}](https://vlr.gg/player/{{ $player.PlayerID }}) **{{ $player.Stats.Agent | Title }}** | {{ $player.Stats.ACS }} | {{ $player.Stats.Kills }} | {{ $player.Stats.Deaths }} | {{ $player.Stats.Assists }}|
 {{- end }}
 | **{{(index .Teams 1).Name | Trim }}** | **ACS** | **K** | **D** | **A** |
-|------------------|---------|-------|-------|-------|
 {{- range $playerIdx, $player := (index .Teams 1).Players }}
 | [{{ $player.Alias }}](https://vlr.gg/player/{{ $player.PlayerID }}) **{{ $player.Stats.Agent | Title }}** | {{ $player.Stats.ACS }} | {{ $player.Stats.Kills }} | {{ $player.Stats.Deaths }} | {{ $player.Stats.Assists }}|
 {{- end }}

@@ -3,6 +3,8 @@
 package trackedevent
 
 import (
+	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/google/uuid"
 )
 
@@ -15,8 +17,17 @@ const (
 	FieldEventID = "event_id"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
+	// EdgeScheduledmatches holds the string denoting the scheduledmatches edge name in mutations.
+	EdgeScheduledmatches = "scheduledmatches"
 	// Table holds the table name of the trackedevent in the database.
 	Table = "tracked_events"
+	// ScheduledmatchesTable is the table that holds the scheduledmatches relation/edge.
+	ScheduledmatchesTable = "scheduled_matches"
+	// ScheduledmatchesInverseTable is the table name for the ScheduledMatch entity.
+	// It exists in this package in order to avoid circular dependency with the "scheduledmatch" package.
+	ScheduledmatchesInverseTable = "scheduled_matches"
+	// ScheduledmatchesColumn is the table column denoting the scheduledmatches relation/edge.
+	ScheduledmatchesColumn = "tracked_event_scheduledmatches"
 )
 
 // Columns holds all SQL columns for trackedevent fields.
@@ -40,3 +51,42 @@ var (
 	// DefaultID holds the default value on creation for the "id" field.
 	DefaultID func() uuid.UUID
 )
+
+// OrderOption defines the ordering options for the TrackedEvent queries.
+type OrderOption func(*sql.Selector)
+
+// ByID orders the results by the id field.
+func ByID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldID, opts...).ToFunc()
+}
+
+// ByEventID orders the results by the event_id field.
+func ByEventID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldEventID, opts...).ToFunc()
+}
+
+// ByName orders the results by the name field.
+func ByName(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldName, opts...).ToFunc()
+}
+
+// ByScheduledmatchesCount orders the results by scheduledmatches count.
+func ByScheduledmatchesCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newScheduledmatchesStep(), opts...)
+	}
+}
+
+// ByScheduledmatches orders the results by scheduledmatches terms.
+func ByScheduledmatches(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newScheduledmatchesStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+func newScheduledmatchesStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(ScheduledmatchesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, ScheduledmatchesTable, ScheduledmatchesColumn),
+	)
+}

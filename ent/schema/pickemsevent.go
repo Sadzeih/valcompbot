@@ -6,7 +6,7 @@ import (
 	"github.com/google/uuid"
 )
 
-// PickemsEvent holds the schema definition for the TrackedEvent entity.
+// PickemsEvent holds the schema definition for the PickemsEvent entity.
 type PickemsEvent struct {
 	ent.Schema
 }

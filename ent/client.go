@@ -7,17 +7,20 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"reflect"
 
 	"github.com/Sadzeih/valcompbot/ent/migrate"
 	"github.com/google/uuid"
 
+	"entgo.io/ent"
+	"entgo.io/ent/dialect"
+	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/Sadzeih/valcompbot/ent/highlightedcomment"
 	"github.com/Sadzeih/valcompbot/ent/pickemsevent"
 	"github.com/Sadzeih/valcompbot/ent/pinnedcomment"
+	"github.com/Sadzeih/valcompbot/ent/scheduledmatch"
 	"github.com/Sadzeih/valcompbot/ent/trackedevent"
-
-	"entgo.io/ent/dialect"
-	"entgo.io/ent/dialect/sql"
 )
 
 // Client is the client that holds all ent builders.
@@ -31,15 +34,15 @@ type Client struct {
 	PickemsEvent *PickemsEventClient
 	// PinnedComment is the client for interacting with the PinnedComment builders.
 	PinnedComment *PinnedCommentClient
+	// ScheduledMatch is the client for interacting with the ScheduledMatch builders.
+	ScheduledMatch *ScheduledMatchClient
 	// TrackedEvent is the client for interacting with the TrackedEvent builders.
 	TrackedEvent *TrackedEventClient
 }
 
 // NewClient creates a new client configured with the given options.
 func NewClient(opts ...Option) *Client {
-	cfg := config{log: log.Println, hooks: &hooks{}}
-	cfg.options(opts...)
-	client := &Client{config: cfg}
+	client := &Client{config: newConfig(opts...)}
 	client.init()
 	return client
 }
@@ -49,7 +52,64 @@ func (c *Client) init() {
 	c.HighlightedComment = NewHighlightedCommentClient(c.config)
 	c.PickemsEvent = NewPickemsEventClient(c.config)
 	c.PinnedComment = NewPinnedCommentClient(c.config)
+	c.ScheduledMatch = NewScheduledMatchClient(c.config)
 	c.TrackedEvent = NewTrackedEventClient(c.config)
+}
+
+type (
+	// config is the configuration for the client and its builder.
+	config struct {
+		// driver used for executing database requests.
+		driver dialect.Driver
+		// debug enable a debug logging.
+		debug bool
+		// log used for logging on debug mode.
+		log func(...any)
+		// hooks to execute on mutations.
+		hooks *hooks
+		// interceptors to execute on queries.
+		inters *inters
+	}
+	// Option function to configure the client.
+	Option func(*config)
+)
+
+// newConfig creates a new config for the client.
+func newConfig(opts ...Option) config {
+	cfg := config{log: log.Println, hooks: &hooks{}, inters: &inters{}}
+	cfg.options(opts...)
+	return cfg
+}
+
+// options applies the options on the config object.
+func (c *config) options(opts ...Option) {
+	for _, opt := range opts {
+		opt(c)
+	}
+	if c.debug {
+		c.driver = dialect.Debug(c.driver, c.log)
+	}
+}
+
+// Debug enables debug logging on the ent.Driver.
+func Debug() Option {
+	return func(c *config) {
+		c.debug = true
+	}
+}
+
+// Log sets the logging function for debug mode.
+func Log(fn func(...any)) Option {
+	return func(c *config) {
+		c.log = fn
+	}
+}
+
+// Driver configures the client driver.
+func Driver(driver dialect.Driver) Option {
+	return func(c *config) {
+		c.driver = driver
+	}
 }
 
 // Open opens a database/sql.DB specified by the driver name and
@@ -68,11 +128,14 @@ func Open(driverName, dataSourceName string, options ...Option) (*Client, error)
 	}
 }
 
+// ErrTxStarted is returned when trying to start a new transaction from a transactional client.
+var ErrTxStarted = errors.New("ent: cannot start a transaction within a transaction")
+
 // Tx returns a new transactional client. The provided context
 // is used until the transaction is committed or rolled back.
 func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	if _, ok := c.driver.(*txDriver); ok {
-		return nil, errors.New("ent: cannot start a transaction within a transaction")
+		return nil, ErrTxStarted
 	}
 	tx, err := newTx(ctx, c.driver)
 	if err != nil {
@@ -86,6 +149,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		HighlightedComment: NewHighlightedCommentClient(cfg),
 		PickemsEvent:       NewPickemsEventClient(cfg),
 		PinnedComment:      NewPinnedCommentClient(cfg),
+		ScheduledMatch:     NewScheduledMatchClient(cfg),
 		TrackedEvent:       NewTrackedEventClient(cfg),
 	}, nil
 }
@@ -109,6 +173,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		HighlightedComment: NewHighlightedCommentClient(cfg),
 		PickemsEvent:       NewPickemsEventClient(cfg),
 		PinnedComment:      NewPinnedCommentClient(cfg),
+		ScheduledMatch:     NewScheduledMatchClient(cfg),
 		TrackedEvent:       NewTrackedEventClient(cfg),
 	}, nil
 }
@@ -141,7 +206,36 @@ func (c *Client) Use(hooks ...Hook) {
 	c.HighlightedComment.Use(hooks...)
 	c.PickemsEvent.Use(hooks...)
 	c.PinnedComment.Use(hooks...)
+	c.ScheduledMatch.Use(hooks...)
 	c.TrackedEvent.Use(hooks...)
+}
+
+// Intercept adds the query interceptors to all the entity clients.
+// In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
+func (c *Client) Intercept(interceptors ...Interceptor) {
+	c.HighlightedComment.Intercept(interceptors...)
+	c.PickemsEvent.Intercept(interceptors...)
+	c.PinnedComment.Intercept(interceptors...)
+	c.ScheduledMatch.Intercept(interceptors...)
+	c.TrackedEvent.Intercept(interceptors...)
+}
+
+// Mutate implements the ent.Mutator interface.
+func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
+	switch m := m.(type) {
+	case *HighlightedCommentMutation:
+		return c.HighlightedComment.mutate(ctx, m)
+	case *PickemsEventMutation:
+		return c.PickemsEvent.mutate(ctx, m)
+	case *PinnedCommentMutation:
+		return c.PinnedComment.mutate(ctx, m)
+	case *ScheduledMatchMutation:
+		return c.ScheduledMatch.mutate(ctx, m)
+	case *TrackedEventMutation:
+		return c.TrackedEvent.mutate(ctx, m)
+	default:
+		return nil, fmt.Errorf("ent: unknown mutation type %T", m)
+	}
 }
 
 // HighlightedCommentClient is a client for the HighlightedComment schema.
@@ -160,6 +254,12 @@ func (c *HighlightedCommentClient) Use(hooks ...Hook) {
 	c.hooks.HighlightedComment = append(c.hooks.HighlightedComment, hooks...)
 }
 
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `highlightedcomment.Intercept(f(g(h())))`.
+func (c *HighlightedCommentClient) Intercept(interceptors ...Interceptor) {
+	c.inters.HighlightedComment = append(c.inters.HighlightedComment, interceptors...)
+}
+
 // Create returns a builder for creating a HighlightedComment entity.
 func (c *HighlightedCommentClient) Create() *HighlightedCommentCreate {
 	mutation := newHighlightedCommentMutation(c.config, OpCreate)
@@ -168,6 +268,21 @@ func (c *HighlightedCommentClient) Create() *HighlightedCommentCreate {
 
 // CreateBulk returns a builder for creating a bulk of HighlightedComment entities.
 func (c *HighlightedCommentClient) CreateBulk(builders ...*HighlightedCommentCreate) *HighlightedCommentCreateBulk {
+	return &HighlightedCommentCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *HighlightedCommentClient) MapCreateBulk(slice any, setFunc func(*HighlightedCommentCreate, int)) *HighlightedCommentCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &HighlightedCommentCreateBulk{err: fmt.Errorf("calling to HighlightedCommentClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*HighlightedCommentCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
 	return &HighlightedCommentCreateBulk{config: c.config, builders: builders}
 }
 
@@ -200,7 +315,7 @@ func (c *HighlightedCommentClient) DeleteOne(hc *HighlightedComment) *Highlighte
 	return c.DeleteOneID(hc.ID)
 }
 
-// DeleteOne returns a builder for deleting the given entity by its id.
+// DeleteOneID returns a builder for deleting the given entity by its id.
 func (c *HighlightedCommentClient) DeleteOneID(id uuid.UUID) *HighlightedCommentDeleteOne {
 	builder := c.Delete().Where(highlightedcomment.ID(id))
 	builder.mutation.id = &id
@@ -212,6 +327,8 @@ func (c *HighlightedCommentClient) DeleteOneID(id uuid.UUID) *HighlightedComment
 func (c *HighlightedCommentClient) Query() *HighlightedCommentQuery {
 	return &HighlightedCommentQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeHighlightedComment},
+		inters: c.Interceptors(),
 	}
 }
 
@@ -234,6 +351,26 @@ func (c *HighlightedCommentClient) Hooks() []Hook {
 	return c.hooks.HighlightedComment
 }
 
+// Interceptors returns the client interceptors.
+func (c *HighlightedCommentClient) Interceptors() []Interceptor {
+	return c.inters.HighlightedComment
+}
+
+func (c *HighlightedCommentClient) mutate(ctx context.Context, m *HighlightedCommentMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&HighlightedCommentCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&HighlightedCommentUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&HighlightedCommentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&HighlightedCommentDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown HighlightedComment mutation op: %q", m.Op())
+	}
+}
+
 // PickemsEventClient is a client for the PickemsEvent schema.
 type PickemsEventClient struct {
 	config
@@ -250,6 +387,12 @@ func (c *PickemsEventClient) Use(hooks ...Hook) {
 	c.hooks.PickemsEvent = append(c.hooks.PickemsEvent, hooks...)
 }
 
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `pickemsevent.Intercept(f(g(h())))`.
+func (c *PickemsEventClient) Intercept(interceptors ...Interceptor) {
+	c.inters.PickemsEvent = append(c.inters.PickemsEvent, interceptors...)
+}
+
 // Create returns a builder for creating a PickemsEvent entity.
 func (c *PickemsEventClient) Create() *PickemsEventCreate {
 	mutation := newPickemsEventMutation(c.config, OpCreate)
@@ -258,6 +401,21 @@ func (c *PickemsEventClient) Create() *PickemsEventCreate {
 
 // CreateBulk returns a builder for creating a bulk of PickemsEvent entities.
 func (c *PickemsEventClient) CreateBulk(builders ...*PickemsEventCreate) *PickemsEventCreateBulk {
+	return &PickemsEventCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *PickemsEventClient) MapCreateBulk(slice any, setFunc func(*PickemsEventCreate, int)) *PickemsEventCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &PickemsEventCreateBulk{err: fmt.Errorf("calling to PickemsEventClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*PickemsEventCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
 	return &PickemsEventCreateBulk{config: c.config, builders: builders}
 }
 
@@ -290,7 +448,7 @@ func (c *PickemsEventClient) DeleteOne(pe *PickemsEvent) *PickemsEventDeleteOne 
 	return c.DeleteOneID(pe.ID)
 }
 
-// DeleteOne returns a builder for deleting the given entity by its id.
+// DeleteOneID returns a builder for deleting the given entity by its id.
 func (c *PickemsEventClient) DeleteOneID(id uuid.UUID) *PickemsEventDeleteOne {
 	builder := c.Delete().Where(pickemsevent.ID(id))
 	builder.mutation.id = &id
@@ -302,6 +460,8 @@ func (c *PickemsEventClient) DeleteOneID(id uuid.UUID) *PickemsEventDeleteOne {
 func (c *PickemsEventClient) Query() *PickemsEventQuery {
 	return &PickemsEventQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypePickemsEvent},
+		inters: c.Interceptors(),
 	}
 }
 
@@ -324,6 +484,26 @@ func (c *PickemsEventClient) Hooks() []Hook {
 	return c.hooks.PickemsEvent
 }
 
+// Interceptors returns the client interceptors.
+func (c *PickemsEventClient) Interceptors() []Interceptor {
+	return c.inters.PickemsEvent
+}
+
+func (c *PickemsEventClient) mutate(ctx context.Context, m *PickemsEventMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&PickemsEventCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&PickemsEventUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&PickemsEventUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&PickemsEventDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown PickemsEvent mutation op: %q", m.Op())
+	}
+}
+
 // PinnedCommentClient is a client for the PinnedComment schema.
 type PinnedCommentClient struct {
 	config
@@ -340,6 +520,12 @@ func (c *PinnedCommentClient) Use(hooks ...Hook) {
 	c.hooks.PinnedComment = append(c.hooks.PinnedComment, hooks...)
 }
 
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `pinnedcomment.Intercept(f(g(h())))`.
+func (c *PinnedCommentClient) Intercept(interceptors ...Interceptor) {
+	c.inters.PinnedComment = append(c.inters.PinnedComment, interceptors...)
+}
+
 // Create returns a builder for creating a PinnedComment entity.
 func (c *PinnedCommentClient) Create() *PinnedCommentCreate {
 	mutation := newPinnedCommentMutation(c.config, OpCreate)
@@ -348,6 +534,21 @@ func (c *PinnedCommentClient) Create() *PinnedCommentCreate {
 
 // CreateBulk returns a builder for creating a bulk of PinnedComment entities.
 func (c *PinnedCommentClient) CreateBulk(builders ...*PinnedCommentCreate) *PinnedCommentCreateBulk {
+	return &PinnedCommentCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *PinnedCommentClient) MapCreateBulk(slice any, setFunc func(*PinnedCommentCreate, int)) *PinnedCommentCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &PinnedCommentCreateBulk{err: fmt.Errorf("calling to PinnedCommentClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*PinnedCommentCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
 	return &PinnedCommentCreateBulk{config: c.config, builders: builders}
 }
 
@@ -380,7 +581,7 @@ func (c *PinnedCommentClient) DeleteOne(pc *PinnedComment) *PinnedCommentDeleteO
 	return c.DeleteOneID(pc.ID)
 }
 
-// DeleteOne returns a builder for deleting the given entity by its id.
+// DeleteOneID returns a builder for deleting the given entity by its id.
 func (c *PinnedCommentClient) DeleteOneID(id uuid.UUID) *PinnedCommentDeleteOne {
 	builder := c.Delete().Where(pinnedcomment.ID(id))
 	builder.mutation.id = &id
@@ -392,6 +593,8 @@ func (c *PinnedCommentClient) DeleteOneID(id uuid.UUID) *PinnedCommentDeleteOne 
 func (c *PinnedCommentClient) Query() *PinnedCommentQuery {
 	return &PinnedCommentQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypePinnedComment},
+		inters: c.Interceptors(),
 	}
 }
 
@@ -414,6 +617,175 @@ func (c *PinnedCommentClient) Hooks() []Hook {
 	return c.hooks.PinnedComment
 }
 
+// Interceptors returns the client interceptors.
+func (c *PinnedCommentClient) Interceptors() []Interceptor {
+	return c.inters.PinnedComment
+}
+
+func (c *PinnedCommentClient) mutate(ctx context.Context, m *PinnedCommentMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&PinnedCommentCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&PinnedCommentUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&PinnedCommentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&PinnedCommentDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown PinnedComment mutation op: %q", m.Op())
+	}
+}
+
+// ScheduledMatchClient is a client for the ScheduledMatch schema.
+type ScheduledMatchClient struct {
+	config
+}
+
+// NewScheduledMatchClient returns a client for the ScheduledMatch from the given config.
+func NewScheduledMatchClient(c config) *ScheduledMatchClient {
+	return &ScheduledMatchClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `scheduledmatch.Hooks(f(g(h())))`.
+func (c *ScheduledMatchClient) Use(hooks ...Hook) {
+	c.hooks.ScheduledMatch = append(c.hooks.ScheduledMatch, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `scheduledmatch.Intercept(f(g(h())))`.
+func (c *ScheduledMatchClient) Intercept(interceptors ...Interceptor) {
+	c.inters.ScheduledMatch = append(c.inters.ScheduledMatch, interceptors...)
+}
+
+// Create returns a builder for creating a ScheduledMatch entity.
+func (c *ScheduledMatchClient) Create() *ScheduledMatchCreate {
+	mutation := newScheduledMatchMutation(c.config, OpCreate)
+	return &ScheduledMatchCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of ScheduledMatch entities.
+func (c *ScheduledMatchClient) CreateBulk(builders ...*ScheduledMatchCreate) *ScheduledMatchCreateBulk {
+	return &ScheduledMatchCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *ScheduledMatchClient) MapCreateBulk(slice any, setFunc func(*ScheduledMatchCreate, int)) *ScheduledMatchCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &ScheduledMatchCreateBulk{err: fmt.Errorf("calling to ScheduledMatchClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*ScheduledMatchCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &ScheduledMatchCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for ScheduledMatch.
+func (c *ScheduledMatchClient) Update() *ScheduledMatchUpdate {
+	mutation := newScheduledMatchMutation(c.config, OpUpdate)
+	return &ScheduledMatchUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ScheduledMatchClient) UpdateOne(sm *ScheduledMatch) *ScheduledMatchUpdateOne {
+	mutation := newScheduledMatchMutation(c.config, OpUpdateOne, withScheduledMatch(sm))
+	return &ScheduledMatchUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ScheduledMatchClient) UpdateOneID(id uuid.UUID) *ScheduledMatchUpdateOne {
+	mutation := newScheduledMatchMutation(c.config, OpUpdateOne, withScheduledMatchID(id))
+	return &ScheduledMatchUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for ScheduledMatch.
+func (c *ScheduledMatchClient) Delete() *ScheduledMatchDelete {
+	mutation := newScheduledMatchMutation(c.config, OpDelete)
+	return &ScheduledMatchDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *ScheduledMatchClient) DeleteOne(sm *ScheduledMatch) *ScheduledMatchDeleteOne {
+	return c.DeleteOneID(sm.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *ScheduledMatchClient) DeleteOneID(id uuid.UUID) *ScheduledMatchDeleteOne {
+	builder := c.Delete().Where(scheduledmatch.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ScheduledMatchDeleteOne{builder}
+}
+
+// Query returns a query builder for ScheduledMatch.
+func (c *ScheduledMatchClient) Query() *ScheduledMatchQuery {
+	return &ScheduledMatchQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeScheduledMatch},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a ScheduledMatch entity by its id.
+func (c *ScheduledMatchClient) Get(ctx context.Context, id uuid.UUID) (*ScheduledMatch, error) {
+	return c.Query().Where(scheduledmatch.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ScheduledMatchClient) GetX(ctx context.Context, id uuid.UUID) *ScheduledMatch {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryEvent queries the event edge of a ScheduledMatch.
+func (c *ScheduledMatchClient) QueryEvent(sm *ScheduledMatch) *TrackedEventQuery {
+	query := (&TrackedEventClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := sm.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(scheduledmatch.Table, scheduledmatch.FieldID, id),
+			sqlgraph.To(trackedevent.Table, trackedevent.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, scheduledmatch.EventTable, scheduledmatch.EventColumn),
+		)
+		fromV = sqlgraph.Neighbors(sm.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *ScheduledMatchClient) Hooks() []Hook {
+	return c.hooks.ScheduledMatch
+}
+
+// Interceptors returns the client interceptors.
+func (c *ScheduledMatchClient) Interceptors() []Interceptor {
+	return c.inters.ScheduledMatch
+}
+
+func (c *ScheduledMatchClient) mutate(ctx context.Context, m *ScheduledMatchMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&ScheduledMatchCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&ScheduledMatchUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&ScheduledMatchUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&ScheduledMatchDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown ScheduledMatch mutation op: %q", m.Op())
+	}
+}
+
 // TrackedEventClient is a client for the TrackedEvent schema.
 type TrackedEventClient struct {
 	config
@@ -430,6 +802,12 @@ func (c *TrackedEventClient) Use(hooks ...Hook) {
 	c.hooks.TrackedEvent = append(c.hooks.TrackedEvent, hooks...)
 }
 
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `trackedevent.Intercept(f(g(h())))`.
+func (c *TrackedEventClient) Intercept(interceptors ...Interceptor) {
+	c.inters.TrackedEvent = append(c.inters.TrackedEvent, interceptors...)
+}
+
 // Create returns a builder for creating a TrackedEvent entity.
 func (c *TrackedEventClient) Create() *TrackedEventCreate {
 	mutation := newTrackedEventMutation(c.config, OpCreate)
@@ -438,6 +816,21 @@ func (c *TrackedEventClient) Create() *TrackedEventCreate {
 
 // CreateBulk returns a builder for creating a bulk of TrackedEvent entities.
 func (c *TrackedEventClient) CreateBulk(builders ...*TrackedEventCreate) *TrackedEventCreateBulk {
+	return &TrackedEventCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *TrackedEventClient) MapCreateBulk(slice any, setFunc func(*TrackedEventCreate, int)) *TrackedEventCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &TrackedEventCreateBulk{err: fmt.Errorf("calling to TrackedEventClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*TrackedEventCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
 	return &TrackedEventCreateBulk{config: c.config, builders: builders}
 }
 
@@ -470,7 +863,7 @@ func (c *TrackedEventClient) DeleteOne(te *TrackedEvent) *TrackedEventDeleteOne 
 	return c.DeleteOneID(te.ID)
 }
 
-// DeleteOne returns a builder for deleting the given entity by its id.
+// DeleteOneID returns a builder for deleting the given entity by its id.
 func (c *TrackedEventClient) DeleteOneID(id uuid.UUID) *TrackedEventDeleteOne {
 	builder := c.Delete().Where(trackedevent.ID(id))
 	builder.mutation.id = &id
@@ -482,6 +875,8 @@ func (c *TrackedEventClient) DeleteOneID(id uuid.UUID) *TrackedEventDeleteOne {
 func (c *TrackedEventClient) Query() *TrackedEventQuery {
 	return &TrackedEventQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeTrackedEvent},
+		inters: c.Interceptors(),
 	}
 }
 
@@ -499,7 +894,55 @@ func (c *TrackedEventClient) GetX(ctx context.Context, id uuid.UUID) *TrackedEve
 	return obj
 }
 
+// QueryScheduledmatches queries the scheduledmatches edge of a TrackedEvent.
+func (c *TrackedEventClient) QueryScheduledmatches(te *TrackedEvent) *ScheduledMatchQuery {
+	query := (&ScheduledMatchClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := te.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(trackedevent.Table, trackedevent.FieldID, id),
+			sqlgraph.To(scheduledmatch.Table, scheduledmatch.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, trackedevent.ScheduledmatchesTable, trackedevent.ScheduledmatchesColumn),
+		)
+		fromV = sqlgraph.Neighbors(te.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *TrackedEventClient) Hooks() []Hook {
 	return c.hooks.TrackedEvent
 }
+
+// Interceptors returns the client interceptors.
+func (c *TrackedEventClient) Interceptors() []Interceptor {
+	return c.inters.TrackedEvent
+}
+
+func (c *TrackedEventClient) mutate(ctx context.Context, m *TrackedEventMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&TrackedEventCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&TrackedEventUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&TrackedEventUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&TrackedEventDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown TrackedEvent mutation op: %q", m.Op())
+	}
+}
+
+// hooks and interceptors per client, for fast access.
+type (
+	hooks struct {
+		HighlightedComment, PickemsEvent, PinnedComment, ScheduledMatch,
+		TrackedEvent []ent.Hook
+	}
+	inters struct {
+		HighlightedComment, PickemsEvent, PinnedComment, ScheduledMatch,
+		TrackedEvent []ent.Interceptor
+	}
+)

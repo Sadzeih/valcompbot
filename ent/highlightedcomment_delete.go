@@ -4,7 +4,6 @@ package ent
 
 import (
 	"context"
-	"fmt"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -28,34 +27,7 @@ func (hcd *HighlightedCommentDelete) Where(ps ...predicate.HighlightedComment) *
 
 // Exec executes the deletion query and returns how many vertices were deleted.
 func (hcd *HighlightedCommentDelete) Exec(ctx context.Context) (int, error) {
-	var (
-		err      error
-		affected int
-	)
-	if len(hcd.hooks) == 0 {
-		affected, err = hcd.sqlExec(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*HighlightedCommentMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			hcd.mutation = mutation
-			affected, err = hcd.sqlExec(ctx)
-			mutation.done = true
-			return affected, err
-		})
-		for i := len(hcd.hooks) - 1; i >= 0; i-- {
-			if hcd.hooks[i] == nil {
-				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = hcd.hooks[i](mut)
-		}
-		if _, err := mut.Mutate(ctx, hcd.mutation); err != nil {
-			return 0, err
-		}
-	}
-	return affected, err
+	return withHooks(ctx, hcd.sqlExec, hcd.mutation, hcd.hooks)
 }
 
 // ExecX is like Exec, but panics if an error occurs.
@@ -68,15 +40,7 @@ func (hcd *HighlightedCommentDelete) ExecX(ctx context.Context) int {
 }
 
 func (hcd *HighlightedCommentDelete) sqlExec(ctx context.Context) (int, error) {
-	_spec := &sqlgraph.DeleteSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table: highlightedcomment.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
-				Column: highlightedcomment.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewDeleteSpec(highlightedcomment.Table, sqlgraph.NewFieldSpec(highlightedcomment.FieldID, field.TypeUUID))
 	if ps := hcd.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -88,12 +52,19 @@ func (hcd *HighlightedCommentDelete) sqlExec(ctx context.Context) (int, error) {
 	if err != nil && sqlgraph.IsConstraintError(err) {
 		err = &ConstraintError{msg: err.Error(), wrap: err}
 	}
+	hcd.mutation.done = true
 	return affected, err
 }
 
 // HighlightedCommentDeleteOne is the builder for deleting a single HighlightedComment entity.
 type HighlightedCommentDeleteOne struct {
 	hcd *HighlightedCommentDelete
+}
+
+// Where appends a list predicates to the HighlightedCommentDelete builder.
+func (hcdo *HighlightedCommentDeleteOne) Where(ps ...predicate.HighlightedComment) *HighlightedCommentDeleteOne {
+	hcdo.hcd.mutation.Where(ps...)
+	return hcdo
 }
 
 // Exec executes the deletion query.
@@ -111,5 +82,7 @@ func (hcdo *HighlightedCommentDeleteOne) Exec(ctx context.Context) error {
 
 // ExecX is like Exec, but panics if an error occurs.
 func (hcdo *HighlightedCommentDeleteOne) ExecX(ctx context.Context) {
-	hcdo.hcd.ExecX(ctx)
+	if err := hcdo.Exec(ctx); err != nil {
+		panic(err)
+	}
 }

@@ -34,9 +34,25 @@ func (hcu *HighlightedCommentUpdate) SetCommentID(s string) *HighlightedCommentU
 	return hcu
 }
 
+// SetNillableCommentID sets the "comment_id" field if the given value is not nil.
+func (hcu *HighlightedCommentUpdate) SetNillableCommentID(s *string) *HighlightedCommentUpdate {
+	if s != nil {
+		hcu.SetCommentID(*s)
+	}
+	return hcu
+}
+
 // SetBody sets the "body" field.
 func (hcu *HighlightedCommentUpdate) SetBody(s string) *HighlightedCommentUpdate {
 	hcu.mutation.SetBody(s)
+	return hcu
+}
+
+// SetNillableBody sets the "body" field if the given value is not nil.
+func (hcu *HighlightedCommentUpdate) SetNillableBody(s *string) *HighlightedCommentUpdate {
+	if s != nil {
+		hcu.SetBody(*s)
+	}
 	return hcu
 }
 
@@ -46,9 +62,25 @@ func (hcu *HighlightedCommentUpdate) SetAuthor(s string) *HighlightedCommentUpda
 	return hcu
 }
 
+// SetNillableAuthor sets the "author" field if the given value is not nil.
+func (hcu *HighlightedCommentUpdate) SetNillableAuthor(s *string) *HighlightedCommentUpdate {
+	if s != nil {
+		hcu.SetAuthor(*s)
+	}
+	return hcu
+}
+
 // SetFlair sets the "flair" field.
 func (hcu *HighlightedCommentUpdate) SetFlair(s string) *HighlightedCommentUpdate {
 	hcu.mutation.SetFlair(s)
+	return hcu
+}
+
+// SetNillableFlair sets the "flair" field if the given value is not nil.
+func (hcu *HighlightedCommentUpdate) SetNillableFlair(s *string) *HighlightedCommentUpdate {
+	if s != nil {
+		hcu.SetFlair(*s)
+	}
 	return hcu
 }
 
@@ -58,9 +90,25 @@ func (hcu *HighlightedCommentUpdate) SetParentID(s string) *HighlightedCommentUp
 	return hcu
 }
 
+// SetNillableParentID sets the "parent_id" field if the given value is not nil.
+func (hcu *HighlightedCommentUpdate) SetNillableParentID(s *string) *HighlightedCommentUpdate {
+	if s != nil {
+		hcu.SetParentID(*s)
+	}
+	return hcu
+}
+
 // SetLink sets the "link" field.
 func (hcu *HighlightedCommentUpdate) SetLink(s string) *HighlightedCommentUpdate {
 	hcu.mutation.SetLink(s)
+	return hcu
+}
+
+// SetNillableLink sets the "link" field if the given value is not nil.
+func (hcu *HighlightedCommentUpdate) SetNillableLink(s *string) *HighlightedCommentUpdate {
+	if s != nil {
+		hcu.SetLink(*s)
+	}
 	return hcu
 }
 
@@ -70,9 +118,25 @@ func (hcu *HighlightedCommentUpdate) SetAuthorType(s string) *HighlightedComment
 	return hcu
 }
 
+// SetNillableAuthorType sets the "author_type" field if the given value is not nil.
+func (hcu *HighlightedCommentUpdate) SetNillableAuthorType(s *string) *HighlightedCommentUpdate {
+	if s != nil {
+		hcu.SetAuthorType(*s)
+	}
+	return hcu
+}
+
 // SetTimestamp sets the "timestamp" field.
 func (hcu *HighlightedCommentUpdate) SetTimestamp(t time.Time) *HighlightedCommentUpdate {
 	hcu.mutation.SetTimestamp(t)
+	return hcu
+}
+
+// SetNillableTimestamp sets the "timestamp" field if the given value is not nil.
+func (hcu *HighlightedCommentUpdate) SetNillableTimestamp(t *time.Time) *HighlightedCommentUpdate {
+	if t != nil {
+		hcu.SetTimestamp(*t)
+	}
 	return hcu
 }
 
@@ -83,34 +147,7 @@ func (hcu *HighlightedCommentUpdate) Mutation() *HighlightedCommentMutation {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (hcu *HighlightedCommentUpdate) Save(ctx context.Context) (int, error) {
-	var (
-		err      error
-		affected int
-	)
-	if len(hcu.hooks) == 0 {
-		affected, err = hcu.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*HighlightedCommentMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			hcu.mutation = mutation
-			affected, err = hcu.sqlSave(ctx)
-			mutation.done = true
-			return affected, err
-		})
-		for i := len(hcu.hooks) - 1; i >= 0; i-- {
-			if hcu.hooks[i] == nil {
-				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = hcu.hooks[i](mut)
-		}
-		if _, err := mut.Mutate(ctx, hcu.mutation); err != nil {
-			return 0, err
-		}
-	}
-	return affected, err
+	return withHooks(ctx, hcu.sqlSave, hcu.mutation, hcu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -136,16 +173,7 @@ func (hcu *HighlightedCommentUpdate) ExecX(ctx context.Context) {
 }
 
 func (hcu *HighlightedCommentUpdate) sqlSave(ctx context.Context) (n int, err error) {
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   highlightedcomment.Table,
-			Columns: highlightedcomment.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
-				Column: highlightedcomment.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(highlightedcomment.Table, highlightedcomment.Columns, sqlgraph.NewFieldSpec(highlightedcomment.FieldID, field.TypeUUID))
 	if ps := hcu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -154,60 +182,28 @@ func (hcu *HighlightedCommentUpdate) sqlSave(ctx context.Context) (n int, err er
 		}
 	}
 	if value, ok := hcu.mutation.CommentID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: highlightedcomment.FieldCommentID,
-		})
+		_spec.SetField(highlightedcomment.FieldCommentID, field.TypeString, value)
 	}
 	if value, ok := hcu.mutation.Body(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: highlightedcomment.FieldBody,
-		})
+		_spec.SetField(highlightedcomment.FieldBody, field.TypeString, value)
 	}
 	if value, ok := hcu.mutation.Author(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: highlightedcomment.FieldAuthor,
-		})
+		_spec.SetField(highlightedcomment.FieldAuthor, field.TypeString, value)
 	}
 	if value, ok := hcu.mutation.Flair(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: highlightedcomment.FieldFlair,
-		})
+		_spec.SetField(highlightedcomment.FieldFlair, field.TypeString, value)
 	}
 	if value, ok := hcu.mutation.ParentID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: highlightedcomment.FieldParentID,
-		})
+		_spec.SetField(highlightedcomment.FieldParentID, field.TypeString, value)
 	}
 	if value, ok := hcu.mutation.Link(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: highlightedcomment.FieldLink,
-		})
+		_spec.SetField(highlightedcomment.FieldLink, field.TypeString, value)
 	}
 	if value, ok := hcu.mutation.AuthorType(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: highlightedcomment.FieldAuthorType,
-		})
+		_spec.SetField(highlightedcomment.FieldAuthorType, field.TypeString, value)
 	}
 	if value, ok := hcu.mutation.Timestamp(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: highlightedcomment.FieldTimestamp,
-		})
+		_spec.SetField(highlightedcomment.FieldTimestamp, field.TypeTime, value)
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, hcu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -217,6 +213,7 @@ func (hcu *HighlightedCommentUpdate) sqlSave(ctx context.Context) (n int, err er
 		}
 		return 0, err
 	}
+	hcu.mutation.done = true
 	return n, nil
 }
 
@@ -234,9 +231,25 @@ func (hcuo *HighlightedCommentUpdateOne) SetCommentID(s string) *HighlightedComm
 	return hcuo
 }
 
+// SetNillableCommentID sets the "comment_id" field if the given value is not nil.
+func (hcuo *HighlightedCommentUpdateOne) SetNillableCommentID(s *string) *HighlightedCommentUpdateOne {
+	if s != nil {
+		hcuo.SetCommentID(*s)
+	}
+	return hcuo
+}
+
 // SetBody sets the "body" field.
 func (hcuo *HighlightedCommentUpdateOne) SetBody(s string) *HighlightedCommentUpdateOne {
 	hcuo.mutation.SetBody(s)
+	return hcuo
+}
+
+// SetNillableBody sets the "body" field if the given value is not nil.
+func (hcuo *HighlightedCommentUpdateOne) SetNillableBody(s *string) *HighlightedCommentUpdateOne {
+	if s != nil {
+		hcuo.SetBody(*s)
+	}
 	return hcuo
 }
 
@@ -246,9 +259,25 @@ func (hcuo *HighlightedCommentUpdateOne) SetAuthor(s string) *HighlightedComment
 	return hcuo
 }
 
+// SetNillableAuthor sets the "author" field if the given value is not nil.
+func (hcuo *HighlightedCommentUpdateOne) SetNillableAuthor(s *string) *HighlightedCommentUpdateOne {
+	if s != nil {
+		hcuo.SetAuthor(*s)
+	}
+	return hcuo
+}
+
 // SetFlair sets the "flair" field.
 func (hcuo *HighlightedCommentUpdateOne) SetFlair(s string) *HighlightedCommentUpdateOne {
 	hcuo.mutation.SetFlair(s)
+	return hcuo
+}
+
+// SetNillableFlair sets the "flair" field if the given value is not nil.
+func (hcuo *HighlightedCommentUpdateOne) SetNillableFlair(s *string) *HighlightedCommentUpdateOne {
+	if s != nil {
+		hcuo.SetFlair(*s)
+	}
 	return hcuo
 }
 
@@ -258,9 +287,25 @@ func (hcuo *HighlightedCommentUpdateOne) SetParentID(s string) *HighlightedComme
 	return hcuo
 }
 
+// SetNillableParentID sets the "parent_id" field if the given value is not nil.
+func (hcuo *HighlightedCommentUpdateOne) SetNillableParentID(s *string) *HighlightedCommentUpdateOne {
+	if s != nil {
+		hcuo.SetParentID(*s)
+	}
+	return hcuo
+}
+
 // SetLink sets the "link" field.
 func (hcuo *HighlightedCommentUpdateOne) SetLink(s string) *HighlightedCommentUpdateOne {
 	hcuo.mutation.SetLink(s)
+	return hcuo
+}
+
+// SetNillableLink sets the "link" field if the given value is not nil.
+func (hcuo *HighlightedCommentUpdateOne) SetNillableLink(s *string) *HighlightedCommentUpdateOne {
+	if s != nil {
+		hcuo.SetLink(*s)
+	}
 	return hcuo
 }
 
@@ -270,15 +315,37 @@ func (hcuo *HighlightedCommentUpdateOne) SetAuthorType(s string) *HighlightedCom
 	return hcuo
 }
 
+// SetNillableAuthorType sets the "author_type" field if the given value is not nil.
+func (hcuo *HighlightedCommentUpdateOne) SetNillableAuthorType(s *string) *HighlightedCommentUpdateOne {
+	if s != nil {
+		hcuo.SetAuthorType(*s)
+	}
+	return hcuo
+}
+
 // SetTimestamp sets the "timestamp" field.
 func (hcuo *HighlightedCommentUpdateOne) SetTimestamp(t time.Time) *HighlightedCommentUpdateOne {
 	hcuo.mutation.SetTimestamp(t)
 	return hcuo
 }
 
+// SetNillableTimestamp sets the "timestamp" field if the given value is not nil.
+func (hcuo *HighlightedCommentUpdateOne) SetNillableTimestamp(t *time.Time) *HighlightedCommentUpdateOne {
+	if t != nil {
+		hcuo.SetTimestamp(*t)
+	}
+	return hcuo
+}
+
 // Mutation returns the HighlightedCommentMutation object of the builder.
 func (hcuo *HighlightedCommentUpdateOne) Mutation() *HighlightedCommentMutation {
 	return hcuo.mutation
+}
+
+// Where appends a list predicates to the HighlightedCommentUpdate builder.
+func (hcuo *HighlightedCommentUpdateOne) Where(ps ...predicate.HighlightedComment) *HighlightedCommentUpdateOne {
+	hcuo.mutation.Where(ps...)
+	return hcuo
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -290,40 +357,7 @@ func (hcuo *HighlightedCommentUpdateOne) Select(field string, fields ...string) 
 
 // Save executes the query and returns the updated HighlightedComment entity.
 func (hcuo *HighlightedCommentUpdateOne) Save(ctx context.Context) (*HighlightedComment, error) {
-	var (
-		err  error
-		node *HighlightedComment
-	)
-	if len(hcuo.hooks) == 0 {
-		node, err = hcuo.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*HighlightedCommentMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			hcuo.mutation = mutation
-			node, err = hcuo.sqlSave(ctx)
-			mutation.done = true
-			return node, err
-		})
-		for i := len(hcuo.hooks) - 1; i >= 0; i-- {
-			if hcuo.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = hcuo.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, hcuo.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*HighlightedComment)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from HighlightedCommentMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks(ctx, hcuo.sqlSave, hcuo.mutation, hcuo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -349,16 +383,7 @@ func (hcuo *HighlightedCommentUpdateOne) ExecX(ctx context.Context) {
 }
 
 func (hcuo *HighlightedCommentUpdateOne) sqlSave(ctx context.Context) (_node *HighlightedComment, err error) {
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   highlightedcomment.Table,
-			Columns: highlightedcomment.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
-				Column: highlightedcomment.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(highlightedcomment.Table, highlightedcomment.Columns, sqlgraph.NewFieldSpec(highlightedcomment.FieldID, field.TypeUUID))
 	id, ok := hcuo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "HighlightedComment.id" for update`)}
@@ -384,60 +409,28 @@ func (hcuo *HighlightedCommentUpdateOne) sqlSave(ctx context.Context) (_node *Hi
 		}
 	}
 	if value, ok := hcuo.mutation.CommentID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: highlightedcomment.FieldCommentID,
-		})
+		_spec.SetField(highlightedcomment.FieldCommentID, field.TypeString, value)
 	}
 	if value, ok := hcuo.mutation.Body(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: highlightedcomment.FieldBody,
-		})
+		_spec.SetField(highlightedcomment.FieldBody, field.TypeString, value)
 	}
 	if value, ok := hcuo.mutation.Author(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: highlightedcomment.FieldAuthor,
-		})
+		_spec.SetField(highlightedcomment.FieldAuthor, field.TypeString, value)
 	}
 	if value, ok := hcuo.mutation.Flair(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: highlightedcomment.FieldFlair,
-		})
+		_spec.SetField(highlightedcomment.FieldFlair, field.TypeString, value)
 	}
 	if value, ok := hcuo.mutation.ParentID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: highlightedcomment.FieldParentID,
-		})
+		_spec.SetField(highlightedcomment.FieldParentID, field.TypeString, value)
 	}
 	if value, ok := hcuo.mutation.Link(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: highlightedcomment.FieldLink,
-		})
+		_spec.SetField(highlightedcomment.FieldLink, field.TypeString, value)
 	}
 	if value, ok := hcuo.mutation.AuthorType(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: highlightedcomment.FieldAuthorType,
-		})
+		_spec.SetField(highlightedcomment.FieldAuthorType, field.TypeString, value)
 	}
 	if value, ok := hcuo.mutation.Timestamp(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: highlightedcomment.FieldTimestamp,
-		})
+		_spec.SetField(highlightedcomment.FieldTimestamp, field.TypeTime, value)
 	}
 	_node = &HighlightedComment{config: hcuo.config}
 	_spec.Assign = _node.assignValues
@@ -450,5 +443,6 @@ func (hcuo *HighlightedCommentUpdateOne) sqlSave(ctx context.Context) (_node *Hi
 		}
 		return nil, err
 	}
+	hcuo.mutation.done = true
 	return _node, nil
 }

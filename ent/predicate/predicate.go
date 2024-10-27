@@ -15,5 +15,8 @@ type PickemsEvent func(*sql.Selector)
 // PinnedComment is the predicate function for pinnedcomment builders.
 type PinnedComment func(*sql.Selector)
 
+// ScheduledMatch is the predicate function for scheduledmatch builders.
+type ScheduledMatch func(*sql.Selector)
+
 // TrackedEvent is the predicate function for trackedevent builders.
 type TrackedEvent func(*sql.Selector)

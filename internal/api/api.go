@@ -2,8 +2,9 @@ package api
 
 import (
 	"context"
-	"github.com/Sadzeih/valcompbot/pickems"
 	"net/http"
+
+	"github.com/Sadzeih/valcompbot/pickems"
 
 	"github.com/Sadzeih/valcompbot/config"
 	"github.com/Sadzeih/valcompbot/ent"
@@ -36,11 +37,12 @@ func Start(redditClient *reddit.Client, entClient *ent.Client) error {
 	r.HandleFunc("/events", eventsHandler.HandleGetTrackedEvents)
 
 	matchesHandler := matches.NewHandler(ctx, redditClient, entClient)
-	r.HandleFunc("/matches/{eventID}", matchesHandler.HandleGetByEventID)
+	r.HandleFunc("/matches/{eventID}", matchesHandler.HandleGetByEventID).Methods(http.MethodGet)
 	r.HandleFunc("/match/{ID}", matchesHandler.HandleGetMatch).
 		Methods(http.MethodGet)
 	r.HandleFunc("/match/{ID}", matchesHandler.HandlePostMatch).
 		Methods(http.MethodPost)
+	r.HandleFunc("/match/{ID}/schedule", matchesHandler.HandleSchedule).Methods(http.MethodPost)
 
 	pickemsHandler := pickems.NewHandler(ctx, redditClient, entClient)
 	r.HandleFunc("/pickems/event", pickemsHandler.SetEvent).

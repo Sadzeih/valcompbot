@@ -9,14 +9,15 @@ import (
 	"sync"
 	"time"
 
+	"entgo.io/ent"
+	"entgo.io/ent/dialect/sql"
 	"github.com/Sadzeih/valcompbot/ent/highlightedcomment"
 	"github.com/Sadzeih/valcompbot/ent/pickemsevent"
 	"github.com/Sadzeih/valcompbot/ent/pinnedcomment"
 	"github.com/Sadzeih/valcompbot/ent/predicate"
+	"github.com/Sadzeih/valcompbot/ent/scheduledmatch"
 	"github.com/Sadzeih/valcompbot/ent/trackedevent"
 	"github.com/google/uuid"
-
-	"entgo.io/ent"
 )
 
 const (
@@ -31,6 +32,7 @@ const (
 	TypeHighlightedComment = "HighlightedComment"
 	TypePickemsEvent       = "PickemsEvent"
 	TypePinnedComment      = "PinnedComment"
+	TypeScheduledMatch     = "ScheduledMatch"
 	TypeTrackedEvent       = "TrackedEvent"
 )
 
@@ -451,9 +453,24 @@ func (m *HighlightedCommentMutation) Where(ps ...predicate.HighlightedComment) {
 	m.predicates = append(m.predicates, ps...)
 }
 
+// WhereP appends storage-level predicates to the HighlightedCommentMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *HighlightedCommentMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.HighlightedComment, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
 // Op returns the operation name.
 func (m *HighlightedCommentMutation) Op() Op {
 	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *HighlightedCommentMutation) SetOp(op Op) {
+	m.op = op
 }
 
 // Type returns the node type of this mutation (HighlightedComment).
@@ -959,9 +976,24 @@ func (m *PickemsEventMutation) Where(ps ...predicate.PickemsEvent) {
 	m.predicates = append(m.predicates, ps...)
 }
 
+// WhereP appends storage-level predicates to the PickemsEventMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *PickemsEventMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.PickemsEvent, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
 // Op returns the operation name.
 func (m *PickemsEventMutation) Op() Op {
 	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *PickemsEventMutation) SetOp(op Op) {
+	m.op = op
 }
 
 // Type returns the node type of this mutation (PickemsEvent).
@@ -1354,9 +1386,24 @@ func (m *PinnedCommentMutation) Where(ps ...predicate.PinnedComment) {
 	m.predicates = append(m.predicates, ps...)
 }
 
+// WhereP appends storage-level predicates to the PinnedCommentMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *PinnedCommentMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.PinnedComment, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
 // Op returns the operation name.
 func (m *PinnedCommentMutation) Op() Op {
 	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *PinnedCommentMutation) SetOp(op Op) {
+	m.op = op
 }
 
 // Type returns the node type of this mutation (PinnedComment).
@@ -1530,19 +1577,570 @@ func (m *PinnedCommentMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown PinnedComment edge %s", name)
 }
 
-// TrackedEventMutation represents an operation that mutates the TrackedEvent nodes in the graph.
-type TrackedEventMutation struct {
+// ScheduledMatchMutation represents an operation that mutates the ScheduledMatch nodes in the graph.
+type ScheduledMatchMutation struct {
 	config
 	op            Op
 	typ           string
 	id            *uuid.UUID
-	event_id      *int
-	addevent_id   *int
-	name          *string
+	match_id      *string
+	done_at       *time.Time
+	posted_at     *time.Time
 	clearedFields map[string]struct{}
+	event         *uuid.UUID
+	clearedevent  bool
 	done          bool
-	oldValue      func(context.Context) (*TrackedEvent, error)
-	predicates    []predicate.TrackedEvent
+	oldValue      func(context.Context) (*ScheduledMatch, error)
+	predicates    []predicate.ScheduledMatch
+}
+
+var _ ent.Mutation = (*ScheduledMatchMutation)(nil)
+
+// scheduledmatchOption allows management of the mutation configuration using functional options.
+type scheduledmatchOption func(*ScheduledMatchMutation)
+
+// newScheduledMatchMutation creates new mutation for the ScheduledMatch entity.
+func newScheduledMatchMutation(c config, op Op, opts ...scheduledmatchOption) *ScheduledMatchMutation {
+	m := &ScheduledMatchMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeScheduledMatch,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withScheduledMatchID sets the ID field of the mutation.
+func withScheduledMatchID(id uuid.UUID) scheduledmatchOption {
+	return func(m *ScheduledMatchMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *ScheduledMatch
+		)
+		m.oldValue = func(ctx context.Context) (*ScheduledMatch, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().ScheduledMatch.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withScheduledMatch sets the old ScheduledMatch of the mutation.
+func withScheduledMatch(node *ScheduledMatch) scheduledmatchOption {
+	return func(m *ScheduledMatchMutation) {
+		m.oldValue = func(context.Context) (*ScheduledMatch, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m ScheduledMatchMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m ScheduledMatchMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of ScheduledMatch entities.
+func (m *ScheduledMatchMutation) SetID(id uuid.UUID) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *ScheduledMatchMutation) ID() (id uuid.UUID, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *ScheduledMatchMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []uuid.UUID{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().ScheduledMatch.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetMatchID sets the "match_id" field.
+func (m *ScheduledMatchMutation) SetMatchID(s string) {
+	m.match_id = &s
+}
+
+// MatchID returns the value of the "match_id" field in the mutation.
+func (m *ScheduledMatchMutation) MatchID() (r string, exists bool) {
+	v := m.match_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldMatchID returns the old "match_id" field's value of the ScheduledMatch entity.
+// If the ScheduledMatch object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ScheduledMatchMutation) OldMatchID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldMatchID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldMatchID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldMatchID: %w", err)
+	}
+	return oldValue.MatchID, nil
+}
+
+// ResetMatchID resets all changes to the "match_id" field.
+func (m *ScheduledMatchMutation) ResetMatchID() {
+	m.match_id = nil
+}
+
+// SetDoneAt sets the "done_at" field.
+func (m *ScheduledMatchMutation) SetDoneAt(t time.Time) {
+	m.done_at = &t
+}
+
+// DoneAt returns the value of the "done_at" field in the mutation.
+func (m *ScheduledMatchMutation) DoneAt() (r time.Time, exists bool) {
+	v := m.done_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDoneAt returns the old "done_at" field's value of the ScheduledMatch entity.
+// If the ScheduledMatch object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ScheduledMatchMutation) OldDoneAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDoneAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDoneAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDoneAt: %w", err)
+	}
+	return oldValue.DoneAt, nil
+}
+
+// ClearDoneAt clears the value of the "done_at" field.
+func (m *ScheduledMatchMutation) ClearDoneAt() {
+	m.done_at = nil
+	m.clearedFields[scheduledmatch.FieldDoneAt] = struct{}{}
+}
+
+// DoneAtCleared returns if the "done_at" field was cleared in this mutation.
+func (m *ScheduledMatchMutation) DoneAtCleared() bool {
+	_, ok := m.clearedFields[scheduledmatch.FieldDoneAt]
+	return ok
+}
+
+// ResetDoneAt resets all changes to the "done_at" field.
+func (m *ScheduledMatchMutation) ResetDoneAt() {
+	m.done_at = nil
+	delete(m.clearedFields, scheduledmatch.FieldDoneAt)
+}
+
+// SetPostedAt sets the "posted_at" field.
+func (m *ScheduledMatchMutation) SetPostedAt(t time.Time) {
+	m.posted_at = &t
+}
+
+// PostedAt returns the value of the "posted_at" field in the mutation.
+func (m *ScheduledMatchMutation) PostedAt() (r time.Time, exists bool) {
+	v := m.posted_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPostedAt returns the old "posted_at" field's value of the ScheduledMatch entity.
+// If the ScheduledMatch object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ScheduledMatchMutation) OldPostedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPostedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPostedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPostedAt: %w", err)
+	}
+	return oldValue.PostedAt, nil
+}
+
+// ClearPostedAt clears the value of the "posted_at" field.
+func (m *ScheduledMatchMutation) ClearPostedAt() {
+	m.posted_at = nil
+	m.clearedFields[scheduledmatch.FieldPostedAt] = struct{}{}
+}
+
+// PostedAtCleared returns if the "posted_at" field was cleared in this mutation.
+func (m *ScheduledMatchMutation) PostedAtCleared() bool {
+	_, ok := m.clearedFields[scheduledmatch.FieldPostedAt]
+	return ok
+}
+
+// ResetPostedAt resets all changes to the "posted_at" field.
+func (m *ScheduledMatchMutation) ResetPostedAt() {
+	m.posted_at = nil
+	delete(m.clearedFields, scheduledmatch.FieldPostedAt)
+}
+
+// SetEventID sets the "event" edge to the TrackedEvent entity by id.
+func (m *ScheduledMatchMutation) SetEventID(id uuid.UUID) {
+	m.event = &id
+}
+
+// ClearEvent clears the "event" edge to the TrackedEvent entity.
+func (m *ScheduledMatchMutation) ClearEvent() {
+	m.clearedevent = true
+}
+
+// EventCleared reports if the "event" edge to the TrackedEvent entity was cleared.
+func (m *ScheduledMatchMutation) EventCleared() bool {
+	return m.clearedevent
+}
+
+// EventID returns the "event" edge ID in the mutation.
+func (m *ScheduledMatchMutation) EventID() (id uuid.UUID, exists bool) {
+	if m.event != nil {
+		return *m.event, true
+	}
+	return
+}
+
+// EventIDs returns the "event" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// EventID instead. It exists only for internal usage by the builders.
+func (m *ScheduledMatchMutation) EventIDs() (ids []uuid.UUID) {
+	if id := m.event; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetEvent resets all changes to the "event" edge.
+func (m *ScheduledMatchMutation) ResetEvent() {
+	m.event = nil
+	m.clearedevent = false
+}
+
+// Where appends a list predicates to the ScheduledMatchMutation builder.
+func (m *ScheduledMatchMutation) Where(ps ...predicate.ScheduledMatch) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the ScheduledMatchMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *ScheduledMatchMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.ScheduledMatch, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *ScheduledMatchMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *ScheduledMatchMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (ScheduledMatch).
+func (m *ScheduledMatchMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *ScheduledMatchMutation) Fields() []string {
+	fields := make([]string, 0, 3)
+	if m.match_id != nil {
+		fields = append(fields, scheduledmatch.FieldMatchID)
+	}
+	if m.done_at != nil {
+		fields = append(fields, scheduledmatch.FieldDoneAt)
+	}
+	if m.posted_at != nil {
+		fields = append(fields, scheduledmatch.FieldPostedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *ScheduledMatchMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case scheduledmatch.FieldMatchID:
+		return m.MatchID()
+	case scheduledmatch.FieldDoneAt:
+		return m.DoneAt()
+	case scheduledmatch.FieldPostedAt:
+		return m.PostedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *ScheduledMatchMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case scheduledmatch.FieldMatchID:
+		return m.OldMatchID(ctx)
+	case scheduledmatch.FieldDoneAt:
+		return m.OldDoneAt(ctx)
+	case scheduledmatch.FieldPostedAt:
+		return m.OldPostedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown ScheduledMatch field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ScheduledMatchMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case scheduledmatch.FieldMatchID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetMatchID(v)
+		return nil
+	case scheduledmatch.FieldDoneAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDoneAt(v)
+		return nil
+	case scheduledmatch.FieldPostedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPostedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown ScheduledMatch field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *ScheduledMatchMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *ScheduledMatchMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ScheduledMatchMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown ScheduledMatch numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *ScheduledMatchMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(scheduledmatch.FieldDoneAt) {
+		fields = append(fields, scheduledmatch.FieldDoneAt)
+	}
+	if m.FieldCleared(scheduledmatch.FieldPostedAt) {
+		fields = append(fields, scheduledmatch.FieldPostedAt)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *ScheduledMatchMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *ScheduledMatchMutation) ClearField(name string) error {
+	switch name {
+	case scheduledmatch.FieldDoneAt:
+		m.ClearDoneAt()
+		return nil
+	case scheduledmatch.FieldPostedAt:
+		m.ClearPostedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown ScheduledMatch nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *ScheduledMatchMutation) ResetField(name string) error {
+	switch name {
+	case scheduledmatch.FieldMatchID:
+		m.ResetMatchID()
+		return nil
+	case scheduledmatch.FieldDoneAt:
+		m.ResetDoneAt()
+		return nil
+	case scheduledmatch.FieldPostedAt:
+		m.ResetPostedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown ScheduledMatch field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *ScheduledMatchMutation) AddedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.event != nil {
+		edges = append(edges, scheduledmatch.EdgeEvent)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *ScheduledMatchMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case scheduledmatch.EdgeEvent:
+		if id := m.event; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *ScheduledMatchMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 1)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *ScheduledMatchMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *ScheduledMatchMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.clearedevent {
+		edges = append(edges, scheduledmatch.EdgeEvent)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *ScheduledMatchMutation) EdgeCleared(name string) bool {
+	switch name {
+	case scheduledmatch.EdgeEvent:
+		return m.clearedevent
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *ScheduledMatchMutation) ClearEdge(name string) error {
+	switch name {
+	case scheduledmatch.EdgeEvent:
+		m.ClearEvent()
+		return nil
+	}
+	return fmt.Errorf("unknown ScheduledMatch unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *ScheduledMatchMutation) ResetEdge(name string) error {
+	switch name {
+	case scheduledmatch.EdgeEvent:
+		m.ResetEvent()
+		return nil
+	}
+	return fmt.Errorf("unknown ScheduledMatch edge %s", name)
+}
+
+// TrackedEventMutation represents an operation that mutates the TrackedEvent nodes in the graph.
+type TrackedEventMutation struct {
+	config
+	op                      Op
+	typ                     string
+	id                      *uuid.UUID
+	event_id                *int
+	addevent_id             *int
+	name                    *string
+	clearedFields           map[string]struct{}
+	scheduledmatches        map[uuid.UUID]struct{}
+	removedscheduledmatches map[uuid.UUID]struct{}
+	clearedscheduledmatches bool
+	done                    bool
+	oldValue                func(context.Context) (*TrackedEvent, error)
+	predicates              []predicate.TrackedEvent
 }
 
 var _ ent.Mutation = (*TrackedEventMutation)(nil)
@@ -1741,14 +2339,83 @@ func (m *TrackedEventMutation) ResetName() {
 	m.name = nil
 }
 
+// AddScheduledmatchIDs adds the "scheduledmatches" edge to the ScheduledMatch entity by ids.
+func (m *TrackedEventMutation) AddScheduledmatchIDs(ids ...uuid.UUID) {
+	if m.scheduledmatches == nil {
+		m.scheduledmatches = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		m.scheduledmatches[ids[i]] = struct{}{}
+	}
+}
+
+// ClearScheduledmatches clears the "scheduledmatches" edge to the ScheduledMatch entity.
+func (m *TrackedEventMutation) ClearScheduledmatches() {
+	m.clearedscheduledmatches = true
+}
+
+// ScheduledmatchesCleared reports if the "scheduledmatches" edge to the ScheduledMatch entity was cleared.
+func (m *TrackedEventMutation) ScheduledmatchesCleared() bool {
+	return m.clearedscheduledmatches
+}
+
+// RemoveScheduledmatchIDs removes the "scheduledmatches" edge to the ScheduledMatch entity by IDs.
+func (m *TrackedEventMutation) RemoveScheduledmatchIDs(ids ...uuid.UUID) {
+	if m.removedscheduledmatches == nil {
+		m.removedscheduledmatches = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		delete(m.scheduledmatches, ids[i])
+		m.removedscheduledmatches[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedScheduledmatches returns the removed IDs of the "scheduledmatches" edge to the ScheduledMatch entity.
+func (m *TrackedEventMutation) RemovedScheduledmatchesIDs() (ids []uuid.UUID) {
+	for id := range m.removedscheduledmatches {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ScheduledmatchesIDs returns the "scheduledmatches" edge IDs in the mutation.
+func (m *TrackedEventMutation) ScheduledmatchesIDs() (ids []uuid.UUID) {
+	for id := range m.scheduledmatches {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetScheduledmatches resets all changes to the "scheduledmatches" edge.
+func (m *TrackedEventMutation) ResetScheduledmatches() {
+	m.scheduledmatches = nil
+	m.clearedscheduledmatches = false
+	m.removedscheduledmatches = nil
+}
+
 // Where appends a list predicates to the TrackedEventMutation builder.
 func (m *TrackedEventMutation) Where(ps ...predicate.TrackedEvent) {
 	m.predicates = append(m.predicates, ps...)
 }
 
+// WhereP appends storage-level predicates to the TrackedEventMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *TrackedEventMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.TrackedEvent, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
 // Op returns the operation name.
 func (m *TrackedEventMutation) Op() Op {
 	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *TrackedEventMutation) SetOp(op Op) {
+	m.op = op
 }
 
 // Type returns the node type of this mutation (TrackedEvent).
@@ -1891,48 +2558,84 @@ func (m *TrackedEventMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *TrackedEventMutation) AddedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.scheduledmatches != nil {
+		edges = append(edges, trackedevent.EdgeScheduledmatches)
+	}
 	return edges
 }
 
 // AddedIDs returns all IDs (to other nodes) that were added for the given edge
 // name in this mutation.
 func (m *TrackedEventMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case trackedevent.EdgeScheduledmatches:
+		ids := make([]ent.Value, 0, len(m.scheduledmatches))
+		for id := range m.scheduledmatches {
+			ids = append(ids, id)
+		}
+		return ids
+	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *TrackedEventMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.removedscheduledmatches != nil {
+		edges = append(edges, trackedevent.EdgeScheduledmatches)
+	}
 	return edges
 }
 
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
 func (m *TrackedEventMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case trackedevent.EdgeScheduledmatches:
+		ids := make([]ent.Value, 0, len(m.removedscheduledmatches))
+		for id := range m.removedscheduledmatches {
+			ids = append(ids, id)
+		}
+		return ids
+	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *TrackedEventMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.clearedscheduledmatches {
+		edges = append(edges, trackedevent.EdgeScheduledmatches)
+	}
 	return edges
 }
 
 // EdgeCleared returns a boolean which indicates if the edge with the given name
 // was cleared in this mutation.
 func (m *TrackedEventMutation) EdgeCleared(name string) bool {
+	switch name {
+	case trackedevent.EdgeScheduledmatches:
+		return m.clearedscheduledmatches
+	}
 	return false
 }
 
 // ClearEdge clears the value of the edge with the given name. It returns an error
 // if that edge is not defined in the schema.
 func (m *TrackedEventMutation) ClearEdge(name string) error {
+	switch name {
+	}
 	return fmt.Errorf("unknown TrackedEvent unique edge %s", name)
 }
 
 // ResetEdge resets all changes to the edge with the given name in this mutation.
 // It returns an error if the edge is not defined in the schema.
 func (m *TrackedEventMutation) ResetEdge(name string) error {
+	switch name {
+	case trackedevent.EdgeScheduledmatches:
+		m.ResetScheduledmatches()
+		return nil
+	}
 	return fmt.Errorf("unknown TrackedEvent edge %s", name)
 }

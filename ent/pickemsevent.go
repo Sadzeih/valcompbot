@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/Sadzeih/valcompbot/ent/pickemsevent"
 	"github.com/google/uuid"
@@ -20,12 +21,13 @@ type PickemsEvent struct {
 	// EventID holds the value of the "event_id" field.
 	EventID *int `json:"event_id,omitempty"`
 	// Timestamp holds the value of the "timestamp" field.
-	Timestamp time.Time `json:"timestamp,omitempty"`
+	Timestamp    time.Time `json:"timestamp,omitempty"`
+	selectValues sql.SelectValues
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
-func (*PickemsEvent) scanValues(columns []string) ([]interface{}, error) {
-	values := make([]interface{}, len(columns))
+func (*PickemsEvent) scanValues(columns []string) ([]any, error) {
+	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
 		case pickemsevent.FieldEventID:
@@ -35,7 +37,7 @@ func (*PickemsEvent) scanValues(columns []string) ([]interface{}, error) {
 		case pickemsevent.FieldID:
 			values[i] = new(uuid.UUID)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type PickemsEvent", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -43,7 +45,7 @@ func (*PickemsEvent) scanValues(columns []string) ([]interface{}, error) {
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
 // to the PickemsEvent fields.
-func (pe *PickemsEvent) assignValues(columns []string, values []interface{}) error {
+func (pe *PickemsEvent) assignValues(columns []string, values []any) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
@@ -68,16 +70,24 @@ func (pe *PickemsEvent) assignValues(columns []string, values []interface{}) err
 			} else if value.Valid {
 				pe.Timestamp = value.Time
 			}
+		default:
+			pe.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the PickemsEvent.
+// This includes values selected through modifiers, order, etc.
+func (pe *PickemsEvent) Value(name string) (ent.Value, error) {
+	return pe.selectValues.Get(name)
 }
 
 // Update returns a builder for updating this PickemsEvent.
 // Note that you need to call PickemsEvent.Unwrap() before calling this method if this PickemsEvent
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (pe *PickemsEvent) Update() *PickemsEventUpdateOne {
-	return (&PickemsEventClient{config: pe.config}).UpdateOne(pe)
+	return NewPickemsEventClient(pe.config).UpdateOne(pe)
 }
 
 // Unwrap unwraps the PickemsEvent entity that was returned from a transaction after it was closed,
@@ -109,9 +119,3 @@ func (pe *PickemsEvent) String() string {
 
 // PickemsEvents is a parsable slice of PickemsEvent.
 type PickemsEvents []*PickemsEvent
-
-func (pe PickemsEvents) config(cfg config) {
-	for _i := range pe {
-		pe[_i].config = cfg
-	}
-}

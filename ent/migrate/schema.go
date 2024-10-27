@@ -50,6 +50,35 @@ var (
 		Columns:    PinnedCommentsColumns,
 		PrimaryKey: []*schema.Column{PinnedCommentsColumns[0]},
 	}
+	// ScheduledMatchesColumns holds the columns for the "scheduled_matches" table.
+	ScheduledMatchesColumns = []*schema.Column{
+		{Name: "oid", Type: field.TypeUUID},
+		{Name: "match_id", Type: field.TypeString, Unique: true},
+		{Name: "done_at", Type: field.TypeTime, Nullable: true},
+		{Name: "posted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "tracked_event_scheduledmatches", Type: field.TypeUUID},
+	}
+	// ScheduledMatchesTable holds the schema information for the "scheduled_matches" table.
+	ScheduledMatchesTable = &schema.Table{
+		Name:       "scheduled_matches",
+		Columns:    ScheduledMatchesColumns,
+		PrimaryKey: []*schema.Column{ScheduledMatchesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "scheduled_matches_tracked_events_scheduledmatches",
+				Columns:    []*schema.Column{ScheduledMatchesColumns[4]},
+				RefColumns: []*schema.Column{TrackedEventsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "scheduledmatch_match_id",
+				Unique:  false,
+				Columns: []*schema.Column{ScheduledMatchesColumns[1]},
+			},
+		},
+	}
 	// TrackedEventsColumns holds the columns for the "tracked_events" table.
 	TrackedEventsColumns = []*schema.Column{
 		{Name: "oid", Type: field.TypeUUID},
@@ -67,9 +96,11 @@ var (
 		HighlightedCommentsTable,
 		PickemsEventsTable,
 		PinnedCommentsTable,
+		ScheduledMatchesTable,
 		TrackedEventsTable,
 	}
 )
 
 func init() {
+	ScheduledMatchesTable.ForeignKeys[0].RefTable = TrackedEventsTable
 }

@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -18,11 +19,9 @@ import (
 // PickemsEventQuery is the builder for querying PickemsEvent entities.
 type PickemsEventQuery struct {
 	config
-	limit      *int
-	offset     *int
-	unique     *bool
-	order      []OrderFunc
-	fields     []string
+	ctx        *QueryContext
+	order      []pickemsevent.OrderOption
+	inters     []Interceptor
 	predicates []predicate.PickemsEvent
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -35,27 +34,27 @@ func (peq *PickemsEventQuery) Where(ps ...predicate.PickemsEvent) *PickemsEventQ
 	return peq
 }
 
-// Limit adds a limit step to the query.
+// Limit the number of records to be returned by this query.
 func (peq *PickemsEventQuery) Limit(limit int) *PickemsEventQuery {
-	peq.limit = &limit
+	peq.ctx.Limit = &limit
 	return peq
 }
 
-// Offset adds an offset step to the query.
+// Offset to start from.
 func (peq *PickemsEventQuery) Offset(offset int) *PickemsEventQuery {
-	peq.offset = &offset
+	peq.ctx.Offset = &offset
 	return peq
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
 func (peq *PickemsEventQuery) Unique(unique bool) *PickemsEventQuery {
-	peq.unique = &unique
+	peq.ctx.Unique = &unique
 	return peq
 }
 
-// Order adds an order step to the query.
-func (peq *PickemsEventQuery) Order(o ...OrderFunc) *PickemsEventQuery {
+// Order specifies how the records should be ordered.
+func (peq *PickemsEventQuery) Order(o ...pickemsevent.OrderOption) *PickemsEventQuery {
 	peq.order = append(peq.order, o...)
 	return peq
 }
@@ -63,7 +62,7 @@ func (peq *PickemsEventQuery) Order(o ...OrderFunc) *PickemsEventQuery {
 // First returns the first PickemsEvent entity from the query.
 // Returns a *NotFoundError when no PickemsEvent was found.
 func (peq *PickemsEventQuery) First(ctx context.Context) (*PickemsEvent, error) {
-	nodes, err := peq.Limit(1).All(ctx)
+	nodes, err := peq.Limit(1).All(setContextOp(ctx, peq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -86,7 +85,7 @@ func (peq *PickemsEventQuery) FirstX(ctx context.Context) *PickemsEvent {
 // Returns a *NotFoundError when no PickemsEvent ID was found.
 func (peq *PickemsEventQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
 	var ids []uuid.UUID
-	if ids, err = peq.Limit(1).IDs(ctx); err != nil {
+	if ids, err = peq.Limit(1).IDs(setContextOp(ctx, peq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -109,7 +108,7 @@ func (peq *PickemsEventQuery) FirstIDX(ctx context.Context) uuid.UUID {
 // Returns a *NotSingularError when more than one PickemsEvent entity is found.
 // Returns a *NotFoundError when no PickemsEvent entities are found.
 func (peq *PickemsEventQuery) Only(ctx context.Context) (*PickemsEvent, error) {
-	nodes, err := peq.Limit(2).All(ctx)
+	nodes, err := peq.Limit(2).All(setContextOp(ctx, peq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -137,7 +136,7 @@ func (peq *PickemsEventQuery) OnlyX(ctx context.Context) *PickemsEvent {
 // Returns a *NotFoundError when no entities are found.
 func (peq *PickemsEventQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
 	var ids []uuid.UUID
-	if ids, err = peq.Limit(2).IDs(ctx); err != nil {
+	if ids, err = peq.Limit(2).IDs(setContextOp(ctx, peq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -162,10 +161,12 @@ func (peq *PickemsEventQuery) OnlyIDX(ctx context.Context) uuid.UUID {
 
 // All executes the query and returns a list of PickemsEvents.
 func (peq *PickemsEventQuery) All(ctx context.Context) ([]*PickemsEvent, error) {
+	ctx = setContextOp(ctx, peq.ctx, ent.OpQueryAll)
 	if err := peq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
-	return peq.sqlAll(ctx)
+	qr := querierAll[[]*PickemsEvent, *PickemsEventQuery]()
+	return withInterceptors[[]*PickemsEvent](ctx, peq, qr, peq.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
@@ -178,9 +179,12 @@ func (peq *PickemsEventQuery) AllX(ctx context.Context) []*PickemsEvent {
 }
 
 // IDs executes the query and returns a list of PickemsEvent IDs.
-func (peq *PickemsEventQuery) IDs(ctx context.Context) ([]uuid.UUID, error) {
-	var ids []uuid.UUID
-	if err := peq.Select(pickemsevent.FieldID).Scan(ctx, &ids); err != nil {
+func (peq *PickemsEventQuery) IDs(ctx context.Context) (ids []uuid.UUID, err error) {
+	if peq.ctx.Unique == nil && peq.path != nil {
+		peq.Unique(true)
+	}
+	ctx = setContextOp(ctx, peq.ctx, ent.OpQueryIDs)
+	if err = peq.Select(pickemsevent.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
@@ -197,10 +201,11 @@ func (peq *PickemsEventQuery) IDsX(ctx context.Context) []uuid.UUID {
 
 // Count returns the count of the given query.
 func (peq *PickemsEventQuery) Count(ctx context.Context) (int, error) {
+	ctx = setContextOp(ctx, peq.ctx, ent.OpQueryCount)
 	if err := peq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return peq.sqlCount(ctx)
+	return withInterceptors[int](ctx, peq, querierCount[*PickemsEventQuery](), peq.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
@@ -214,10 +219,15 @@ func (peq *PickemsEventQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (peq *PickemsEventQuery) Exist(ctx context.Context) (bool, error) {
-	if err := peq.prepareQuery(ctx); err != nil {
-		return false, err
+	ctx = setContextOp(ctx, peq.ctx, ent.OpQueryExist)
+	switch _, err := peq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
+		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return peq.sqlExist(ctx)
 }
 
 // ExistX is like Exist, but panics if an error occurs.
@@ -237,14 +247,13 @@ func (peq *PickemsEventQuery) Clone() *PickemsEventQuery {
 	}
 	return &PickemsEventQuery{
 		config:     peq.config,
-		limit:      peq.limit,
-		offset:     peq.offset,
-		order:      append([]OrderFunc{}, peq.order...),
+		ctx:        peq.ctx.Clone(),
+		order:      append([]pickemsevent.OrderOption{}, peq.order...),
+		inters:     append([]Interceptor{}, peq.inters...),
 		predicates: append([]predicate.PickemsEvent{}, peq.predicates...),
 		// clone intermediate query.
-		sql:    peq.sql.Clone(),
-		path:   peq.path,
-		unique: peq.unique,
+		sql:  peq.sql.Clone(),
+		path: peq.path,
 	}
 }
 
@@ -263,16 +272,11 @@ func (peq *PickemsEventQuery) Clone() *PickemsEventQuery {
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (peq *PickemsEventQuery) GroupBy(field string, fields ...string) *PickemsEventGroupBy {
-	grbuild := &PickemsEventGroupBy{config: peq.config}
-	grbuild.fields = append([]string{field}, fields...)
-	grbuild.path = func(ctx context.Context) (prev *sql.Selector, err error) {
-		if err := peq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		return peq.sqlQuery(ctx), nil
-	}
+	peq.ctx.Fields = append([]string{field}, fields...)
+	grbuild := &PickemsEventGroupBy{build: peq}
+	grbuild.flds = &peq.ctx.Fields
 	grbuild.label = pickemsevent.Label
-	grbuild.flds, grbuild.scan = &grbuild.fields, grbuild.Scan
+	grbuild.scan = grbuild.Scan
 	return grbuild
 }
 
@@ -289,15 +293,30 @@ func (peq *PickemsEventQuery) GroupBy(field string, fields ...string) *PickemsEv
 //		Select(pickemsevent.FieldEventID).
 //		Scan(ctx, &v)
 func (peq *PickemsEventQuery) Select(fields ...string) *PickemsEventSelect {
-	peq.fields = append(peq.fields, fields...)
-	selbuild := &PickemsEventSelect{PickemsEventQuery: peq}
-	selbuild.label = pickemsevent.Label
-	selbuild.flds, selbuild.scan = &peq.fields, selbuild.Scan
-	return selbuild
+	peq.ctx.Fields = append(peq.ctx.Fields, fields...)
+	sbuild := &PickemsEventSelect{PickemsEventQuery: peq}
+	sbuild.label = pickemsevent.Label
+	sbuild.flds, sbuild.scan = &peq.ctx.Fields, sbuild.Scan
+	return sbuild
+}
+
+// Aggregate returns a PickemsEventSelect configured with the given aggregations.
+func (peq *PickemsEventQuery) Aggregate(fns ...AggregateFunc) *PickemsEventSelect {
+	return peq.Select().Aggregate(fns...)
 }
 
 func (peq *PickemsEventQuery) prepareQuery(ctx context.Context) error {
-	for _, f := range peq.fields {
+	for _, inter := range peq.inters {
+		if inter == nil {
+			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
+		}
+		if trv, ok := inter.(Traverser); ok {
+			if err := trv.Traverse(ctx, peq); err != nil {
+				return err
+			}
+		}
+	}
+	for _, f := range peq.ctx.Fields {
 		if !pickemsevent.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
@@ -317,10 +336,10 @@ func (peq *PickemsEventQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([
 		nodes = []*PickemsEvent{}
 		_spec = peq.querySpec()
 	)
-	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
+	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*PickemsEvent).scanValues(nil, columns)
 	}
-	_spec.Assign = func(columns []string, values []interface{}) error {
+	_spec.Assign = func(columns []string, values []any) error {
 		node := &PickemsEvent{config: peq.config}
 		nodes = append(nodes, node)
 		return node.assignValues(columns, values)
@@ -339,38 +358,22 @@ func (peq *PickemsEventQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([
 
 func (peq *PickemsEventQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := peq.querySpec()
-	_spec.Node.Columns = peq.fields
-	if len(peq.fields) > 0 {
-		_spec.Unique = peq.unique != nil && *peq.unique
+	_spec.Node.Columns = peq.ctx.Fields
+	if len(peq.ctx.Fields) > 0 {
+		_spec.Unique = peq.ctx.Unique != nil && *peq.ctx.Unique
 	}
 	return sqlgraph.CountNodes(ctx, peq.driver, _spec)
 }
 
-func (peq *PickemsEventQuery) sqlExist(ctx context.Context) (bool, error) {
-	n, err := peq.sqlCount(ctx)
-	if err != nil {
-		return false, fmt.Errorf("ent: check existence: %w", err)
-	}
-	return n > 0, nil
-}
-
 func (peq *PickemsEventQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := &sqlgraph.QuerySpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   pickemsevent.Table,
-			Columns: pickemsevent.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
-				Column: pickemsevent.FieldID,
-			},
-		},
-		From:   peq.sql,
-		Unique: true,
-	}
-	if unique := peq.unique; unique != nil {
+	_spec := sqlgraph.NewQuerySpec(pickemsevent.Table, pickemsevent.Columns, sqlgraph.NewFieldSpec(pickemsevent.FieldID, field.TypeUUID))
+	_spec.From = peq.sql
+	if unique := peq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
+	} else if peq.path != nil {
+		_spec.Unique = true
 	}
-	if fields := peq.fields; len(fields) > 0 {
+	if fields := peq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, pickemsevent.FieldID)
 		for i := range fields {
@@ -386,10 +389,10 @@ func (peq *PickemsEventQuery) querySpec() *sqlgraph.QuerySpec {
 			}
 		}
 	}
-	if limit := peq.limit; limit != nil {
+	if limit := peq.ctx.Limit; limit != nil {
 		_spec.Limit = *limit
 	}
-	if offset := peq.offset; offset != nil {
+	if offset := peq.ctx.Offset; offset != nil {
 		_spec.Offset = *offset
 	}
 	if ps := peq.order; len(ps) > 0 {
@@ -405,7 +408,7 @@ func (peq *PickemsEventQuery) querySpec() *sqlgraph.QuerySpec {
 func (peq *PickemsEventQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(peq.driver.Dialect())
 	t1 := builder.Table(pickemsevent.Table)
-	columns := peq.fields
+	columns := peq.ctx.Fields
 	if len(columns) == 0 {
 		columns = pickemsevent.Columns
 	}
@@ -414,7 +417,7 @@ func (peq *PickemsEventQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector = peq.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
-	if peq.unique != nil && *peq.unique {
+	if peq.ctx.Unique != nil && *peq.ctx.Unique {
 		selector.Distinct()
 	}
 	for _, p := range peq.predicates {
@@ -423,12 +426,12 @@ func (peq *PickemsEventQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	for _, p := range peq.order {
 		p(selector)
 	}
-	if offset := peq.offset; offset != nil {
+	if offset := peq.ctx.Offset; offset != nil {
 		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}
-	if limit := peq.limit; limit != nil {
+	if limit := peq.ctx.Limit; limit != nil {
 		selector.Limit(*limit)
 	}
 	return selector
@@ -436,13 +439,8 @@ func (peq *PickemsEventQuery) sqlQuery(ctx context.Context) *sql.Selector {
 
 // PickemsEventGroupBy is the group-by builder for PickemsEvent entities.
 type PickemsEventGroupBy struct {
-	config
 	selector
-	fields []string
-	fns    []AggregateFunc
-	// intermediate query (i.e. traversal path).
-	sql  *sql.Selector
-	path func(context.Context) (*sql.Selector, error)
+	build *PickemsEventQuery
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
@@ -451,74 +449,77 @@ func (pegb *PickemsEventGroupBy) Aggregate(fns ...AggregateFunc) *PickemsEventGr
 	return pegb
 }
 
-// Scan applies the group-by query and scans the result into the given value.
-func (pegb *PickemsEventGroupBy) Scan(ctx context.Context, v interface{}) error {
-	query, err := pegb.path(ctx)
-	if err != nil {
+// Scan applies the selector query and scans the result into the given value.
+func (pegb *PickemsEventGroupBy) Scan(ctx context.Context, v any) error {
+	ctx = setContextOp(ctx, pegb.build.ctx, ent.OpQueryGroupBy)
+	if err := pegb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	pegb.sql = query
-	return pegb.sqlScan(ctx, v)
+	return scanWithInterceptors[*PickemsEventQuery, *PickemsEventGroupBy](ctx, pegb.build, pegb, pegb.build.inters, v)
 }
 
-func (pegb *PickemsEventGroupBy) sqlScan(ctx context.Context, v interface{}) error {
-	for _, f := range pegb.fields {
-		if !pickemsevent.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
-		}
+func (pegb *PickemsEventGroupBy) sqlScan(ctx context.Context, root *PickemsEventQuery, v any) error {
+	selector := root.sqlQuery(ctx).Select()
+	aggregation := make([]string, 0, len(pegb.fns))
+	for _, fn := range pegb.fns {
+		aggregation = append(aggregation, fn(selector))
 	}
-	selector := pegb.sqlQuery()
+	if len(selector.SelectedColumns()) == 0 {
+		columns := make([]string, 0, len(*pegb.flds)+len(pegb.fns))
+		for _, f := range *pegb.flds {
+			columns = append(columns, selector.C(f))
+		}
+		columns = append(columns, aggregation...)
+		selector.Select(columns...)
+	}
+	selector.GroupBy(selector.Columns(*pegb.flds...)...)
 	if err := selector.Err(); err != nil {
 		return err
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := pegb.driver.Query(ctx, query, args, rows); err != nil {
+	if err := pegb.build.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
 }
 
-func (pegb *PickemsEventGroupBy) sqlQuery() *sql.Selector {
-	selector := pegb.sql.Select()
-	aggregation := make([]string, 0, len(pegb.fns))
-	for _, fn := range pegb.fns {
-		aggregation = append(aggregation, fn(selector))
-	}
-	// If no columns were selected in a custom aggregation function, the default
-	// selection is the fields used for "group-by", and the aggregation functions.
-	if len(selector.SelectedColumns()) == 0 {
-		columns := make([]string, 0, len(pegb.fields)+len(pegb.fns))
-		for _, f := range pegb.fields {
-			columns = append(columns, selector.C(f))
-		}
-		columns = append(columns, aggregation...)
-		selector.Select(columns...)
-	}
-	return selector.GroupBy(selector.Columns(pegb.fields...)...)
-}
-
 // PickemsEventSelect is the builder for selecting fields of PickemsEvent entities.
 type PickemsEventSelect struct {
 	*PickemsEventQuery
 	selector
-	// intermediate query (i.e. traversal path).
-	sql *sql.Selector
+}
+
+// Aggregate adds the given aggregation functions to the selector query.
+func (pes *PickemsEventSelect) Aggregate(fns ...AggregateFunc) *PickemsEventSelect {
+	pes.fns = append(pes.fns, fns...)
+	return pes
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (pes *PickemsEventSelect) Scan(ctx context.Context, v interface{}) error {
+func (pes *PickemsEventSelect) Scan(ctx context.Context, v any) error {
+	ctx = setContextOp(ctx, pes.ctx, ent.OpQuerySelect)
 	if err := pes.prepareQuery(ctx); err != nil {
 		return err
 	}
-	pes.sql = pes.PickemsEventQuery.sqlQuery(ctx)
-	return pes.sqlScan(ctx, v)
+	return scanWithInterceptors[*PickemsEventQuery, *PickemsEventSelect](ctx, pes.PickemsEventQuery, pes, pes.inters, v)
 }
 
-func (pes *PickemsEventSelect) sqlScan(ctx context.Context, v interface{}) error {
+func (pes *PickemsEventSelect) sqlScan(ctx context.Context, root *PickemsEventQuery, v any) error {
+	selector := root.sqlQuery(ctx)
+	aggregation := make([]string, 0, len(pes.fns))
+	for _, fn := range pes.fns {
+		aggregation = append(aggregation, fn(selector))
+	}
+	switch n := len(*pes.selector.flds); {
+	case n == 0 && len(aggregation) > 0:
+		selector.Select(aggregation...)
+	case n != 0 && len(aggregation) > 0:
+		selector.AppendSelect(aggregation...)
+	}
 	rows := &sql.Rows{}
-	query, args := pes.sql.Query()
+	query, args := selector.Query()
 	if err := pes.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}

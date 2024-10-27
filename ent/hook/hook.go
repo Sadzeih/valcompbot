@@ -15,11 +15,10 @@ type HighlightedCommentFunc func(context.Context, *ent.HighlightedCommentMutatio
 
 // Mutate calls f(ctx, m).
 func (f HighlightedCommentFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	mv, ok := m.(*ent.HighlightedCommentMutation)
-	if !ok {
-		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.HighlightedCommentMutation", m)
+	if mv, ok := m.(*ent.HighlightedCommentMutation); ok {
+		return f(ctx, mv)
 	}
-	return f(ctx, mv)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.HighlightedCommentMutation", m)
 }
 
 // The PickemsEventFunc type is an adapter to allow the use of ordinary
@@ -28,11 +27,10 @@ type PickemsEventFunc func(context.Context, *ent.PickemsEventMutation) (ent.Valu
 
 // Mutate calls f(ctx, m).
 func (f PickemsEventFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	mv, ok := m.(*ent.PickemsEventMutation)
-	if !ok {
-		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PickemsEventMutation", m)
+	if mv, ok := m.(*ent.PickemsEventMutation); ok {
+		return f(ctx, mv)
 	}
-	return f(ctx, mv)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PickemsEventMutation", m)
 }
 
 // The PinnedCommentFunc type is an adapter to allow the use of ordinary
@@ -41,11 +39,22 @@ type PinnedCommentFunc func(context.Context, *ent.PinnedCommentMutation) (ent.Va
 
 // Mutate calls f(ctx, m).
 func (f PinnedCommentFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	mv, ok := m.(*ent.PinnedCommentMutation)
-	if !ok {
-		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PinnedCommentMutation", m)
+	if mv, ok := m.(*ent.PinnedCommentMutation); ok {
+		return f(ctx, mv)
 	}
-	return f(ctx, mv)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PinnedCommentMutation", m)
+}
+
+// The ScheduledMatchFunc type is an adapter to allow the use of ordinary
+// function as ScheduledMatch mutator.
+type ScheduledMatchFunc func(context.Context, *ent.ScheduledMatchMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ScheduledMatchFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.ScheduledMatchMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ScheduledMatchMutation", m)
 }
 
 // The TrackedEventFunc type is an adapter to allow the use of ordinary
@@ -54,11 +63,10 @@ type TrackedEventFunc func(context.Context, *ent.TrackedEventMutation) (ent.Valu
 
 // Mutate calls f(ctx, m).
 func (f TrackedEventFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	mv, ok := m.(*ent.TrackedEventMutation)
-	if !ok {
-		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.TrackedEventMutation", m)
+	if mv, ok := m.(*ent.TrackedEventMutation); ok {
+		return f(ctx, mv)
 	}
-	return f(ctx, mv)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.TrackedEventMutation", m)
 }
 
 // Condition is a hook condition function.
