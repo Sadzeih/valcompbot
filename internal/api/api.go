@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 
 	"github.com/Sadzeih/valcompbot/pickems"
@@ -59,12 +60,13 @@ func Start(redditClient *reddit.Client, entClient *ent.Client) error {
 			http.MethodPut,
 			http.MethodPatch,
 			http.MethodDelete,
+			http.MethodOptions,
 		},
 		AllowedHeaders:   []string{"*"},
-		AllowCredentials: false,
+		AllowCredentials: true,
 	}).Handler(r)
 
-	if err := http.ListenAndServe(":8080", c); err != nil {
+	if err := http.ListenAndServe(fmt.Sprintf(":%s", config.Get().Port), c); err != nil {
 		return err
 	}
 
