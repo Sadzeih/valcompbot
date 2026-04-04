@@ -11,7 +11,7 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/gorilla/mux v1.8.0
 	github.com/joho/godotenv v1.4.0
-	github.com/lib/pq v1.10.5
+	github.com/lib/pq v1.12.3
 	github.com/purini-to/zapmw v1.1.0
 	github.com/rs/cors v1.8.2
 	github.com/vartanbeno/go-reddit/v2 v2.0.1
