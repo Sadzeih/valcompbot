@@ -1,0 +1,4302 @@
+{
+  "info": {
+    "match_id": "108015",
+    "event_id": "2860",
+    "completed": "1",
+    "scheduled_ts": "1775854800",
+    "patch": "12.06",
+    "series": "Group Stage",
+    "subseries": "Week 1",
+    "category": [],
+    "link": "https://www.vlr.gg/645474/sentinels-vs-kr-esports-vct-2026-americas-stage-1-w1"
+  },
+  "streams": [
+    {
+      "provider": "twitch",
+      "name": "Valorant Brazil",
+      "country": "br",
+      "viewer_count": "613",
+      "live": "0",
+      "link": "https://www.twitch.tv/valorant_br"
+    },
+    {
+      "provider": "twitch",
+      "name": "Valorant LATAM",
+      "country": "un",
+      "viewer_count": "549",
+      "live": "0",
+      "link": "https://www.twitch.tv/valorant_la"
+    },
+    {
+      "provider": "youtube",
+      "name": "VAL Esports BR (YT)",
+      "country": "br",
+      "viewer_count": null,
+      "live": null,
+      "link": "https://www.youtube.com/@valesportsbr/live"
+    },
+    {
+      "provider": "youtube",
+      "name": "VAL Esports LA (YT)",
+      "country": "un",
+      "viewer_count": null,
+      "live": null,
+      "link": "https://www.youtube.com/@VALORANTEsportsLA/live"
+    },
+    {
+      "provider": "twitch",
+      "name": "VCT Americas",
+      "country": "us",
+      "viewer_count": "3417",
+      "live": "0",
+      "link": "https://www.twitch.tv/valorant_americas"
+    },
+    {
+      "provider": "youtube",
+      "name": "VCT Americas (YT)",
+      "country": "us",
+      "viewer_count": null,
+      "live": null,
+      "link": "https://www.youtube.com/@valorant_americas/live"
+    }
+  ],
+  "teams": [
+    {
+      "team_id": "2",
+      "name": "Sentinels",
+      "tag": "SEN",
+      "country": "us",
+      "maps_won": "0",
+      "is_winner": false
+    },
+    {
+      "team_id": "2355",
+      "name": "KRÜ Esports",
+      "tag": "KRÜ",
+      "country": "ar",
+      "maps_won": "2",
+      "is_winner": true
+    }
+  ],
+  "maps": [
+    {
+      "name": "lotus",
+      "link": "https://www.vlr.gg/645474/sentinels-vs-kr-esports-vct-2026-americas-stage-1-w1/?game=258575",
+      "first_attacker_id": "2",
+      "teams": [
+        {
+          "team_id": "2",
+          "name": "Sentinels",
+          "rounds_won": "8",
+          "rounds_won_atk": 4,
+          "rounds_won_def": 4,
+          "is_winner": false,
+          "players": [
+            {
+              "player_id": "8419",
+              "alias": "Reduxx",
+              "country": "us",
+              "twitter_id": "NotReduxx",
+              "stats": {
+                "agent": "omen",
+                "rounds": "21",
+                "rating": "1.2786",
+                "kills": "16",
+                "deaths": "15",
+                "assists": "9",
+                "kda_string": "16/15/9",
+                "damage": "2970",
+                "adr": "141.4",
+                "fbpr": "0.10",
+                "fdpr": "0.00",
+                "hsp": "0.25",
+                "headshots": "13",
+                "bodyshots": "33",
+                "legshots": "7",
+                "kast": "0.86",
+                "kast_raw": "18",
+                "combat_score": "219",
+                "econ_rating": "64",
+                "first_bloods": "2",
+                "first_deaths": "0",
+                "plants": "0",
+                "defuses": "0",
+                "clutch_played": 5,
+                "clutch_won": 0,
+                "clutch_pct": 0
+              }
+            },
+            {
+              "player_id": "1265",
+              "alias": "johnqt",
+              "country": "ma",
+              "twitter_id": "1johnqt",
+              "stats": {
+                "agent": "viper",
+                "rounds": "21",
+                "rating": "0.9012",
+                "kills": "15",
+                "deaths": "16",
+                "assists": "3",
+                "kda_string": "15/16/3",
+                "damage": "2376",
+                "adr": "113.1",
+                "fbpr": "0.00",
+                "fdpr": "0.10",
+                "hsp": "0.21",
+                "headshots": "8",
+                "bodyshots": "27",
+                "legshots": "3",
+                "kast": "0.57",
+                "kast_raw": "12",
+                "combat_score": "185",
+                "econ_rating": "43",
+                "first_bloods": "0",
+                "first_deaths": "2",
+                "plants": "2",
+                "defuses": "0",
+                "clutch_played": 5,
+                "clutch_won": 0,
+                "clutch_pct": 0
+              }
+            },
+            {
+              "player_id": "261",
+              "alias": "Victor",
+              "country": "us",
+              "twitter_id": "victorwong",
+              "stats": {
+                "agent": "raze",
+                "rounds": "21",
+                "rating": "0.6455",
+                "kills": "12",
+                "deaths": "18",
+                "assists": "3",
+                "kda_string": "12/18/3",
+                "damage": "2390",
+                "adr": "113.8",
+                "fbpr": "0.19",
+                "fdpr": "0.24",
+                "hsp": "0.12",
+                "headshots": "6",
+                "bodyshots": "41",
+                "legshots": "2",
+                "kast": "0.52",
+                "kast_raw": "11",
+                "combat_score": "179",
+                "econ_rating": "47",
+                "first_bloods": "4",
+                "first_deaths": "5",
+                "plants": "0",
+                "defuses": "1",
+                "clutch_played": 2,
+                "clutch_won": 0,
+                "clutch_pct": 0
+              }
+            },
+            {
+              "player_id": "5395",
+              "alias": "cortezia",
+              "country": "br",
+              "twitter_id": "corteziafps",
+              "stats": {
+                "agent": "veto",
+                "rounds": "21",
+                "rating": "0.9392",
+                "kills": "13",
+                "deaths": "16",
+                "assists": "2",
+                "kda_string": "13/16/2",
+                "damage": "2663",
+                "adr": "126.8",
+                "fbpr": "0.10",
+                "fdpr": "0.10",
+                "hsp": "0.42",
+                "headshots": "14",
+                "bodyshots": "19",
+                "legshots": "0",
+                "kast": "0.57",
+                "kast_raw": "12",
+                "combat_score": "174",
+                "econ_rating": "54",
+                "first_bloods": "2",
+                "first_deaths": "2",
+                "plants": "2",
+                "defuses": "0",
+                "clutch_played": 1,
+                "clutch_won": 0,
+                "clutch_pct": 0
+              }
+            },
+            {
+              "player_id": "4581",
+              "alias": "JonahP",
+              "country": "ca",
+              "twitter_id": "JonahP_",
+              "stats": {
+                "agent": "fade",
+                "rounds": "21",
+                "rating": "0.4692",
+                "kills": "5",
+                "deaths": "16",
+                "assists": "9",
+                "kda_string": "5/16/9",
+                "damage": "1402",
+                "adr": "66.8",
+                "fbpr": "0.05",
+                "fdpr": "0.14",
+                "hsp": "0.22",
+                "headshots": "8",
+                "bodyshots": "25",
+                "legshots": "3",
+                "kast": "0.43",
+                "kast_raw": "9",
+                "combat_score": "95",
+                "econ_rating": "33",
+                "first_bloods": "1",
+                "first_deaths": "3",
+                "plants": "2",
+                "defuses": "0",
+                "clutch_played": 0,
+                "clutch_won": 0,
+                "clutch_pct": null
+              }
+            }
+          ]
+        },
+        {
+          "team_id": "2355",
+          "name": "KRÜ Esports",
+          "rounds_won": "13",
+          "rounds_won_atk": 5,
+          "rounds_won_def": 8,
+          "is_winner": true,
+          "players": [
+            {
+              "player_id": "41135",
+              "alias": "Dantedeu5",
+              "country": "ar",
+              "twitter_id": "Dantedeu5",
+              "stats": {
+                "agent": "neon",
+                "rounds": "21",
+                "rating": "0.9044",
+                "kills": "16",
+                "deaths": "16",
+                "assists": "5",
+                "kda_string": "16/16/5",
+                "damage": "3123",
+                "adr": "148.7",
+                "fbpr": "0.14",
+                "fdpr": "0.29",
+                "hsp": "0.24",
+                "headshots": "15",
+                "bodyshots": "44",
+                "legshots": "3",
+                "kast": "0.67",
+                "kast_raw": "14",
+                "combat_score": "228",
+                "econ_rating": "54",
+                "first_bloods": "3",
+                "first_deaths": "6",
+                "plants": "0",
+                "defuses": "0",
+                "clutch_played": 0,
+                "clutch_won": 0,
+                "clutch_pct": null
+              }
+            },
+            {
+              "player_id": "8447",
+              "alias": "Less",
+              "country": "br",
+              "twitter_id": "lessvlr",
+              "stats": {
+                "agent": "viper",
+                "rounds": "21",
+                "rating": "1.3265",
+                "kills": "17",
+                "deaths": "10",
+                "assists": "7",
+                "kda_string": "17/10/7",
+                "damage": "3012",
+                "adr": "143.4",
+                "fbpr": "0.10",
+                "fdpr": "0.05",
+                "hsp": "0.33",
+                "headshots": "14",
+                "bodyshots": "25",
+                "legshots": "3",
+                "kast": "0.71",
+                "kast_raw": "15",
+                "combat_score": "225",
+                "econ_rating": "81",
+                "first_bloods": "2",
+                "first_deaths": "1",
+                "plants": "0",
+                "defuses": "0",
+                "clutch_played": 4,
+                "clutch_won": 0,
+                "clutch_pct": 0
+              }
+            },
+            {
+              "player_id": "939",
+              "alias": "mwzera",
+              "country": "br",
+              "twitter_id": "mwzera",
+              "stats": {
+                "agent": "fade",
+                "rounds": "21",
+                "rating": "1.2819",
+                "kills": "17",
+                "deaths": "12",
+                "assists": "10",
+                "kda_string": "17/12/10",
+                "damage": "2835",
+                "adr": "135.0",
+                "fbpr": "0.05",
+                "fdpr": "0.00",
+                "hsp": "0.23",
+                "headshots": "11",
+                "bodyshots": "34",
+                "legshots": "3",
+                "kast": "0.86",
+                "kast_raw": "18",
+                "combat_score": "221",
+                "econ_rating": "57",
+                "first_bloods": "1",
+                "first_deaths": "0",
+                "plants": "4",
+                "defuses": "0",
+                "clutch_played": 1,
+                "clutch_won": 0,
+                "clutch_pct": 0
+              }
+            },
+            {
+              "player_id": "11921",
+              "alias": "silentzz",
+              "country": "br",
+              "twitter_id": "silentzfps",
+              "stats": {
+                "agent": "vyse",
+                "rounds": "21",
+                "rating": "1.1148",
+                "kills": "16",
+                "deaths": "12",
+                "assists": "3",
+                "kda_string": "16/12/3",
+                "damage": "2849",
+                "adr": "135.7",
+                "fbpr": "0.10",
+                "fdpr": "0.00",
+                "hsp": "0.40",
+                "headshots": "14",
+                "bodyshots": "20",
+                "legshots": "1",
+                "kast": "0.81",
+                "kast_raw": "17",
+                "combat_score": "205",
+                "econ_rating": "53",
+                "first_bloods": "2",
+                "first_deaths": "0",
+                "plants": "0",
+                "defuses": "1",
+                "clutch_played": 2,
+                "clutch_won": 0,
+                "clutch_pct": 0
+              }
+            },
+            {
+              "player_id": "727",
+              "alias": "saadhak",
+              "country": "ar",
+              "twitter_id": "SaadhakW",
+              "stats": {
+                "agent": "omen",
+                "rounds": "21",
+                "rating": "1.1506",
+                "kills": "15",
+                "deaths": "11",
+                "assists": "9",
+                "kda_string": "15/11/9",
+                "damage": "2578",
+                "adr": "122.8",
+                "fbpr": "0.19",
+                "fdpr": "0.10",
+                "hsp": "0.32",
+                "headshots": "12",
+                "bodyshots": "25",
+                "legshots": "0",
+                "kast": "0.71",
+                "kast_raw": "15",
+                "combat_score": "193",
+                "econ_rating": "57",
+                "first_bloods": "4",
+                "first_deaths": "2",
+                "plants": "2",
+                "defuses": "1",
+                "clutch_played": 1,
+                "clutch_won": 0,
+                "clutch_pct": 0
+              }
+            }
+          ]
+        }
+      ],
+      "rounds": [
+        {
+          "round_num": "1",
+          "winner_id": "2",
+          "win_condition": "elim",
+          "team_bank_val_1": "300",
+          "team_bank_val_2": "250",
+          "team_loadout_val_1": "3650",
+          "team_loadout_val_2": "3350",
+          "attacking_team_id": "2",
+          "defending_team_id": "2355",
+          "kills": [
+            {
+              "time_ms": 32277,
+              "killer_id": "8419",
+              "victim_id": "8447",
+              "with": "classic"
+            },
+            {
+              "time_ms": 34337,
+              "killer_id": "11921",
+              "victim_id": "261",
+              "with": "classic"
+            },
+            {
+              "time_ms": 39439,
+              "killer_id": "5395",
+              "victim_id": "11921",
+              "with": "ghost"
+            },
+            {
+              "time_ms": 39593,
+              "killer_id": "1265",
+              "victim_id": "41135",
+              "with": "ghost"
+            },
+            {
+              "time_ms": 41025,
+              "killer_id": "939",
+              "victim_id": "8419",
+              "with": "410b2e0b-4ceb-1321-1727-20858f7f3477"
+            },
+            {
+              "time_ms": 43857,
+              "killer_id": "727",
+              "victim_id": "1265",
+              "with": "classic"
+            },
+            {
+              "time_ms": 47577,
+              "killer_id": "5395",
+              "victim_id": "939",
+              "with": "ghost"
+            },
+            {
+              "time_ms": 66270,
+              "killer_id": "4581",
+              "victim_id": "727",
+              "with": "ghost"
+            }
+          ]
+        },
+        {
+          "round_num": "2",
+          "winner_id": "2355",
+          "win_condition": "bomb",
+          "team_bank_val_1": "3650",
+          "team_bank_val_2": "9600",
+          "team_loadout_val_1": "14900",
+          "team_loadout_val_2": "1100",
+          "attacking_team_id": "2",
+          "defending_team_id": "2355",
+          "kills": [
+            {
+              "time_ms": 24961,
+              "killer_id": "727",
+              "victim_id": "261",
+              "with": "classic"
+            },
+            {
+              "time_ms": 47142,
+              "killer_id": "727",
+              "victim_id": "5395",
+              "with": "marshal"
+            },
+            {
+              "time_ms": 52146,
+              "killer_id": "41135",
+              "victim_id": "4581",
+              "with": "classic"
+            },
+            {
+              "time_ms": 53055,
+              "killer_id": "1265",
+              "victim_id": "41135",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 53487,
+              "killer_id": "8419",
+              "victim_id": "939",
+              "with": "guardian"
+            },
+            {
+              "time_ms": 56828,
+              "killer_id": "727",
+              "victim_id": "8419",
+              "with": "marshal"
+            },
+            {
+              "time_ms": 57698,
+              "killer_id": "8447",
+              "victim_id": "1265",
+              "with": "classic"
+            }
+          ]
+        },
+        {
+          "round_num": "3",
+          "winner_id": "2355",
+          "win_condition": "elim",
+          "team_bank_val_1": "9700",
+          "team_bank_val_2": "12000",
+          "team_loadout_val_1": "6000",
+          "team_loadout_val_2": "20000",
+          "attacking_team_id": "2",
+          "defending_team_id": "2355",
+          "kills": [
+            {
+              "time_ms": 20000,
+              "killer_id": "727",
+              "victim_id": "1265",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 44539,
+              "killer_id": "41135",
+              "victim_id": "5395",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 44738,
+              "killer_id": "261",
+              "victim_id": "41135",
+              "with": "sheriff"
+            },
+            {
+              "time_ms": 45444,
+              "killer_id": "8447",
+              "victim_id": "261",
+              "with": "guardian"
+            },
+            {
+              "time_ms": 45977,
+              "killer_id": "939",
+              "victim_id": "4581",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 70029,
+              "killer_id": "8447",
+              "victim_id": "8419",
+              "with": "guardian"
+            }
+          ]
+        },
+        {
+          "round_num": "4",
+          "winner_id": "2",
+          "win_condition": "elim",
+          "team_bank_val_1": "2700",
+          "team_bank_val_2": "22300",
+          "team_loadout_val_1": "21300",
+          "team_loadout_val_2": "23600",
+          "attacking_team_id": "2",
+          "defending_team_id": "2355",
+          "kills": [
+            {
+              "time_ms": 28231,
+              "killer_id": "41135",
+              "victim_id": "261",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 28533,
+              "killer_id": "5395",
+              "victim_id": "939",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 28723,
+              "killer_id": "41135",
+              "victim_id": "5395",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 29064,
+              "killer_id": "8419",
+              "victim_id": "727",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 98392,
+              "killer_id": "8419",
+              "victim_id": "41135",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 99074,
+              "killer_id": "11921",
+              "victim_id": "4581",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 99599,
+              "killer_id": "8419",
+              "victim_id": "11921",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 125113,
+              "killer_id": "8419",
+              "victim_id": "8447",
+              "with": "phantom"
+            }
+          ]
+        },
+        {
+          "round_num": "5",
+          "winner_id": "2355",
+          "win_condition": "time",
+          "team_bank_val_1": "6050",
+          "team_bank_val_2": "12650",
+          "team_loadout_val_1": "21250",
+          "team_loadout_val_2": "20400",
+          "attacking_team_id": "2",
+          "defending_team_id": "2355",
+          "kills": [
+            {
+              "time_ms": 66189,
+              "killer_id": "41135",
+              "victim_id": "261",
+              "with": "judge"
+            },
+            {
+              "time_ms": 66477,
+              "killer_id": "41135",
+              "victim_id": "4581",
+              "with": "judge"
+            },
+            {
+              "time_ms": 78032,
+              "killer_id": "727",
+              "victim_id": "8419",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 79688,
+              "killer_id": "1265",
+              "victim_id": "727",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 82854,
+              "killer_id": "11921",
+              "victim_id": "5395",
+              "with": "vandal"
+            },
+            {
+              "time_ms": 87452,
+              "killer_id": "1265",
+              "victim_id": "41135",
+              "with": "phantom"
+            }
+          ]
+        },
+        {
+          "round_num": "6",
+          "winner_id": "2355",
+          "win_condition": "elim",
+          "team_bank_val_1": "8150",
+          "team_bank_val_2": "17400",
+          "team_loadout_val_1": "11200",
+          "team_loadout_val_2": "22650",
+          "attacking_team_id": "2",
+          "defending_team_id": "2355",
+          "kills": [
+            {
+              "time_ms": 24578,
+              "killer_id": "11921",
+              "victim_id": "261",
+              "with": "vandal"
+            },
+            {
+              "time_ms": 34419,
+              "killer_id": "939",
+              "victim_id": "4581",
+              "with": "vandal"
+            },
+            {
+              "time_ms": 34931,
+              "killer_id": "11921",
+              "victim_id": "1265",
+              "with": "vandal"
+            },
+            {
+              "time_ms": 36093,
+              "killer_id": "8447",
+              "victim_id": "5395",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 39273,
+              "killer_id": "8419",
+              "victim_id": "41135",
+              "with": "410b2e0b-4ceb-1321-1727-20858f7f3477"
+            },
+            {
+              "time_ms": 42909,
+              "killer_id": "8419",
+              "victim_id": "939",
+              "with": "410b2e0b-4ceb-1321-1727-20858f7f3477"
+            },
+            {
+              "time_ms": 45106,
+              "killer_id": "8447",
+              "victim_id": "8419",
+              "with": "phantom"
+            }
+          ]
+        },
+        {
+          "round_num": "7",
+          "winner_id": "2355",
+          "win_condition": "elim",
+          "team_bank_val_1": "1550",
+          "team_bank_val_2": "21800",
+          "team_loadout_val_1": "19450",
+          "team_loadout_val_2": "23150",
+          "attacking_team_id": "2",
+          "defending_team_id": "2355",
+          "kills": [
+            {
+              "time_ms": 4052,
+              "killer_id": "939",
+              "victim_id": "261",
+              "with": "vandal"
+            },
+            {
+              "time_ms": 4078,
+              "killer_id": "41135",
+              "victim_id": "4581",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 4865,
+              "killer_id": "41135",
+              "victim_id": "5395",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 7840,
+              "killer_id": "727",
+              "victim_id": "1265",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 56740,
+              "killer_id": "41135",
+              "victim_id": "8419",
+              "with": "phantom"
+            }
+          ]
+        },
+        {
+          "round_num": "8",
+          "winner_id": "2355",
+          "win_condition": "elim",
+          "team_bank_val_1": "9050",
+          "team_bank_val_2": "32650",
+          "team_loadout_val_1": "8350",
+          "team_loadout_val_2": "23150",
+          "attacking_team_id": "2",
+          "defending_team_id": "2355",
+          "kills": [
+            {
+              "time_ms": 27749,
+              "killer_id": "727",
+              "victim_id": "1265",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 34980,
+              "killer_id": "727",
+              "victim_id": "4581",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 36415,
+              "killer_id": "41135",
+              "victim_id": "5395",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 41195,
+              "killer_id": "939",
+              "victim_id": "8419",
+              "with": "vandal"
+            },
+            {
+              "time_ms": 47149,
+              "killer_id": "727",
+              "victim_id": "261",
+              "with": "phantom"
+            }
+          ]
+        },
+        {
+          "round_num": "9",
+          "winner_id": "2",
+          "win_condition": "elim",
+          "team_bank_val_1": "3000",
+          "team_bank_val_2": "39350",
+          "team_loadout_val_1": "22350",
+          "team_loadout_val_2": "23250",
+          "attacking_team_id": "2",
+          "defending_team_id": "2355",
+          "kills": [
+            {
+              "time_ms": 14131,
+              "killer_id": "261",
+              "victim_id": "41135",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 15933,
+              "killer_id": "939",
+              "victim_id": "261",
+              "with": "vandal"
+            },
+            {
+              "time_ms": 18281,
+              "killer_id": "5395",
+              "victim_id": "8447",
+              "with": "operator"
+            },
+            {
+              "time_ms": 19708,
+              "killer_id": "727",
+              "victim_id": "4581",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 21774,
+              "killer_id": "1265",
+              "victim_id": "727",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 25918,
+              "killer_id": "1265",
+              "victim_id": "939",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 68058,
+              "killer_id": "11921",
+              "victim_id": "5395",
+              "with": "vandal"
+            },
+            {
+              "time_ms": 74301,
+              "killer_id": "1265",
+              "victim_id": "11921",
+              "with": "phantom"
+            }
+          ]
+        },
+        {
+          "round_num": "10",
+          "winner_id": "2355",
+          "win_condition": "bomb",
+          "team_bank_val_1": "5450",
+          "team_bank_val_2": "22950",
+          "team_loadout_val_1": "24850",
+          "team_loadout_val_2": "22650",
+          "attacking_team_id": "2",
+          "defending_team_id": "2355",
+          "kills": [
+            {
+              "time_ms": 62988,
+              "killer_id": "8419",
+              "victim_id": "41135",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 69220,
+              "killer_id": "1265",
+              "victim_id": "727",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 76292,
+              "killer_id": "261",
+              "victim_id": "939",
+              "with": "ultimate"
+            },
+            {
+              "time_ms": 79648,
+              "killer_id": "8447",
+              "victim_id": "8419",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 86736,
+              "killer_id": "11921",
+              "victim_id": "4581",
+              "with": "vandal"
+            },
+            {
+              "time_ms": 87677,
+              "killer_id": "11921",
+              "victim_id": "5395",
+              "with": "vandal"
+            },
+            {
+              "time_ms": 88049,
+              "killer_id": "11921",
+              "victim_id": "1265",
+              "with": "vandal"
+            },
+            {
+              "time_ms": 101178,
+              "killer_id": "8447",
+              "victim_id": "261",
+              "with": "phantom"
+            }
+          ]
+        },
+        {
+          "round_num": "11",
+          "winner_id": "2355",
+          "win_condition": "elim",
+          "team_bank_val_1": "8400",
+          "team_bank_val_2": "18150",
+          "team_loadout_val_1": "8900",
+          "team_loadout_val_2": "24750",
+          "attacking_team_id": "2",
+          "defending_team_id": "2355",
+          "kills": [
+            {
+              "time_ms": 76737,
+              "killer_id": "8447",
+              "victim_id": "5395",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 82437,
+              "killer_id": "4581",
+              "victim_id": "939",
+              "with": "sheriff"
+            },
+            {
+              "time_ms": 82560,
+              "killer_id": "41135",
+              "victim_id": "4581",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 83199,
+              "killer_id": "41135",
+              "victim_id": "261",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 83290,
+              "killer_id": "41135",
+              "victim_id": "8419",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 83653,
+              "killer_id": "1265",
+              "victim_id": "41135",
+              "with": "sheriff"
+            },
+            {
+              "time_ms": 87557,
+              "killer_id": "727",
+              "victim_id": "1265",
+              "with": "phantom"
+            }
+          ]
+        },
+        {
+          "round_num": "12",
+          "winner_id": "2",
+          "win_condition": "elim",
+          "team_bank_val_1": "400",
+          "team_bank_val_2": "20850",
+          "team_loadout_val_1": "21550",
+          "team_loadout_val_2": "23950",
+          "attacking_team_id": "2",
+          "defending_team_id": "2355",
+          "kills": [
+            {
+              "time_ms": 12663,
+              "killer_id": "727",
+              "victim_id": "4581",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 31183,
+              "killer_id": "261",
+              "victim_id": "727",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 39825,
+              "killer_id": "5395",
+              "victim_id": "41135",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 39916,
+              "killer_id": "5395",
+              "victim_id": "939",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 59057,
+              "killer_id": "11921",
+              "victim_id": "261",
+              "with": "operator"
+            },
+            {
+              "time_ms": 61732,
+              "killer_id": "5395",
+              "victim_id": "11921",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 63276,
+              "killer_id": "8447",
+              "victim_id": "1265",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 81362,
+              "killer_id": "5395",
+              "victim_id": "8447",
+              "with": "phantom"
+            }
+          ]
+        },
+        {
+          "round_num": "13",
+          "winner_id": "2355",
+          "win_condition": "elim",
+          "team_bank_val_1": "250",
+          "team_bank_val_2": "100",
+          "team_loadout_val_1": "3500",
+          "team_loadout_val_2": "4050",
+          "attacking_team_id": "2355",
+          "defending_team_id": "2",
+          "kills": [
+            {
+              "time_ms": 3546,
+              "killer_id": "261",
+              "victim_id": "41135",
+              "with": "ghost"
+            },
+            {
+              "time_ms": 54779,
+              "killer_id": "5395",
+              "victim_id": "8447",
+              "with": "ghost"
+            },
+            {
+              "time_ms": 63269,
+              "killer_id": "939",
+              "victim_id": "4581",
+              "with": "ghost"
+            },
+            {
+              "time_ms": 76510,
+              "killer_id": "939",
+              "victim_id": "261",
+              "with": "ghost"
+            },
+            {
+              "time_ms": 84561,
+              "killer_id": "5395",
+              "victim_id": "11921",
+              "with": "sheriff"
+            },
+            {
+              "time_ms": 84924,
+              "killer_id": "939",
+              "victim_id": "5395",
+              "with": "ghost"
+            },
+            {
+              "time_ms": 85272,
+              "killer_id": "939",
+              "victim_id": "1265",
+              "with": "ghost"
+            },
+            {
+              "time_ms": 90316,
+              "killer_id": "939",
+              "victim_id": "8419",
+              "with": "ghost"
+            }
+          ]
+        },
+        {
+          "round_num": "14",
+          "winner_id": "2355",
+          "win_condition": "elim",
+          "team_bank_val_1": "7750",
+          "team_bank_val_2": "3150",
+          "team_loadout_val_1": "2750",
+          "team_loadout_val_2": "15900",
+          "attacking_team_id": "2355",
+          "defending_team_id": "2",
+          "kills": [
+            {
+              "time_ms": 52847,
+              "killer_id": "11921",
+              "victim_id": "4581",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 53608,
+              "killer_id": "11921",
+              "victim_id": "1265",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 54385,
+              "killer_id": "11921",
+              "victim_id": "261",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 54826,
+              "killer_id": "11921",
+              "victim_id": "8419",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 60399,
+              "killer_id": "11921",
+              "victim_id": "5395",
+              "with": "phantom"
+            }
+          ]
+        },
+        {
+          "round_num": "15",
+          "winner_id": "2",
+          "win_condition": "elim",
+          "team_bank_val_1": "200",
+          "team_bank_val_2": "14100",
+          "team_loadout_val_1": "20550",
+          "team_loadout_val_2": "18950",
+          "attacking_team_id": "2355",
+          "defending_team_id": "2",
+          "kills": [
+            {
+              "time_ms": 57216,
+              "killer_id": "5395",
+              "victim_id": "41135",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 57583,
+              "killer_id": "727",
+              "victim_id": "5395",
+              "with": "bulldog"
+            },
+            {
+              "time_ms": 59230,
+              "killer_id": "1265",
+              "victim_id": "727",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 65847,
+              "killer_id": "261",
+              "victim_id": "11921",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 70791,
+              "killer_id": "939",
+              "victim_id": "1265",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 73469,
+              "killer_id": "261",
+              "victim_id": "939",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 81371,
+              "killer_id": "8447",
+              "victim_id": "261",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 88134,
+              "killer_id": "8419",
+              "victim_id": "8447",
+              "with": "phantom"
+            }
+          ]
+        },
+        {
+          "round_num": "16",
+          "winner_id": "2355",
+          "win_condition": "elim",
+          "team_bank_val_1": "4400",
+          "team_bank_val_2": "3400",
+          "team_loadout_val_1": "18300",
+          "team_loadout_val_2": "21600",
+          "attacking_team_id": "2355",
+          "defending_team_id": "2",
+          "kills": [
+            {
+              "time_ms": 17833,
+              "killer_id": "41135",
+              "victim_id": "5395",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 46183,
+              "killer_id": "41135",
+              "victim_id": "4581",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 46473,
+              "killer_id": "8419",
+              "victim_id": "11921",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 47853,
+              "killer_id": "939",
+              "victim_id": "8419",
+              "with": "vandal"
+            },
+            {
+              "time_ms": 49303,
+              "killer_id": "41135",
+              "victim_id": "261",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 51105,
+              "killer_id": "1265",
+              "victim_id": "8447",
+              "with": "guardian"
+            },
+            {
+              "time_ms": 52826,
+              "killer_id": "939",
+              "victim_id": "1265",
+              "with": "vandal"
+            }
+          ]
+        },
+        {
+          "round_num": "17",
+          "winner_id": "2355",
+          "win_condition": "elim",
+          "team_bank_val_1": "350",
+          "team_bank_val_2": "8400",
+          "team_loadout_val_1": "14150",
+          "team_loadout_val_2": "22850",
+          "attacking_team_id": "2355",
+          "defending_team_id": "2",
+          "kills": [
+            {
+              "time_ms": 50834,
+              "killer_id": "8447",
+              "victim_id": "4581",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 94488,
+              "killer_id": "8447",
+              "victim_id": "261",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 99954,
+              "killer_id": "11921",
+              "victim_id": "1265",
+              "with": "5f0aaf7a-4289-3998-d5ff-eb9a5cf7ef5c"
+            },
+            {
+              "time_ms": 102107,
+              "killer_id": "5395",
+              "victim_id": "727",
+              "with": "stinger"
+            },
+            {
+              "time_ms": 104698,
+              "killer_id": "8419",
+              "victim_id": "11921",
+              "with": "vandal"
+            },
+            {
+              "time_ms": 108881,
+              "killer_id": "939",
+              "victim_id": "5395",
+              "with": "vandal"
+            },
+            {
+              "time_ms": 109057,
+              "killer_id": "8447",
+              "victim_id": "8419",
+              "with": "phantom"
+            }
+          ]
+        },
+        {
+          "round_num": "18",
+          "winner_id": "2",
+          "win_condition": "elim",
+          "team_bank_val_1": "1050",
+          "team_bank_val_2": "12300",
+          "team_loadout_val_1": "12250",
+          "team_loadout_val_2": "23450",
+          "attacking_team_id": "2355",
+          "defending_team_id": "2",
+          "kills": [
+            {
+              "time_ms": 3939,
+              "killer_id": "261",
+              "victim_id": "727",
+              "with": "ability2"
+            },
+            {
+              "time_ms": 6550,
+              "killer_id": "1265",
+              "victim_id": "41135",
+              "with": "sheriff"
+            },
+            {
+              "time_ms": 9118,
+              "killer_id": "8419",
+              "victim_id": "939",
+              "with": "stinger"
+            },
+            {
+              "time_ms": 9440,
+              "killer_id": "8447",
+              "victim_id": "8419",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 10952,
+              "killer_id": "261",
+              "victim_id": "8447",
+              "with": "bucky"
+            },
+            {
+              "time_ms": 11177,
+              "killer_id": "1265",
+              "victim_id": "11921",
+              "with": "sheriff"
+            }
+          ]
+        },
+        {
+          "round_num": "19",
+          "winner_id": "2",
+          "win_condition": "time",
+          "team_bank_val_1": "7350",
+          "team_bank_val_2": "2900",
+          "team_loadout_val_1": "22350",
+          "team_loadout_val_2": "20950",
+          "attacking_team_id": "2355",
+          "defending_team_id": "2",
+          "kills": [
+            {
+              "time_ms": 14074,
+              "killer_id": "4581",
+              "victim_id": "41135",
+              "with": "vandal"
+            },
+            {
+              "time_ms": 14625,
+              "killer_id": "261",
+              "victim_id": "8447",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 15386,
+              "killer_id": "8419",
+              "victim_id": "727",
+              "with": "vandal"
+            },
+            {
+              "time_ms": 17718,
+              "killer_id": "261",
+              "victim_id": "11921",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 29192,
+              "killer_id": "939",
+              "victim_id": "1265",
+              "with": "guardian"
+            }
+          ]
+        },
+        {
+          "round_num": "20",
+          "winner_id": "2",
+          "win_condition": "bomb",
+          "team_bank_val_1": "11450",
+          "team_bank_val_2": "8000",
+          "team_loadout_val_1": "23150",
+          "team_loadout_val_2": "10500",
+          "attacking_team_id": "2355",
+          "defending_team_id": "2",
+          "kills": [
+            {
+              "time_ms": 37273,
+              "killer_id": "261",
+              "victim_id": "727",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 40406,
+              "killer_id": "4581",
+              "victim_id": "939",
+              "with": "vandal"
+            },
+            {
+              "time_ms": 42879,
+              "killer_id": "1265",
+              "victim_id": "11921",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 42938,
+              "killer_id": "8419",
+              "victim_id": "41135",
+              "with": "vandal"
+            },
+            {
+              "time_ms": 51015,
+              "killer_id": "4581",
+              "victim_id": "8447",
+              "with": "shorty"
+            }
+          ]
+        },
+        {
+          "round_num": "21",
+          "winner_id": "2355",
+          "win_condition": "elim",
+          "team_bank_val_1": "21950",
+          "team_bank_val_2": "4700",
+          "team_loadout_val_1": "23450",
+          "team_loadout_val_2": "19950",
+          "attacking_team_id": "2355",
+          "defending_team_id": "2",
+          "kills": [
+            {
+              "time_ms": 75507,
+              "killer_id": "5395",
+              "victim_id": "41135",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 79730,
+              "killer_id": "8447",
+              "victim_id": "5395",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 83925,
+              "killer_id": "939",
+              "victim_id": "261",
+              "with": "vandal"
+            },
+            {
+              "time_ms": 84624,
+              "killer_id": "8447",
+              "victim_id": "4581",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 85002,
+              "killer_id": "8419",
+              "victim_id": "939",
+              "with": "vandal"
+            },
+            {
+              "time_ms": 106636,
+              "killer_id": "1265",
+              "victim_id": "11921",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 107385,
+              "killer_id": "8447",
+              "victim_id": "8419",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 109318,
+              "killer_id": "727",
+              "victim_id": "1265",
+              "with": "phantom"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "breeze",
+      "link": "https://www.vlr.gg/645474/sentinels-vs-kr-esports-vct-2026-americas-stage-1-w1/?game=258576",
+      "first_attacker_id": "2",
+      "teams": [
+        {
+          "team_id": "2",
+          "name": "Sentinels",
+          "rounds_won": "9",
+          "rounds_won_atk": 5,
+          "rounds_won_def": 4,
+          "is_winner": false,
+          "players": [
+            {
+              "player_id": "1265",
+              "alias": "johnqt",
+              "country": "ma",
+              "twitter_id": "1johnqt",
+              "stats": {
+                "agent": "harbor",
+                "rounds": "22",
+                "rating": "1.2872",
+                "kills": "21",
+                "deaths": "16",
+                "assists": "5",
+                "kda_string": "21/16/5",
+                "damage": "4210",
+                "adr": "191.4",
+                "fbpr": "0.05",
+                "fdpr": "0.05",
+                "hsp": "0.40",
+                "headshots": "23",
+                "bodyshots": "32",
+                "legshots": "2",
+                "kast": "0.73",
+                "kast_raw": "16",
+                "combat_score": "274",
+                "econ_rating": "75",
+                "first_bloods": "1",
+                "first_deaths": "1",
+                "plants": "2",
+                "defuses": "0",
+                "clutch_played": 5,
+                "clutch_won": 0,
+                "clutch_pct": 0
+              }
+            },
+            {
+              "player_id": "261",
+              "alias": "Victor",
+              "country": "us",
+              "twitter_id": "victorwong",
+              "stats": {
+                "agent": "neon",
+                "rounds": "22",
+                "rating": "0.7605",
+                "kills": "16",
+                "deaths": "19",
+                "assists": "2",
+                "kda_string": "16/19/2",
+                "damage": "2811",
+                "adr": "127.8",
+                "fbpr": "0.27",
+                "fdpr": "0.18",
+                "hsp": "0.10",
+                "headshots": "6",
+                "bodyshots": "50",
+                "legshots": "2",
+                "kast": "0.59",
+                "kast_raw": "13",
+                "combat_score": "205",
+                "econ_rating": "46",
+                "first_bloods": "6",
+                "first_deaths": "4",
+                "plants": "1",
+                "defuses": "0",
+                "clutch_played": 1,
+                "clutch_won": 0,
+                "clutch_pct": 0
+              }
+            },
+            {
+              "player_id": "8419",
+              "alias": "Reduxx",
+              "country": "us",
+              "twitter_id": "NotReduxx",
+              "stats": {
+                "agent": "iso",
+                "rounds": "22",
+                "rating": "0.8692",
+                "kills": "15",
+                "deaths": "19",
+                "assists": "4",
+                "kda_string": "15/19/4",
+                "damage": "2839",
+                "adr": "129.0",
+                "fbpr": "0.05",
+                "fdpr": "0.18",
+                "hsp": "0.36",
+                "headshots": "16",
+                "bodyshots": "24",
+                "legshots": "4",
+                "kast": "0.41",
+                "kast_raw": "9",
+                "combat_score": "201",
+                "econ_rating": "43",
+                "first_bloods": "1",
+                "first_deaths": "4",
+                "plants": "1",
+                "defuses": "1",
+                "clutch_played": 2,
+                "clutch_won": 1,
+                "clutch_pct": 50
+              }
+            },
+            {
+              "player_id": "4581",
+              "alias": "JonahP",
+              "country": "ca",
+              "twitter_id": "JonahP_",
+              "stats": {
+                "agent": "sova",
+                "rounds": "22",
+                "rating": "0.6687",
+                "kills": "11",
+                "deaths": "17",
+                "assists": "7",
+                "kda_string": "11/17/7",
+                "damage": "2307",
+                "adr": "104.9",
+                "fbpr": "0.05",
+                "fdpr": "0.14",
+                "hsp": "0.27",
+                "headshots": "8",
+                "bodyshots": "20",
+                "legshots": "2",
+                "kast": "0.77",
+                "kast_raw": "17",
+                "combat_score": "151",
+                "econ_rating": "42",
+                "first_bloods": "1",
+                "first_deaths": "3",
+                "plants": "2",
+                "defuses": "0",
+                "clutch_played": 1,
+                "clutch_won": 0,
+                "clutch_pct": 0
+              }
+            },
+            {
+              "player_id": "5395",
+              "alias": "cortezia",
+              "country": "br",
+              "twitter_id": "corteziafps",
+              "stats": {
+                "agent": "viper",
+                "rounds": "22",
+                "rating": "0.6286",
+                "kills": "9",
+                "deaths": "15",
+                "assists": "6",
+                "kda_string": "9/15/6",
+                "damage": "1687",
+                "adr": "76.7",
+                "fbpr": "0.00",
+                "fdpr": "0.05",
+                "hsp": "0.19",
+                "headshots": "6",
+                "bodyshots": "25",
+                "legshots": "1",
+                "kast": "0.59",
+                "kast_raw": "13",
+                "combat_score": "120",
+                "econ_rating": "33",
+                "first_bloods": "0",
+                "first_deaths": "1",
+                "plants": "2",
+                "defuses": "0",
+                "clutch_played": 7,
+                "clutch_won": 2,
+                "clutch_pct": 28.999999999999996
+              }
+            }
+          ]
+        },
+        {
+          "team_id": "2355",
+          "name": "KRÜ Esports",
+          "rounds_won": "13",
+          "rounds_won_atk": 6,
+          "rounds_won_def": 7,
+          "is_winner": true,
+          "players": [
+            {
+              "player_id": "727",
+              "alias": "saadhak",
+              "country": "ar",
+              "twitter_id": "SaadhakW",
+              "stats": {
+                "agent": "omen",
+                "rounds": "22",
+                "rating": "1.3555",
+                "kills": "22",
+                "deaths": "15",
+                "assists": "5",
+                "kda_string": "22/15/5",
+                "damage": "3567",
+                "adr": "162.1",
+                "fbpr": "0.05",
+                "fdpr": "0.05",
+                "hsp": "0.21",
+                "headshots": "16",
+                "bodyshots": "48",
+                "legshots": "14",
+                "kast": "0.77",
+                "kast_raw": "17",
+                "combat_score": "259",
+                "econ_rating": "66",
+                "first_bloods": "1",
+                "first_deaths": "1",
+                "plants": "0",
+                "defuses": "1",
+                "clutch_played": 2,
+                "clutch_won": 0,
+                "clutch_pct": 0
+              }
+            },
+            {
+              "player_id": "939",
+              "alias": "mwzera",
+              "country": "br",
+              "twitter_id": "mwzera",
+              "stats": {
+                "agent": "sova",
+                "rounds": "22",
+                "rating": "1.3003",
+                "kills": "16",
+                "deaths": "12",
+                "assists": "7",
+                "kda_string": "16/12/7",
+                "damage": "3637",
+                "adr": "165.3",
+                "fbpr": "0.14",
+                "fdpr": "0.09",
+                "hsp": "0.25",
+                "headshots": "13",
+                "bodyshots": "35",
+                "legshots": "3",
+                "kast": "0.91",
+                "kast_raw": "20",
+                "combat_score": "238",
+                "econ_rating": "67",
+                "first_bloods": "3",
+                "first_deaths": "2",
+                "plants": "5",
+                "defuses": "2",
+                "clutch_played": 4,
+                "clutch_won": 0,
+                "clutch_pct": 0
+              }
+            },
+            {
+              "player_id": "8447",
+              "alias": "Less",
+              "country": "br",
+              "twitter_id": "lessvlr",
+              "stats": {
+                "agent": "viper",
+                "rounds": "22",
+                "rating": "1.0622",
+                "kills": "18",
+                "deaths": "15",
+                "assists": "9",
+                "kda_string": "18/15/9",
+                "damage": "3029",
+                "adr": "137.7",
+                "fbpr": "0.14",
+                "fdpr": "0.05",
+                "hsp": "0.18",
+                "headshots": "10",
+                "bodyshots": "39",
+                "legshots": "6",
+                "kast": "0.50",
+                "kast_raw": "11",
+                "combat_score": "234",
+                "econ_rating": "53",
+                "first_bloods": "3",
+                "first_deaths": "1",
+                "plants": "0",
+                "defuses": "0",
+                "clutch_played": 1,
+                "clutch_won": 1,
+                "clutch_pct": 100
+              }
+            },
+            {
+              "player_id": "41135",
+              "alias": "Dantedeu5",
+              "country": "ar",
+              "twitter_id": "Dantedeu5",
+              "stats": {
+                "agent": "neon",
+                "rounds": "22",
+                "rating": "0.7435",
+                "kills": "16",
+                "deaths": "18",
+                "assists": "2",
+                "kda_string": "16/18/2",
+                "damage": "2533",
+                "adr": "115.1",
+                "fbpr": "0.14",
+                "fdpr": "0.14",
+                "hsp": "0.15",
+                "headshots": "9",
+                "bodyshots": "45",
+                "legshots": "5",
+                "kast": "0.50",
+                "kast_raw": "11",
+                "combat_score": "196",
+                "econ_rating": "43",
+                "first_bloods": "3",
+                "first_deaths": "3",
+                "plants": "1",
+                "defuses": "0",
+                "clutch_played": 0,
+                "clutch_won": 0,
+                "clutch_pct": null
+              }
+            },
+            {
+              "player_id": "11921",
+              "alias": "silentzz",
+              "country": "br",
+              "twitter_id": "silentzfps",
+              "stats": {
+                "agent": "chamber",
+                "rounds": "22",
+                "rating": "1.0766",
+                "kills": "14",
+                "deaths": "12",
+                "assists": "3",
+                "kda_string": "14/12/3",
+                "damage": "2308",
+                "adr": "104.9",
+                "fbpr": "0.14",
+                "fdpr": "0.09",
+                "hsp": "0.21",
+                "headshots": "6",
+                "bodyshots": "22",
+                "legshots": "0",
+                "kast": "0.73",
+                "kast_raw": "16",
+                "combat_score": "154",
+                "econ_rating": "43",
+                "first_bloods": "3",
+                "first_deaths": "2",
+                "plants": "1",
+                "defuses": "1",
+                "clutch_played": 4,
+                "clutch_won": 2,
+                "clutch_pct": 50
+              }
+            }
+          ]
+        }
+      ],
+      "rounds": [
+        {
+          "round_num": "1",
+          "winner_id": "2355",
+          "win_condition": "bomb",
+          "team_bank_val_1": "100",
+          "team_bank_val_2": "250",
+          "team_loadout_val_1": "3900",
+          "team_loadout_val_2": "3500",
+          "attacking_team_id": "2",
+          "defending_team_id": "2355",
+          "kills": [
+            {
+              "time_ms": 22376,
+              "killer_id": "4581",
+              "victim_id": "41135",
+              "with": "classic"
+            },
+            {
+              "time_ms": 30026,
+              "killer_id": "727",
+              "victim_id": "4581",
+              "with": "410b2e0b-4ceb-1321-1727-20858f7f3477"
+            },
+            {
+              "time_ms": 31453,
+              "killer_id": "727",
+              "victim_id": "8419",
+              "with": "410b2e0b-4ceb-1321-1727-20858f7f3477"
+            },
+            {
+              "time_ms": 34958,
+              "killer_id": "8447",
+              "victim_id": "261",
+              "with": "ghost"
+            },
+            {
+              "time_ms": 36937,
+              "killer_id": "8447",
+              "victim_id": "1265",
+              "with": "ghost"
+            },
+            {
+              "time_ms": 41417,
+              "killer_id": "11921",
+              "victim_id": "5395",
+              "with": "headhunter"
+            }
+          ]
+        },
+        {
+          "round_num": "2",
+          "winner_id": "2355",
+          "win_condition": "bomb",
+          "team_bank_val_1": "8800",
+          "team_bank_val_2": "4500",
+          "team_loadout_val_1": "2800",
+          "team_loadout_val_2": "13900",
+          "attacking_team_id": "2",
+          "defending_team_id": "2355",
+          "kills": [
+            {
+              "time_ms": 17060,
+              "killer_id": "261",
+              "victim_id": "11921",
+              "with": "classic"
+            },
+            {
+              "time_ms": 20961,
+              "killer_id": "8419",
+              "victim_id": "8447",
+              "with": "classic"
+            },
+            {
+              "time_ms": 44546,
+              "killer_id": "41135",
+              "victim_id": "1265",
+              "with": "judge"
+            },
+            {
+              "time_ms": 44833,
+              "killer_id": "41135",
+              "victim_id": "8419",
+              "with": "judge"
+            },
+            {
+              "time_ms": 45470,
+              "killer_id": "4581",
+              "victim_id": "41135",
+              "with": "sheriff"
+            },
+            {
+              "time_ms": 47950,
+              "killer_id": "727",
+              "victim_id": "261",
+              "with": "spectre"
+            },
+            {
+              "time_ms": 49485,
+              "killer_id": "727",
+              "victim_id": "4581",
+              "with": "spectre"
+            },
+            {
+              "time_ms": 53980,
+              "killer_id": "727",
+              "victim_id": "5395",
+              "with": "spectre"
+            }
+          ]
+        },
+        {
+          "round_num": "3",
+          "winner_id": "2355",
+          "win_condition": "bomb",
+          "team_bank_val_1": "2150",
+          "team_bank_val_2": "13550",
+          "team_loadout_val_1": "21250",
+          "team_loadout_val_2": "13800",
+          "attacking_team_id": "2",
+          "defending_team_id": "2355",
+          "kills": [
+            {
+              "time_ms": 17892,
+              "killer_id": "8447",
+              "victim_id": "8419",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 52908,
+              "killer_id": "11921",
+              "victim_id": "4581",
+              "with": "headhunter"
+            },
+            {
+              "time_ms": 80463,
+              "killer_id": "261",
+              "victim_id": "727",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 85993,
+              "killer_id": "1265",
+              "victim_id": "41135",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 87551,
+              "killer_id": "1265",
+              "victim_id": "939",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 87642,
+              "killer_id": "8447",
+              "victim_id": "1265",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 87967,
+              "killer_id": "261",
+              "victim_id": "8447",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 92332,
+              "killer_id": "11921",
+              "victim_id": "5395",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 103138,
+              "killer_id": "11921",
+              "victim_id": "261",
+              "with": "phantom"
+            }
+          ]
+        },
+        {
+          "round_num": "4",
+          "winner_id": "2",
+          "win_condition": "elim",
+          "team_bank_val_1": "1150",
+          "team_bank_val_2": "12000",
+          "team_loadout_val_1": "18800",
+          "team_loadout_val_2": "20900",
+          "attacking_team_id": "2",
+          "defending_team_id": "2355",
+          "kills": [
+            {
+              "time_ms": 18470,
+              "killer_id": "939",
+              "victim_id": "1265",
+              "with": "vandal"
+            },
+            {
+              "time_ms": 19109,
+              "killer_id": "939",
+              "victim_id": "4581",
+              "with": "vandal"
+            },
+            {
+              "time_ms": 19544,
+              "killer_id": "8419",
+              "victim_id": "939",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 22484,
+              "killer_id": "8419",
+              "victim_id": "41135",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 22663,
+              "killer_id": "727",
+              "victim_id": "261",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 25114,
+              "killer_id": "8419",
+              "victim_id": "8447",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 30258,
+              "killer_id": "5395",
+              "victim_id": "11921",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 37963,
+              "killer_id": "8419",
+              "victim_id": "727",
+              "with": "phantom"
+            }
+          ]
+        },
+        {
+          "round_num": "5",
+          "winner_id": "2",
+          "win_condition": "elim",
+          "team_bank_val_1": "4850",
+          "team_bank_val_2": "1850",
+          "team_loadout_val_1": "19200",
+          "team_loadout_val_2": "21400",
+          "attacking_team_id": "2",
+          "defending_team_id": "2355",
+          "kills": [
+            {
+              "time_ms": 2382,
+              "killer_id": "8419",
+              "victim_id": "41135",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 9015,
+              "killer_id": "8419",
+              "victim_id": "727",
+              "with": "shorty"
+            },
+            {
+              "time_ms": 25733,
+              "killer_id": "1265",
+              "victim_id": "8447",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 57796,
+              "killer_id": "261",
+              "victim_id": "11921",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 60114,
+              "killer_id": "939",
+              "victim_id": "261",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 60781,
+              "killer_id": "1265",
+              "victim_id": "939",
+              "with": "phantom"
+            }
+          ]
+        },
+        {
+          "round_num": "6",
+          "winner_id": "2",
+          "win_condition": "bomb",
+          "team_bank_val_1": "14450",
+          "team_bank_val_2": "9250",
+          "team_loadout_val_1": "22800",
+          "team_loadout_val_2": "6400",
+          "attacking_team_id": "2",
+          "defending_team_id": "2355",
+          "kills": [
+            {
+              "time_ms": 37459,
+              "killer_id": "261",
+              "victim_id": "11921",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 52920,
+              "killer_id": "5395",
+              "victim_id": "8447",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 53683,
+              "killer_id": "5395",
+              "victim_id": "41135",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 66111,
+              "killer_id": "727",
+              "victim_id": "8419",
+              "with": "410b2e0b-4ceb-1321-1727-20858f7f3477"
+            },
+            {
+              "time_ms": 67411,
+              "killer_id": "727",
+              "victim_id": "261",
+              "with": "410b2e0b-4ceb-1321-1727-20858f7f3477"
+            },
+            {
+              "time_ms": 90376,
+              "killer_id": "1265",
+              "victim_id": "727",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 91599,
+              "killer_id": "939",
+              "victim_id": "4581",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 92538,
+              "killer_id": "939",
+              "victim_id": "1265",
+              "with": "phantom"
+            }
+          ]
+        },
+        {
+          "round_num": "7",
+          "winner_id": "2",
+          "win_condition": "bomb",
+          "team_bank_val_1": "12500",
+          "team_bank_val_2": "4150",
+          "team_loadout_val_1": "23100",
+          "team_loadout_val_2": "23250",
+          "attacking_team_id": "2",
+          "defending_team_id": "2355",
+          "kills": [
+            {
+              "time_ms": 51786,
+              "killer_id": "1265",
+              "victim_id": "939",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 51931,
+              "killer_id": "41135",
+              "victim_id": "8419",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 55927,
+              "killer_id": "1265",
+              "victim_id": "41135",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 65161,
+              "killer_id": "261",
+              "victim_id": "8447",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 79007,
+              "killer_id": "4581",
+              "victim_id": "727",
+              "with": "phantom"
+            }
+          ]
+        },
+        {
+          "round_num": "8",
+          "winner_id": "2",
+          "win_condition": "elim",
+          "team_bank_val_1": "24200",
+          "team_bank_val_2": "6100",
+          "team_loadout_val_1": "22900",
+          "team_loadout_val_2": "17400",
+          "attacking_team_id": "2",
+          "defending_team_id": "2355",
+          "kills": [
+            {
+              "time_ms": 11803,
+              "killer_id": "11921",
+              "victim_id": "261",
+              "with": "operator"
+            },
+            {
+              "time_ms": 18032,
+              "killer_id": "8419",
+              "victim_id": "8447",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 21990,
+              "killer_id": "1265",
+              "victim_id": "41135",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 23822,
+              "killer_id": "727",
+              "victim_id": "8419",
+              "with": "guardian"
+            },
+            {
+              "time_ms": 24528,
+              "killer_id": "1265",
+              "victim_id": "727",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 32715,
+              "killer_id": "939",
+              "victim_id": "5395",
+              "with": "vandal"
+            },
+            {
+              "time_ms": 35897,
+              "killer_id": "1265",
+              "victim_id": "939",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 38181,
+              "killer_id": "1265",
+              "victim_id": "11921",
+              "with": "phantom"
+            }
+          ]
+        },
+        {
+          "round_num": "9",
+          "winner_id": "2355",
+          "win_condition": "bomb",
+          "team_bank_val_1": "26500",
+          "team_bank_val_2": "4850",
+          "team_loadout_val_1": "23400",
+          "team_loadout_val_2": "18450",
+          "attacking_team_id": "2",
+          "defending_team_id": "2355",
+          "kills": [
+            {
+              "time_ms": 70685,
+              "killer_id": "41135",
+              "victim_id": "8419",
+              "with": "judge"
+            },
+            {
+              "time_ms": 72816,
+              "killer_id": "41135",
+              "victim_id": "261",
+              "with": "judge"
+            },
+            {
+              "time_ms": 74737,
+              "killer_id": "1265",
+              "victim_id": "939",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 84511,
+              "killer_id": "8447",
+              "victim_id": "5395",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 85401,
+              "killer_id": "41135",
+              "victim_id": "1265",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 86102,
+              "killer_id": "4581",
+              "victim_id": "41135",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 88535,
+              "killer_id": "4581",
+              "victim_id": "8447",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 98376,
+              "killer_id": "727",
+              "victim_id": "4581",
+              "with": "judge"
+            }
+          ]
+        },
+        {
+          "round_num": "10",
+          "winner_id": "2355",
+          "win_condition": "elim",
+          "team_bank_val_1": "14900",
+          "team_bank_val_2": "7300",
+          "team_loadout_val_1": "23700",
+          "team_loadout_val_2": "22750",
+          "attacking_team_id": "2",
+          "defending_team_id": "2355",
+          "kills": [
+            {
+              "time_ms": 17728,
+              "killer_id": "41135",
+              "victim_id": "8419",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 19345,
+              "killer_id": "4581",
+              "victim_id": "8447",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 20037,
+              "killer_id": "41135",
+              "victim_id": "4581",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 20473,
+              "killer_id": "41135",
+              "victim_id": "5395",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 21737,
+              "killer_id": "41135",
+              "victim_id": "261",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 26813,
+              "killer_id": "11921",
+              "victim_id": "1265",
+              "with": "operator"
+            }
+          ]
+        },
+        {
+          "round_num": "11",
+          "winner_id": "2355",
+          "win_condition": "elim",
+          "team_bank_val_1": "7200",
+          "team_bank_val_2": "11400",
+          "team_loadout_val_1": "20700",
+          "team_loadout_val_2": "24700",
+          "attacking_team_id": "2",
+          "defending_team_id": "2355",
+          "kills": [
+            {
+              "time_ms": 4849,
+              "killer_id": "11921",
+              "victim_id": "261",
+              "with": "operator"
+            },
+            {
+              "time_ms": 15079,
+              "killer_id": "41135",
+              "victim_id": "5395",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 31914,
+              "killer_id": "8419",
+              "victim_id": "727",
+              "with": "vandal"
+            },
+            {
+              "time_ms": 35606,
+              "killer_id": "11921",
+              "victim_id": "4581",
+              "with": "operator"
+            },
+            {
+              "time_ms": 39505,
+              "killer_id": "939",
+              "victim_id": "1265",
+              "with": "vandal"
+            },
+            {
+              "time_ms": 41711,
+              "killer_id": "8419",
+              "victim_id": "41135",
+              "with": "vandal"
+            },
+            {
+              "time_ms": 44444,
+              "killer_id": "11921",
+              "victim_id": "8419",
+              "with": "shorty"
+            }
+          ]
+        },
+        {
+          "round_num": "12",
+          "winner_id": "2355",
+          "win_condition": "elim",
+          "team_bank_val_1": "1250",
+          "team_bank_val_2": "14300",
+          "team_loadout_val_1": "21850",
+          "team_loadout_val_2": "25850",
+          "attacking_team_id": "2",
+          "defending_team_id": "2355",
+          "kills": [
+            {
+              "time_ms": 10797,
+              "killer_id": "727",
+              "victim_id": "8419",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 17239,
+              "killer_id": "41135",
+              "victim_id": "5395",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 27043,
+              "killer_id": "261",
+              "victim_id": "11921",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 27820,
+              "killer_id": "41135",
+              "victim_id": "261",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 44924,
+              "killer_id": "1265",
+              "victim_id": "727",
+              "with": "vandal"
+            },
+            {
+              "time_ms": 45451,
+              "killer_id": "8447",
+              "victim_id": "4581",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 49018,
+              "killer_id": "41135",
+              "victim_id": "1265",
+              "with": "overdrive"
+            }
+          ]
+        },
+        {
+          "round_num": "13",
+          "winner_id": "2355",
+          "win_condition": "elim",
+          "team_bank_val_1": "0",
+          "team_bank_val_2": "50",
+          "team_loadout_val_1": "4000",
+          "team_loadout_val_2": "3900",
+          "attacking_team_id": "2355",
+          "defending_team_id": "2",
+          "kills": [
+            {
+              "time_ms": 15258,
+              "killer_id": "261",
+              "victim_id": "939",
+              "with": "sheriff"
+            },
+            {
+              "time_ms": 20029,
+              "killer_id": "1265",
+              "victim_id": "41135",
+              "with": "ghost"
+            },
+            {
+              "time_ms": 24480,
+              "killer_id": "8447",
+              "victim_id": "1265",
+              "with": "sheriff"
+            },
+            {
+              "time_ms": 25569,
+              "killer_id": "8447",
+              "victim_id": "8419",
+              "with": "sheriff"
+            },
+            {
+              "time_ms": 27193,
+              "killer_id": "4581",
+              "victim_id": "727",
+              "with": "sheriff"
+            },
+            {
+              "time_ms": 38628,
+              "killer_id": "8447",
+              "victim_id": "261",
+              "with": "sheriff"
+            },
+            {
+              "time_ms": 53096,
+              "killer_id": "8447",
+              "victim_id": "4581",
+              "with": "sheriff"
+            },
+            {
+              "time_ms": 61351,
+              "killer_id": "5395",
+              "victim_id": "8447",
+              "with": "sheriff"
+            },
+            {
+              "time_ms": 63174,
+              "killer_id": "11921",
+              "victim_id": "5395",
+              "with": "headhunter"
+            }
+          ]
+        },
+        {
+          "round_num": "14",
+          "winner_id": "2355",
+          "win_condition": "elim",
+          "team_bank_val_1": "7800",
+          "team_bank_val_2": "5250",
+          "team_loadout_val_1": "2500",
+          "team_loadout_val_2": "13450",
+          "attacking_team_id": "2355",
+          "defending_team_id": "2",
+          "kills": [
+            {
+              "time_ms": 37882,
+              "killer_id": "41135",
+              "victim_id": "261",
+              "with": "bulldog"
+            },
+            {
+              "time_ms": 41069,
+              "killer_id": "939",
+              "victim_id": "8419",
+              "with": "bulldog"
+            },
+            {
+              "time_ms": 46916,
+              "killer_id": "8447",
+              "victim_id": "1265",
+              "with": "bucky"
+            },
+            {
+              "time_ms": 47018,
+              "killer_id": "41135",
+              "victim_id": "4581",
+              "with": "bulldog"
+            },
+            {
+              "time_ms": 48779,
+              "killer_id": "5395",
+              "victim_id": "41135",
+              "with": "classic"
+            },
+            {
+              "time_ms": 49611,
+              "killer_id": "727",
+              "victim_id": "5395",
+              "with": "spectre"
+            }
+          ]
+        },
+        {
+          "round_num": "15",
+          "winner_id": "2",
+          "win_condition": "elim",
+          "team_bank_val_1": "1500",
+          "team_bank_val_2": "15700",
+          "team_loadout_val_1": "19450",
+          "team_loadout_val_2": "17850",
+          "attacking_team_id": "2355",
+          "defending_team_id": "2",
+          "kills": [
+            {
+              "time_ms": 15411,
+              "killer_id": "939",
+              "victim_id": "4581",
+              "with": "bulldog"
+            },
+            {
+              "time_ms": 17592,
+              "killer_id": "261",
+              "victim_id": "41135",
+              "with": "judge"
+            },
+            {
+              "time_ms": 20800,
+              "killer_id": "261",
+              "victim_id": "8447",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 26323,
+              "killer_id": "727",
+              "victim_id": "8419",
+              "with": "spectre"
+            },
+            {
+              "time_ms": 26858,
+              "killer_id": "727",
+              "victim_id": "261",
+              "with": "spectre"
+            },
+            {
+              "time_ms": 29682,
+              "killer_id": "1265",
+              "victim_id": "727",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 38427,
+              "killer_id": "5395",
+              "victim_id": "11921",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 41525,
+              "killer_id": "939",
+              "victim_id": "1265",
+              "with": "bulldog"
+            },
+            {
+              "time_ms": 44271,
+              "killer_id": "5395",
+              "victim_id": "939",
+              "with": "phantom"
+            }
+          ]
+        },
+        {
+          "round_num": "16",
+          "winner_id": "2355",
+          "win_condition": "elim",
+          "team_bank_val_1": "3200",
+          "team_bank_val_2": "4800",
+          "team_loadout_val_1": "18200",
+          "team_loadout_val_2": "22250",
+          "attacking_team_id": "2355",
+          "defending_team_id": "2",
+          "kills": [
+            {
+              "time_ms": 49093,
+              "killer_id": "8447",
+              "victim_id": "4581",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 63381,
+              "killer_id": "8447",
+              "victim_id": "8419",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 72785,
+              "killer_id": "11921",
+              "victim_id": "5395",
+              "with": "headhunter"
+            },
+            {
+              "time_ms": 72822,
+              "killer_id": "8447",
+              "victim_id": "261",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 81939,
+              "killer_id": "1265",
+              "victim_id": "11921",
+              "with": "guardian"
+            },
+            {
+              "time_ms": 84663,
+              "killer_id": "1265",
+              "victim_id": "939",
+              "with": "guardian"
+            },
+            {
+              "time_ms": 86720,
+              "killer_id": "727",
+              "victim_id": "1265",
+              "with": "phantom"
+            }
+          ]
+        },
+        {
+          "round_num": "17",
+          "winner_id": "2",
+          "win_condition": "bomb",
+          "team_bank_val_1": "8600",
+          "team_bank_val_2": "9250",
+          "team_loadout_val_1": "5900",
+          "team_loadout_val_2": "22850",
+          "attacking_team_id": "2355",
+          "defending_team_id": "2",
+          "kills": [
+            {
+              "time_ms": 31863,
+              "killer_id": "11921",
+              "victim_id": "261",
+              "with": "5f0aaf7a-4289-3998-d5ff-eb9a5cf7ef5c"
+            },
+            {
+              "time_ms": 36642,
+              "killer_id": "8419",
+              "victim_id": "11921",
+              "with": "sheriff"
+            },
+            {
+              "time_ms": 58596,
+              "killer_id": "8419",
+              "victim_id": "41135",
+              "with": "sheriff"
+            },
+            {
+              "time_ms": 64189,
+              "killer_id": "727",
+              "victim_id": "1265",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 65372,
+              "killer_id": "727",
+              "victim_id": "5395",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 65485,
+              "killer_id": "4581",
+              "victim_id": "939",
+              "with": "410b2e0b-4ceb-1321-1727-20858f7f3477"
+            },
+            {
+              "time_ms": 68872,
+              "killer_id": "8419",
+              "victim_id": "8447",
+              "with": "sheriff"
+            },
+            {
+              "time_ms": 72638,
+              "killer_id": "727",
+              "victim_id": "4581",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 72858,
+              "killer_id": "8419",
+              "victim_id": "727",
+              "with": "sheriff"
+            }
+          ]
+        },
+        {
+          "round_num": "18",
+          "winner_id": "2",
+          "win_condition": "time",
+          "team_bank_val_1": "5250",
+          "team_bank_val_2": "3000",
+          "team_loadout_val_1": "23450",
+          "team_loadout_val_2": "19600",
+          "attacking_team_id": "2355",
+          "defending_team_id": "2",
+          "kills": [
+            {
+              "time_ms": 3378,
+              "killer_id": "261",
+              "victim_id": "8447",
+              "with": "operator"
+            },
+            {
+              "time_ms": 11633,
+              "killer_id": "261",
+              "victim_id": "41135",
+              "with": "operator"
+            },
+            {
+              "time_ms": 19386,
+              "killer_id": "1265",
+              "victim_id": "727",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 98888,
+              "killer_id": "939",
+              "victim_id": "8419",
+              "with": "vandal"
+            }
+          ]
+        },
+        {
+          "round_num": "19",
+          "winner_id": "2355",
+          "win_condition": "elim",
+          "team_bank_val_1": "15250",
+          "team_bank_val_2": "7350",
+          "team_loadout_val_1": "24050",
+          "team_loadout_val_2": "15850",
+          "attacking_team_id": "2355",
+          "defending_team_id": "2",
+          "kills": [
+            {
+              "time_ms": 15167,
+              "killer_id": "939",
+              "victim_id": "5395",
+              "with": "ultimate"
+            },
+            {
+              "time_ms": 17017,
+              "killer_id": "261",
+              "victim_id": "8447",
+              "with": "operator"
+            },
+            {
+              "time_ms": 41454,
+              "killer_id": "4581",
+              "victim_id": "41135",
+              "with": "vandal"
+            },
+            {
+              "time_ms": 45731,
+              "killer_id": "939",
+              "victim_id": "8419",
+              "with": "vandal"
+            },
+            {
+              "time_ms": 52438,
+              "killer_id": "11921",
+              "victim_id": "261",
+              "with": "operator"
+            },
+            {
+              "time_ms": 57012,
+              "killer_id": "727",
+              "victim_id": "4581",
+              "with": "vandal"
+            },
+            {
+              "time_ms": 61788,
+              "killer_id": "727",
+              "victim_id": "1265",
+              "with": "vandal"
+            }
+          ]
+        },
+        {
+          "round_num": "20",
+          "winner_id": "2",
+          "win_condition": "elim",
+          "team_bank_val_1": "3550",
+          "team_bank_val_2": "11650",
+          "team_loadout_val_1": "22500",
+          "team_loadout_val_2": "25150",
+          "attacking_team_id": "2355",
+          "defending_team_id": "2",
+          "kills": [
+            {
+              "time_ms": 35068,
+              "killer_id": "261",
+              "victim_id": "727",
+              "with": "operator"
+            },
+            {
+              "time_ms": 43726,
+              "killer_id": "5395",
+              "victim_id": "8447",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 46716,
+              "killer_id": "4581",
+              "victim_id": "41135",
+              "with": "vandal"
+            },
+            {
+              "time_ms": 51481,
+              "killer_id": "4581",
+              "victim_id": "11921",
+              "with": "vandal"
+            },
+            {
+              "time_ms": 58266,
+              "killer_id": "939",
+              "victim_id": "8419",
+              "with": "vandal"
+            },
+            {
+              "time_ms": 70629,
+              "killer_id": "261",
+              "victim_id": "939",
+              "with": "operator"
+            }
+          ]
+        },
+        {
+          "round_num": "21",
+          "winner_id": "2355",
+          "win_condition": "bomb",
+          "team_bank_val_1": "10150",
+          "team_bank_val_2": "10100",
+          "team_loadout_val_1": "25000",
+          "team_loadout_val_2": "12950",
+          "attacking_team_id": "2355",
+          "defending_team_id": "2",
+          "kills": [
+            {
+              "time_ms": 16909,
+              "killer_id": "261",
+              "victim_id": "41135",
+              "with": "shorty"
+            },
+            {
+              "time_ms": 21563,
+              "killer_id": "939",
+              "victim_id": "261",
+              "with": "vandal"
+            },
+            {
+              "time_ms": 27677,
+              "killer_id": "727",
+              "victim_id": "8419",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 47565,
+              "killer_id": "1265",
+              "victim_id": "11921",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 56959,
+              "killer_id": "727",
+              "victim_id": "4581",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 59642,
+              "killer_id": "8447",
+              "victim_id": "5395",
+              "with": "sheriff"
+            },
+            {
+              "time_ms": 61718,
+              "killer_id": "1265",
+              "victim_id": "727",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 63072,
+              "killer_id": "1265",
+              "victim_id": "939",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 80254,
+              "killer_id": "1265",
+              "victim_id": "1265",
+              "with": "null"
+            },
+            {
+              "time_ms": 80374,
+              "killer_id": "8447",
+              "victim_id": "8447",
+              "with": "null"
+            }
+          ]
+        },
+        {
+          "round_num": "22",
+          "winner_id": "2355",
+          "win_condition": "elim",
+          "team_bank_val_1": "800",
+          "team_bank_val_2": "3550",
+          "team_loadout_val_1": "20150",
+          "team_loadout_val_2": "25000",
+          "attacking_team_id": null,
+          "defending_team_id": null,
+          "kills": [
+            {
+              "time_ms": 14684,
+              "killer_id": "8447",
+              "victim_id": "4581",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 18018,
+              "killer_id": "8447",
+              "victim_id": "1265",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 19661,
+              "killer_id": "8419",
+              "victim_id": "727",
+              "with": "vandal"
+            },
+            {
+              "time_ms": 22849,
+              "killer_id": "11921",
+              "victim_id": "261",
+              "with": "operator"
+            },
+            {
+              "time_ms": 25777,
+              "killer_id": "8447",
+              "victim_id": "8419",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 35461,
+              "killer_id": "5395",
+              "victim_id": "11921",
+              "with": "phantom"
+            },
+            {
+              "time_ms": 36621,
+              "killer_id": "939",
+              "victim_id": "5395",
+              "with": "vandal"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "bind",
+      "link": "https://www.vlr.gg/645474/sentinels-vs-kr-esports-vct-2026-americas-stage-1-w1/?game=258577",
+      "first_attacker_id": "",
+      "teams": [
+        {
+          "team_id": "2",
+          "name": "Sentinels",
+          "rounds_won": "0",
+          "rounds_won_atk": 0,
+          "rounds_won_def": 0,
+          "is_winner": null,
+          "players": [
+            {
+              "player_id": "261",
+              "alias": "Victor",
+              "country": "us",
+              "twitter_id": "victorwong",
+              "stats": {
+                "agent": null,
+                "rounds": "0",
+                "rating": null,
+                "kills": null,
+                "deaths": null,
+                "assists": null,
+                "kda_string": null,
+                "damage": null,
+                "adr": null,
+                "fbpr": null,
+                "fdpr": null,
+                "hsp": null,
+                "headshots": null,
+                "bodyshots": null,
+                "legshots": null,
+                "kast": null,
+                "kast_raw": null,
+                "combat_score": null,
+                "econ_rating": null,
+                "first_bloods": null,
+                "first_deaths": null,
+                "plants": null,
+                "defuses": null,
+                "clutch_played": 0,
+                "clutch_won": 0,
+                "clutch_pct": null
+              }
+            },
+            {
+              "player_id": "1265",
+              "alias": "johnqt",
+              "country": "ma",
+              "twitter_id": "1johnqt",
+              "stats": {
+                "agent": null,
+                "rounds": "0",
+                "rating": null,
+                "kills": null,
+                "deaths": null,
+                "assists": null,
+                "kda_string": null,
+                "damage": null,
+                "adr": null,
+                "fbpr": null,
+                "fdpr": null,
+                "hsp": null,
+                "headshots": null,
+                "bodyshots": null,
+                "legshots": null,
+                "kast": null,
+                "kast_raw": null,
+                "combat_score": null,
+                "econ_rating": null,
+                "first_bloods": null,
+                "first_deaths": null,
+                "plants": null,
+                "defuses": null,
+                "clutch_played": 0,
+                "clutch_won": 0,
+                "clutch_pct": null
+              }
+            },
+            {
+              "player_id": "4581",
+              "alias": "JonahP",
+              "country": "ca",
+              "twitter_id": "JonahP_",
+              "stats": {
+                "agent": null,
+                "rounds": "0",
+                "rating": null,
+                "kills": null,
+                "deaths": null,
+                "assists": null,
+                "kda_string": null,
+                "damage": null,
+                "adr": null,
+                "fbpr": null,
+                "fdpr": null,
+                "hsp": null,
+                "headshots": null,
+                "bodyshots": null,
+                "legshots": null,
+                "kast": null,
+                "kast_raw": null,
+                "combat_score": null,
+                "econ_rating": null,
+                "first_bloods": null,
+                "first_deaths": null,
+                "plants": null,
+                "defuses": null,
+                "clutch_played": 0,
+                "clutch_won": 0,
+                "clutch_pct": null
+              }
+            },
+            {
+              "player_id": "5395",
+              "alias": "cortezia",
+              "country": "br",
+              "twitter_id": "corteziafps",
+              "stats": {
+                "agent": null,
+                "rounds": "0",
+                "rating": null,
+                "kills": null,
+                "deaths": null,
+                "assists": null,
+                "kda_string": null,
+                "damage": null,
+                "adr": null,
+                "fbpr": null,
+                "fdpr": null,
+                "hsp": null,
+                "headshots": null,
+                "bodyshots": null,
+                "legshots": null,
+                "kast": null,
+                "kast_raw": null,
+                "combat_score": null,
+                "econ_rating": null,
+                "first_bloods": null,
+                "first_deaths": null,
+                "plants": null,
+                "defuses": null,
+                "clutch_played": 0,
+                "clutch_won": 0,
+                "clutch_pct": null
+              }
+            },
+            {
+              "player_id": "8419",
+              "alias": "Reduxx",
+              "country": "us",
+              "twitter_id": "NotReduxx",
+              "stats": {
+                "agent": null,
+                "rounds": "0",
+                "rating": null,
+                "kills": null,
+                "deaths": null,
+                "assists": null,
+                "kda_string": null,
+                "damage": null,
+                "adr": null,
+                "fbpr": null,
+                "fdpr": null,
+                "hsp": null,
+                "headshots": null,
+                "bodyshots": null,
+                "legshots": null,
+                "kast": null,
+                "kast_raw": null,
+                "combat_score": null,
+                "econ_rating": null,
+                "first_bloods": null,
+                "first_deaths": null,
+                "plants": null,
+                "defuses": null,
+                "clutch_played": 0,
+                "clutch_won": 0,
+                "clutch_pct": null
+              }
+            }
+          ]
+        },
+        {
+          "team_id": "2355",
+          "name": "KRÜ Esports",
+          "rounds_won": "0",
+          "rounds_won_atk": 0,
+          "rounds_won_def": 0,
+          "is_winner": null,
+          "players": [
+            {
+              "player_id": "41135",
+              "alias": "Dantedeu5",
+              "country": "ar",
+              "twitter_id": "Dantedeu5",
+              "stats": {
+                "agent": null,
+                "rounds": "0",
+                "rating": null,
+                "kills": null,
+                "deaths": null,
+                "assists": null,
+                "kda_string": null,
+                "damage": null,
+                "adr": null,
+                "fbpr": null,
+                "fdpr": null,
+                "hsp": null,
+                "headshots": null,
+                "bodyshots": null,
+                "legshots": null,
+                "kast": null,
+                "kast_raw": null,
+                "combat_score": null,
+                "econ_rating": null,
+                "first_bloods": null,
+                "first_deaths": null,
+                "plants": null,
+                "defuses": null,
+                "clutch_played": 0,
+                "clutch_won": 0,
+                "clutch_pct": null
+              }
+            },
+            {
+              "player_id": "727",
+              "alias": "saadhak",
+              "country": "ar",
+              "twitter_id": "SaadhakW",
+              "stats": {
+                "agent": null,
+                "rounds": "0",
+                "rating": null,
+                "kills": null,
+                "deaths": null,
+                "assists": null,
+                "kda_string": null,
+                "damage": null,
+                "adr": null,
+                "fbpr": null,
+                "fdpr": null,
+                "hsp": null,
+                "headshots": null,
+                "bodyshots": null,
+                "legshots": null,
+                "kast": null,
+                "kast_raw": null,
+                "combat_score": null,
+                "econ_rating": null,
+                "first_bloods": null,
+                "first_deaths": null,
+                "plants": null,
+                "defuses": null,
+                "clutch_played": 0,
+                "clutch_won": 0,
+                "clutch_pct": null
+              }
+            },
+            {
+              "player_id": "939",
+              "alias": "mwzera",
+              "country": "br",
+              "twitter_id": "mwzera",
+              "stats": {
+                "agent": null,
+                "rounds": "0",
+                "rating": null,
+                "kills": null,
+                "deaths": null,
+                "assists": null,
+                "kda_string": null,
+                "damage": null,
+                "adr": null,
+                "fbpr": null,
+                "fdpr": null,
+                "hsp": null,
+                "headshots": null,
+                "bodyshots": null,
+                "legshots": null,
+                "kast": null,
+                "kast_raw": null,
+                "combat_score": null,
+                "econ_rating": null,
+                "first_bloods": null,
+                "first_deaths": null,
+                "plants": null,
+                "defuses": null,
+                "clutch_played": 0,
+                "clutch_won": 0,
+                "clutch_pct": null
+              }
+            },
+            {
+              "player_id": "11921",
+              "alias": "silentzz",
+              "country": "br",
+              "twitter_id": "silentzfps",
+              "stats": {
+                "agent": null,
+                "rounds": "0",
+                "rating": null,
+                "kills": null,
+                "deaths": null,
+                "assists": null,
+                "kda_string": null,
+                "damage": null,
+                "adr": null,
+                "fbpr": null,
+                "fdpr": null,
+                "hsp": null,
+                "headshots": null,
+                "bodyshots": null,
+                "legshots": null,
+                "kast": null,
+                "kast_raw": null,
+                "combat_score": null,
+                "econ_rating": null,
+                "first_bloods": null,
+                "first_deaths": null,
+                "plants": null,
+                "defuses": null,
+                "clutch_played": 0,
+                "clutch_won": 0,
+                "clutch_pct": null
+              }
+            },
+            {
+              "player_id": "8447",
+              "alias": "Less",
+              "country": "br",
+              "twitter_id": "lessvlr",
+              "stats": {
+                "agent": null,
+                "rounds": "0",
+                "rating": null,
+                "kills": null,
+                "deaths": null,
+                "assists": null,
+                "kda_string": null,
+                "damage": null,
+                "adr": null,
+                "fbpr": null,
+                "fdpr": null,
+                "hsp": null,
+                "headshots": null,
+                "bodyshots": null,
+                "legshots": null,
+                "kast": null,
+                "kast_raw": null,
+                "combat_score": null,
+                "econ_rating": null,
+                "first_bloods": null,
+                "first_deaths": null,
+                "plants": null,
+                "defuses": null,
+                "clutch_played": 0,
+                "clutch_won": 0,
+                "clutch_pct": null
+              }
+            }
+          ]
+        }
+      ],
+      "rounds": [
+        {
+          "round_id": "6514816",
+          "round_num": "1",
+          "game_id": "258577",
+          "winner_id": null,
+          "win_condition": null,
+          "first_killer_team_id": null,
+          "team_bank_val_1": null,
+          "team_bank_val_2": null,
+          "team_loadout_val_1": null,
+          "team_loadout_val_2": null,
+          "data": null,
+          "attacking_team_id": null,
+          "defending_team_id": null
+        },
+        {
+          "round_id": "6514817",
+          "round_num": "2",
+          "game_id": "258577",
+          "winner_id": null,
+          "win_condition": null,
+          "first_killer_team_id": null,
+          "team_bank_val_1": null,
+          "team_bank_val_2": null,
+          "team_loadout_val_1": null,
+          "team_loadout_val_2": null,
+          "data": null,
+          "attacking_team_id": null,
+          "defending_team_id": null
+        },
+        {
+          "round_id": "6514818",
+          "round_num": "3",
+          "game_id": "258577",
+          "winner_id": null,
+          "win_condition": null,
+          "first_killer_team_id": null,
+          "team_bank_val_1": null,
+          "team_bank_val_2": null,
+          "team_loadout_val_1": null,
+          "team_loadout_val_2": null,
+          "data": null,
+          "attacking_team_id": null,
+          "defending_team_id": null
+        },
+        {
+          "round_id": "6514819",
+          "round_num": "4",
+          "game_id": "258577",
+          "winner_id": null,
+          "win_condition": null,
+          "first_killer_team_id": null,
+          "team_bank_val_1": null,
+          "team_bank_val_2": null,
+          "team_loadout_val_1": null,
+          "team_loadout_val_2": null,
+          "data": null,
+          "attacking_team_id": null,
+          "defending_team_id": null
+        },
+        {
+          "round_id": "6514820",
+          "round_num": "5",
+          "game_id": "258577",
+          "winner_id": null,
+          "win_condition": null,
+          "first_killer_team_id": null,
+          "team_bank_val_1": null,
+          "team_bank_val_2": null,
+          "team_loadout_val_1": null,
+          "team_loadout_val_2": null,
+          "data": null,
+          "attacking_team_id": null,
+          "defending_team_id": null
+        },
+        {
+          "round_id": "6514821",
+          "round_num": "6",
+          "game_id": "258577",
+          "winner_id": null,
+          "win_condition": null,
+          "first_killer_team_id": null,
+          "team_bank_val_1": null,
+          "team_bank_val_2": null,
+          "team_loadout_val_1": null,
+          "team_loadout_val_2": null,
+          "data": null,
+          "attacking_team_id": null,
+          "defending_team_id": null
+        },
+        {
+          "round_id": "6514822",
+          "round_num": "7",
+          "game_id": "258577",
+          "winner_id": null,
+          "win_condition": null,
+          "first_killer_team_id": null,
+          "team_bank_val_1": null,
+          "team_bank_val_2": null,
+          "team_loadout_val_1": null,
+          "team_loadout_val_2": null,
+          "data": null,
+          "attacking_team_id": null,
+          "defending_team_id": null
+        },
+        {
+          "round_id": "6514823",
+          "round_num": "8",
+          "game_id": "258577",
+          "winner_id": null,
+          "win_condition": null,
+          "first_killer_team_id": null,
+          "team_bank_val_1": null,
+          "team_bank_val_2": null,
+          "team_loadout_val_1": null,
+          "team_loadout_val_2": null,
+          "data": null,
+          "attacking_team_id": null,
+          "defending_team_id": null
+        },
+        {
+          "round_id": "6514824",
+          "round_num": "9",
+          "game_id": "258577",
+          "winner_id": null,
+          "win_condition": null,
+          "first_killer_team_id": null,
+          "team_bank_val_1": null,
+          "team_bank_val_2": null,
+          "team_loadout_val_1": null,
+          "team_loadout_val_2": null,
+          "data": null,
+          "attacking_team_id": null,
+          "defending_team_id": null
+        },
+        {
+          "round_id": "6514825",
+          "round_num": "10",
+          "game_id": "258577",
+          "winner_id": null,
+          "win_condition": null,
+          "first_killer_team_id": null,
+          "team_bank_val_1": null,
+          "team_bank_val_2": null,
+          "team_loadout_val_1": null,
+          "team_loadout_val_2": null,
+          "data": null,
+          "attacking_team_id": null,
+          "defending_team_id": null
+        },
+        {
+          "round_id": "6514826",
+          "round_num": "11",
+          "game_id": "258577",
+          "winner_id": null,
+          "win_condition": null,
+          "first_killer_team_id": null,
+          "team_bank_val_1": null,
+          "team_bank_val_2": null,
+          "team_loadout_val_1": null,
+          "team_loadout_val_2": null,
+          "data": null,
+          "attacking_team_id": null,
+          "defending_team_id": null
+        },
+        {
+          "round_id": "6514827",
+          "round_num": "12",
+          "game_id": "258577",
+          "winner_id": null,
+          "win_condition": null,
+          "first_killer_team_id": null,
+          "team_bank_val_1": null,
+          "team_bank_val_2": null,
+          "team_loadout_val_1": null,
+          "team_loadout_val_2": null,
+          "data": null,
+          "attacking_team_id": null,
+          "defending_team_id": null
+        },
+        {
+          "round_id": "6514828",
+          "round_num": "13",
+          "game_id": "258577",
+          "winner_id": null,
+          "win_condition": null,
+          "first_killer_team_id": null,
+          "team_bank_val_1": null,
+          "team_bank_val_2": null,
+          "team_loadout_val_1": null,
+          "team_loadout_val_2": null,
+          "data": null,
+          "attacking_team_id": null,
+          "defending_team_id": null
+        },
+        {
+          "round_id": "6514829",
+          "round_num": "14",
+          "game_id": "258577",
+          "winner_id": null,
+          "win_condition": null,
+          "first_killer_team_id": null,
+          "team_bank_val_1": null,
+          "team_bank_val_2": null,
+          "team_loadout_val_1": null,
+          "team_loadout_val_2": null,
+          "data": null,
+          "attacking_team_id": null,
+          "defending_team_id": null
+        },
+        {
+          "round_id": "6514830",
+          "round_num": "15",
+          "game_id": "258577",
+          "winner_id": null,
+          "win_condition": null,
+          "first_killer_team_id": null,
+          "team_bank_val_1": null,
+          "team_bank_val_2": null,
+          "team_loadout_val_1": null,
+          "team_loadout_val_2": null,
+          "data": null,
+          "attacking_team_id": null,
+          "defending_team_id": null
+        },
+        {
+          "round_id": "6514831",
+          "round_num": "16",
+          "game_id": "258577",
+          "winner_id": null,
+          "win_condition": null,
+          "first_killer_team_id": null,
+          "team_bank_val_1": null,
+          "team_bank_val_2": null,
+          "team_loadout_val_1": null,
+          "team_loadout_val_2": null,
+          "data": null,
+          "attacking_team_id": null,
+          "defending_team_id": null
+        },
+        {
+          "round_id": "6514832",
+          "round_num": "17",
+          "game_id": "258577",
+          "winner_id": null,
+          "win_condition": null,
+          "first_killer_team_id": null,
+          "team_bank_val_1": null,
+          "team_bank_val_2": null,
+          "team_loadout_val_1": null,
+          "team_loadout_val_2": null,
+          "data": null,
+          "attacking_team_id": null,
+          "defending_team_id": null
+        },
+        {
+          "round_id": "6514833",
+          "round_num": "18",
+          "game_id": "258577",
+          "winner_id": null,
+          "win_condition": null,
+          "first_killer_team_id": null,
+          "team_bank_val_1": null,
+          "team_bank_val_2": null,
+          "team_loadout_val_1": null,
+          "team_loadout_val_2": null,
+          "data": null,
+          "attacking_team_id": null,
+          "defending_team_id": null
+        },
+        {
+          "round_id": "6514834",
+          "round_num": "19",
+          "game_id": "258577",
+          "winner_id": null,
+          "win_condition": null,
+          "first_killer_team_id": null,
+          "team_bank_val_1": null,
+          "team_bank_val_2": null,
+          "team_loadout_val_1": null,
+          "team_loadout_val_2": null,
+          "data": null,
+          "attacking_team_id": null,
+          "defending_team_id": null
+        },
+        {
+          "round_id": "6514835",
+          "round_num": "20",
+          "game_id": "258577",
+          "winner_id": null,
+          "win_condition": null,
+          "first_killer_team_id": null,
+          "team_bank_val_1": null,
+          "team_bank_val_2": null,
+          "team_loadout_val_1": null,
+          "team_loadout_val_2": null,
+          "data": null,
+          "attacking_team_id": null,
+          "defending_team_id": null
+        },
+        {
+          "round_id": "6514836",
+          "round_num": "21",
+          "game_id": "258577",
+          "winner_id": null,
+          "win_condition": null,
+          "first_killer_team_id": null,
+          "team_bank_val_1": null,
+          "team_bank_val_2": null,
+          "team_loadout_val_1": null,
+          "team_loadout_val_2": null,
+          "data": null,
+          "attacking_team_id": null,
+          "defending_team_id": null
+        },
+        {
+          "round_id": "6514837",
+          "round_num": "22",
+          "game_id": "258577",
+          "winner_id": null,
+          "win_condition": null,
+          "first_killer_team_id": null,
+          "team_bank_val_1": null,
+          "team_bank_val_2": null,
+          "team_loadout_val_1": null,
+          "team_loadout_val_2": null,
+          "data": null,
+          "attacking_team_id": null,
+          "defending_team_id": null
+        },
+        {
+          "round_id": "6514838",
+          "round_num": "23",
+          "game_id": "258577",
+          "winner_id": null,
+          "win_condition": null,
+          "first_killer_team_id": null,
+          "team_bank_val_1": null,
+          "team_bank_val_2": null,
+          "team_loadout_val_1": null,
+          "team_loadout_val_2": null,
+          "data": null,
+          "attacking_team_id": null,
+          "defending_team_id": null
+        },
+        {
+          "round_id": "6514839",
+          "round_num": "24",
+          "game_id": "258577",
+          "winner_id": null,
+          "win_condition": null,
+          "first_killer_team_id": null,
+          "team_bank_val_1": null,
+          "team_bank_val_2": null,
+          "team_loadout_val_1": null,
+          "team_loadout_val_2": null,
+          "data": null,
+          "attacking_team_id": null,
+          "defending_team_id": null
+        },
+        {
+          "round_id": "6514840",
+          "round_num": "25",
+          "game_id": "258577",
+          "winner_id": null,
+          "win_condition": null,
+          "first_killer_team_id": null,
+          "team_bank_val_1": null,
+          "team_bank_val_2": null,
+          "team_loadout_val_1": null,
+          "team_loadout_val_2": null,
+          "data": null,
+          "attacking_team_id": null,
+          "defending_team_id": null
+        }
+      ]
+    }
+  ],
+  "totals": {
+    "teams": [
+      {
+        "team_id": "2",
+        "name": "Sentinels",
+        "players": [
+          {
+            "player_id": "1265",
+            "alias": "johnqt",
+            "stats": {
+              "agents": [
+                "viper",
+                "harbor"
+              ],
+              "rounds": "43",
+              "rating": "2.1884",
+              "kills": "36",
+              "deaths": "32",
+              "assists": "8",
+              "kda_string": "36/32/8",
+              "damage": "6586",
+              "adr": "153.2",
+              "fbpr": "0.02",
+              "fdpr": "0.07",
+              "hsp": "0.33",
+              "headshots": "31",
+              "bodyshots": "59",
+              "legshots": "5",
+              "kast": "0.65",
+              "kast_raw": "28",
+              "combat_score": "230",
+              "econ_rating": "59",
+              "first_bloods": "1",
+              "first_deaths": "3",
+              "plants": "4",
+              "defuses": "0",
+              "clutch_played": "10",
+              "clutch_won": null,
+              "clutch_pct": 0
+            }
+          },
+          {
+            "player_id": "261",
+            "alias": "Victor",
+            "stats": {
+              "agents": [
+                "raze",
+                "neon"
+              ],
+              "rounds": "43",
+              "rating": "1.406",
+              "kills": "28",
+              "deaths": "37",
+              "assists": "5",
+              "kda_string": "28/37/5",
+              "damage": "5201",
+              "adr": "121.0",
+              "fbpr": "0.23",
+              "fdpr": "0.21",
+              "hsp": "0.11",
+              "headshots": "12",
+              "bodyshots": "91",
+              "legshots": "4",
+              "kast": "0.56",
+              "kast_raw": "24",
+              "combat_score": "192",
+              "econ_rating": "47",
+              "first_bloods": "10",
+              "first_deaths": "9",
+              "plants": "1",
+              "defuses": "1",
+              "clutch_played": "3",
+              "clutch_won": null,
+              "clutch_pct": 0
+            }
+          },
+          {
+            "player_id": "8419",
+            "alias": "Reduxx",
+            "stats": {
+              "agents": [
+                "omen",
+                "iso"
+              ],
+              "rounds": "43",
+              "rating": "2.1478",
+              "kills": "31",
+              "deaths": "34",
+              "assists": "13",
+              "kda_string": "31/34/13",
+              "damage": "5809",
+              "adr": "135.1",
+              "fbpr": "0.07",
+              "fdpr": "0.09",
+              "hsp": "0.30",
+              "headshots": "29",
+              "bodyshots": "57",
+              "legshots": "11",
+              "kast": "0.63",
+              "kast_raw": "27",
+              "combat_score": "210",
+              "econ_rating": "54",
+              "first_bloods": "3",
+              "first_deaths": "4",
+              "plants": "1",
+              "defuses": "1",
+              "clutch_played": "7",
+              "clutch_won": "1",
+              "clutch_pct": 14.000000000000002
+            }
+          },
+          {
+            "player_id": "4581",
+            "alias": "JonahP",
+            "stats": {
+              "agents": [
+                "fade",
+                "sova"
+              ],
+              "rounds": "43",
+              "rating": "1.1379",
+              "kills": "16",
+              "deaths": "33",
+              "assists": "16",
+              "kda_string": "16/33/16",
+              "damage": "3709",
+              "adr": "86.3",
+              "fbpr": "0.05",
+              "fdpr": "0.14",
+              "hsp": "0.24",
+              "headshots": "16",
+              "bodyshots": "45",
+              "legshots": "5",
+              "kast": "0.60",
+              "kast_raw": "26",
+              "combat_score": "123",
+              "econ_rating": "38",
+              "first_bloods": "2",
+              "first_deaths": "6",
+              "plants": "4",
+              "defuses": "0",
+              "clutch_played": "1",
+              "clutch_won": null,
+              "clutch_pct": 0
+            }
+          },
+          {
+            "player_id": "5395",
+            "alias": "cortezia",
+            "stats": {
+              "agents": [
+                "veto",
+                "viper"
+              ],
+              "rounds": "43",
+              "rating": "1.5678",
+              "kills": "22",
+              "deaths": "31",
+              "assists": "8",
+              "kda_string": "22/31/8",
+              "damage": "4350",
+              "adr": "101.2",
+              "fbpr": "0.05",
+              "fdpr": "0.07",
+              "hsp": "0.31",
+              "headshots": "20",
+              "bodyshots": "44",
+              "legshots": "1",
+              "kast": "0.58",
+              "kast_raw": "25",
+              "combat_score": "147",
+              "econ_rating": "44",
+              "first_bloods": "2",
+              "first_deaths": "3",
+              "plants": "4",
+              "defuses": "0",
+              "clutch_played": "8",
+              "clutch_won": "2",
+              "clutch_pct": 25
+            }
+          }
+        ]
+      },
+      {
+        "team_id": "2355",
+        "name": "KRÜ Esports",
+        "players": [
+          {
+            "player_id": "939",
+            "alias": "mwzera",
+            "stats": {
+              "agents": [
+                "fade",
+                "sova"
+              ],
+              "rounds": "43",
+              "rating": "2.5822",
+              "kills": "33",
+              "deaths": "24",
+              "assists": "17",
+              "kda_string": "33/24/17",
+              "damage": "6472",
+              "adr": "150.5",
+              "fbpr": "0.09",
+              "fdpr": "0.05",
+              "hsp": "0.24",
+              "headshots": "24",
+              "bodyshots": "69",
+              "legshots": "6",
+              "kast": "0.88",
+              "kast_raw": "38",
+              "combat_score": "230",
+              "econ_rating": "62",
+              "first_bloods": "4",
+              "first_deaths": "2",
+              "plants": "9",
+              "defuses": "2",
+              "clutch_played": "5",
+              "clutch_won": null,
+              "clutch_pct": 0
+            }
+          },
+          {
+            "player_id": "41135",
+            "alias": "Dantedeu5",
+            "stats": {
+              "agents": [
+                "neon",
+                "neon"
+              ],
+              "rounds": "43",
+              "rating": "1.6479",
+              "kills": "32",
+              "deaths": "34",
+              "assists": "7",
+              "kda_string": "32/34/7",
+              "damage": "5656",
+              "adr": "131.5",
+              "fbpr": "0.14",
+              "fdpr": "0.21",
+              "hsp": "0.20",
+              "headshots": "24",
+              "bodyshots": "89",
+              "legshots": "8",
+              "kast": "0.58",
+              "kast_raw": "25",
+              "combat_score": "212",
+              "econ_rating": "49",
+              "first_bloods": "6",
+              "first_deaths": "9",
+              "plants": "1",
+              "defuses": "0",
+              "clutch_played": null,
+              "clutch_won": null,
+              "clutch_pct": null
+            }
+          },
+          {
+            "player_id": "8447",
+            "alias": "Less",
+            "stats": {
+              "agents": [
+                "viper",
+                "viper"
+              ],
+              "rounds": "43",
+              "rating": "2.3887",
+              "kills": "35",
+              "deaths": "25",
+              "assists": "16",
+              "kda_string": "35/25/16",
+              "damage": "6041",
+              "adr": "140.5",
+              "fbpr": "0.12",
+              "fdpr": "0.05",
+              "hsp": "0.25",
+              "headshots": "24",
+              "bodyshots": "64",
+              "legshots": "9",
+              "kast": "0.60",
+              "kast_raw": "26",
+              "combat_score": "230",
+              "econ_rating": "67",
+              "first_bloods": "5",
+              "first_deaths": "2",
+              "plants": "0",
+              "defuses": "0",
+              "clutch_played": "5",
+              "clutch_won": "1",
+              "clutch_pct": 20
+            }
+          },
+          {
+            "player_id": "727",
+            "alias": "saadhak",
+            "stats": {
+              "agents": [
+                "omen",
+                "omen"
+              ],
+              "rounds": "43",
+              "rating": "2.5061",
+              "kills": "37",
+              "deaths": "26",
+              "assists": "14",
+              "kda_string": "37/26/14",
+              "damage": "6145",
+              "adr": "142.9",
+              "fbpr": "0.12",
+              "fdpr": "0.07",
+              "hsp": "0.24",
+              "headshots": "28",
+              "bodyshots": "73",
+              "legshots": "14",
+              "kast": "0.74",
+              "kast_raw": "32",
+              "combat_score": "226",
+              "econ_rating": "62",
+              "first_bloods": "5",
+              "first_deaths": "3",
+              "plants": "2",
+              "defuses": "2",
+              "clutch_played": "3",
+              "clutch_won": null,
+              "clutch_pct": 0
+            }
+          },
+          {
+            "player_id": "11921",
+            "alias": "silentzz",
+            "stats": {
+              "agents": [
+                "vyse",
+                "chamber"
+              ],
+              "rounds": "43",
+              "rating": "2.1914",
+              "kills": "30",
+              "deaths": "24",
+              "assists": "6",
+              "kda_string": "30/24/6",
+              "damage": "5157",
+              "adr": "119.9",
+              "fbpr": "0.12",
+              "fdpr": "0.05",
+              "hsp": "0.32",
+              "headshots": "20",
+              "bodyshots": "42",
+              "legshots": "1",
+              "kast": "0.77",
+              "kast_raw": "33",
+              "combat_score": "180",
+              "econ_rating": "48",
+              "first_bloods": "5",
+              "first_deaths": "2",
+              "plants": "1",
+              "defuses": "2",
+              "clutch_played": "6",
+              "clutch_won": "2",
+              "clutch_pct": 33
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

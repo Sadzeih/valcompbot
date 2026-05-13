@@ -1,0 +1,1010 @@
+[
+  {
+    "match_id": "108015",
+    "scheduled_ts": "1775854800",
+    "event": "VCT 2026: Americas Stage 1",
+    "series": "Group Stage",
+    "subseries": "Week 1",
+    "category": [],
+    "teams": [
+      {
+        "team_id": "2",
+        "name": "Sentinels",
+        "tag": "SEN",
+        "maps_won": "0",
+        "is_winner": false
+      },
+      {
+        "team_id": "2355",
+        "name": "KRÜ Esports",
+        "tag": "KRÜ",
+        "maps_won": "2",
+        "is_winner": true
+      }
+    ]
+  },
+  {
+    "match_id": "108016",
+    "scheduled_ts": "1775864400",
+    "event": "VCT 2026: Americas Stage 1",
+    "series": "Group Stage",
+    "subseries": "Week 1",
+    "category": [],
+    "teams": [
+      {
+        "team_id": "11058",
+        "name": "G2 Esports",
+        "tag": "G2",
+        "maps_won": "0",
+        "is_winner": false
+      },
+      {
+        "team_id": "7386",
+        "name": "MIBR",
+        "tag": null,
+        "maps_won": "2",
+        "is_winner": true
+      }
+    ]
+  },
+  {
+    "match_id": "108017",
+    "scheduled_ts": "1775941200",
+    "event": "VCT 2026: Americas Stage 1",
+    "series": "Group Stage",
+    "subseries": "Week 1",
+    "category": [],
+    "teams": [
+      {
+        "team_id": "120",
+        "name": "100 Thieves",
+        "tag": "100T",
+        "maps_won": "2",
+        "is_winner": true
+      },
+      {
+        "team_id": "5248",
+        "name": "Evil Geniuses",
+        "tag": "EG",
+        "maps_won": "0",
+        "is_winner": false
+      }
+    ]
+  },
+  {
+    "match_id": "108018",
+    "scheduled_ts": "1775954100",
+    "event": "VCT 2026: Americas Stage 1",
+    "series": "Group Stage",
+    "subseries": "Week 1",
+    "category": [],
+    "teams": [
+      {
+        "team_id": "427",
+        "name": "ENVY",
+        "tag": null,
+        "maps_won": "1",
+        "is_winner": false
+      },
+      {
+        "team_id": "6961",
+        "name": "LOUD",
+        "tag": "LOUD",
+        "maps_won": "2",
+        "is_winner": true
+      }
+    ]
+  },
+  {
+    "match_id": "108019",
+    "scheduled_ts": "1776027600",
+    "event": "VCT 2026: Americas Stage 1",
+    "series": "Group Stage",
+    "subseries": "Week 1",
+    "category": [],
+    "teams": [
+      {
+        "team_id": "188",
+        "name": "Cloud9",
+        "tag": "C9",
+        "maps_won": "0",
+        "is_winner": false
+      },
+      {
+        "team_id": "2359",
+        "name": "LEVIATÁN",
+        "tag": "LEV",
+        "maps_won": "2",
+        "is_winner": true
+      }
+    ]
+  },
+  {
+    "match_id": "108020",
+    "scheduled_ts": "1776035100",
+    "event": "VCT 2026: Americas Stage 1",
+    "series": "Group Stage",
+    "subseries": "Week 1",
+    "category": [],
+    "teams": [
+      {
+        "team_id": "2406",
+        "name": "FURIA",
+        "tag": "FUR",
+        "maps_won": "2",
+        "is_winner": true
+      },
+      {
+        "team_id": "1034",
+        "name": "NRG",
+        "tag": "NRG",
+        "maps_won": "0",
+        "is_winner": false
+      }
+    ]
+  },
+  {
+    "match_id": "108021",
+    "scheduled_ts": "1776459600",
+    "event": "VCT 2026: Americas Stage 1",
+    "series": "Group Stage",
+    "subseries": "Week 2",
+    "category": [],
+    "teams": [
+      {
+        "team_id": "188",
+        "name": "Cloud9",
+        "tag": "C9",
+        "maps_won": "1",
+        "is_winner": false
+      },
+      {
+        "team_id": "427",
+        "name": "ENVY",
+        "tag": null,
+        "maps_won": "2",
+        "is_winner": true
+      }
+    ]
+  },
+  {
+    "match_id": "108022",
+    "scheduled_ts": "1776470700",
+    "event": "VCT 2026: Americas Stage 1",
+    "series": "Group Stage",
+    "subseries": "Week 2",
+    "category": [],
+    "teams": [
+      {
+        "team_id": "2406",
+        "name": "FURIA",
+        "tag": "FUR",
+        "maps_won": "2",
+        "is_winner": true
+      },
+      {
+        "team_id": "5248",
+        "name": "Evil Geniuses",
+        "tag": "EG",
+        "maps_won": "1",
+        "is_winner": false
+      }
+    ]
+  },
+  {
+    "match_id": "108023",
+    "scheduled_ts": "1776546000",
+    "event": "VCT 2026: Americas Stage 1",
+    "series": "Group Stage",
+    "subseries": "Week 2",
+    "category": [],
+    "teams": [
+      {
+        "team_id": "11058",
+        "name": "G2 Esports",
+        "tag": "G2",
+        "maps_won": "1",
+        "is_winner": false
+      },
+      {
+        "team_id": "2359",
+        "name": "LEVIATÁN",
+        "tag": "LEV",
+        "maps_won": "2",
+        "is_winner": true
+      }
+    ]
+  },
+  {
+    "match_id": "108024",
+    "scheduled_ts": "1776558600",
+    "event": "VCT 2026: Americas Stage 1",
+    "series": "Group Stage",
+    "subseries": "Week 2",
+    "category": [],
+    "teams": [
+      {
+        "team_id": "7386",
+        "name": "MIBR",
+        "tag": null,
+        "maps_won": "2",
+        "is_winner": true
+      },
+      {
+        "team_id": "6961",
+        "name": "LOUD",
+        "tag": "LOUD",
+        "maps_won": "0",
+        "is_winner": false
+      }
+    ]
+  },
+  {
+    "match_id": "108025",
+    "scheduled_ts": "1776632400",
+    "event": "VCT 2026: Americas Stage 1",
+    "series": "Group Stage",
+    "subseries": "Week 2",
+    "category": [],
+    "teams": [
+      {
+        "team_id": "1034",
+        "name": "NRG",
+        "tag": "NRG",
+        "maps_won": "0",
+        "is_winner": false
+      },
+      {
+        "team_id": "2355",
+        "name": "KRÜ Esports",
+        "tag": "KRÜ",
+        "maps_won": "2",
+        "is_winner": true
+      }
+    ]
+  },
+  {
+    "match_id": "108026",
+    "scheduled_ts": "1776640800",
+    "event": "VCT 2026: Americas Stage 1",
+    "series": "Group Stage",
+    "subseries": "Week 2",
+    "category": [],
+    "teams": [
+      {
+        "team_id": "120",
+        "name": "100 Thieves",
+        "tag": "100T",
+        "maps_won": "0",
+        "is_winner": false
+      },
+      {
+        "team_id": "2",
+        "name": "Sentinels",
+        "tag": "SEN",
+        "maps_won": "2",
+        "is_winner": true
+      }
+    ]
+  },
+  {
+    "match_id": "108027",
+    "scheduled_ts": "1777064400",
+    "event": "VCT 2026: Americas Stage 1",
+    "series": "Group Stage",
+    "subseries": "Week 3",
+    "category": [],
+    "teams": [
+      {
+        "team_id": "2359",
+        "name": "LEVIATÁN",
+        "tag": "LEV",
+        "maps_won": "2",
+        "is_winner": true
+      },
+      {
+        "team_id": "427",
+        "name": "ENVY",
+        "tag": null,
+        "maps_won": "0",
+        "is_winner": false
+      }
+    ]
+  },
+  {
+    "match_id": "108028",
+    "scheduled_ts": "1777070400",
+    "event": "VCT 2026: Americas Stage 1",
+    "series": "Group Stage",
+    "subseries": "Week 3",
+    "category": [],
+    "teams": [
+      {
+        "team_id": "11058",
+        "name": "G2 Esports",
+        "tag": "G2",
+        "maps_won": "2",
+        "is_winner": true
+      },
+      {
+        "team_id": "6961",
+        "name": "LOUD",
+        "tag": "LOUD",
+        "maps_won": "0",
+        "is_winner": false
+      }
+    ]
+  },
+  {
+    "match_id": "108029",
+    "scheduled_ts": "1777150800",
+    "event": "VCT 2026: Americas Stage 1",
+    "series": "Group Stage",
+    "subseries": "Week 3",
+    "category": [],
+    "teams": [
+      {
+        "team_id": "2406",
+        "name": "FURIA",
+        "tag": "FUR",
+        "maps_won": "0",
+        "is_winner": false
+      },
+      {
+        "team_id": "2355",
+        "name": "KRÜ Esports",
+        "tag": "KRÜ",
+        "maps_won": "2",
+        "is_winner": true
+      }
+    ]
+  },
+  {
+    "match_id": "108030",
+    "scheduled_ts": "1777158300",
+    "event": "VCT 2026: Americas Stage 1",
+    "series": "Group Stage",
+    "subseries": "Week 3",
+    "category": [],
+    "teams": [
+      {
+        "team_id": "1034",
+        "name": "NRG",
+        "tag": "NRG",
+        "maps_won": "2",
+        "is_winner": true
+      },
+      {
+        "team_id": "120",
+        "name": "100 Thieves",
+        "tag": "100T",
+        "maps_won": "1",
+        "is_winner": false
+      }
+    ]
+  },
+  {
+    "match_id": "108031",
+    "scheduled_ts": "1777237200",
+    "event": "VCT 2026: Americas Stage 1",
+    "series": "Group Stage",
+    "subseries": "Week 3",
+    "category": [],
+    "teams": [
+      {
+        "team_id": "5248",
+        "name": "Evil Geniuses",
+        "tag": "EG",
+        "maps_won": "0",
+        "is_winner": false
+      },
+      {
+        "team_id": "2",
+        "name": "Sentinels",
+        "tag": "SEN",
+        "maps_won": "2",
+        "is_winner": true
+      }
+    ]
+  },
+  {
+    "match_id": "108032",
+    "scheduled_ts": "1777245900",
+    "event": "VCT 2026: Americas Stage 1",
+    "series": "Group Stage",
+    "subseries": "Week 3",
+    "category": [],
+    "teams": [
+      {
+        "team_id": "7386",
+        "name": "MIBR",
+        "tag": null,
+        "maps_won": "0",
+        "is_winner": false
+      },
+      {
+        "team_id": "188",
+        "name": "Cloud9",
+        "tag": "C9",
+        "maps_won": "2",
+        "is_winner": true
+      }
+    ]
+  },
+  {
+    "match_id": "108033",
+    "scheduled_ts": "1777669200",
+    "event": "VCT 2026: Americas Stage 1",
+    "series": "Group Stage",
+    "subseries": "Week 4",
+    "category": [],
+    "teams": [
+      {
+        "team_id": "5248",
+        "name": "Evil Geniuses",
+        "tag": "EG",
+        "maps_won": "0",
+        "is_winner": false
+      },
+      {
+        "team_id": "1034",
+        "name": "NRG",
+        "tag": "NRG",
+        "maps_won": "2",
+        "is_winner": true
+      }
+    ]
+  },
+  {
+    "match_id": "108034",
+    "scheduled_ts": "1777677600",
+    "event": "VCT 2026: Americas Stage 1",
+    "series": "Group Stage",
+    "subseries": "Week 4",
+    "category": [],
+    "teams": [
+      {
+        "team_id": "2359",
+        "name": "LEVIATÁN",
+        "tag": "LEV",
+        "maps_won": "0",
+        "is_winner": false
+      },
+      {
+        "team_id": "7386",
+        "name": "MIBR",
+        "tag": null,
+        "maps_won": "2",
+        "is_winner": true
+      }
+    ]
+  },
+  {
+    "match_id": "108035",
+    "scheduled_ts": "1777755600",
+    "event": "VCT 2026: Americas Stage 1",
+    "series": "Group Stage",
+    "subseries": "Week 4",
+    "category": [],
+    "teams": [
+      {
+        "team_id": "2355",
+        "name": "KRÜ Esports",
+        "tag": "KRÜ",
+        "maps_won": "1",
+        "is_winner": false
+      },
+      {
+        "team_id": "120",
+        "name": "100 Thieves",
+        "tag": "100T",
+        "maps_won": "2",
+        "is_winner": true
+      }
+    ]
+  },
+  {
+    "match_id": "108036",
+    "scheduled_ts": "1777766400",
+    "event": "VCT 2026: Americas Stage 1",
+    "series": "Group Stage",
+    "subseries": "Week 4",
+    "category": [],
+    "teams": [
+      {
+        "team_id": "2406",
+        "name": "FURIA",
+        "tag": "FUR",
+        "maps_won": "2",
+        "is_winner": true
+      },
+      {
+        "team_id": "2",
+        "name": "Sentinels",
+        "tag": "SEN",
+        "maps_won": "1",
+        "is_winner": false
+      }
+    ]
+  },
+  {
+    "match_id": "108037",
+    "scheduled_ts": "1777842000",
+    "event": "VCT 2026: Americas Stage 1",
+    "series": "Group Stage",
+    "subseries": "Week 4",
+    "category": [],
+    "teams": [
+      {
+        "team_id": "6961",
+        "name": "LOUD",
+        "tag": "LOUD",
+        "maps_won": "2",
+        "is_winner": true
+      },
+      {
+        "team_id": "188",
+        "name": "Cloud9",
+        "tag": "C9",
+        "maps_won": "1",
+        "is_winner": false
+      }
+    ]
+  },
+  {
+    "match_id": "108038",
+    "scheduled_ts": "1777852800",
+    "event": "VCT 2026: Americas Stage 1",
+    "series": "Group Stage",
+    "subseries": "Week 4",
+    "category": [],
+    "teams": [
+      {
+        "team_id": "11058",
+        "name": "G2 Esports",
+        "tag": "G2",
+        "maps_won": "2",
+        "is_winner": true
+      },
+      {
+        "team_id": "427",
+        "name": "ENVY",
+        "tag": null,
+        "maps_won": "0",
+        "is_winner": false
+      }
+    ]
+  },
+  {
+    "match_id": "108039",
+    "scheduled_ts": "1778274000",
+    "event": "VCT 2026: Americas Stage 1",
+    "series": "Group Stage",
+    "subseries": "Week 5",
+    "category": [],
+    "teams": [
+      {
+        "team_id": "2355",
+        "name": "KRÜ Esports",
+        "tag": "KRÜ",
+        "maps_won": "2",
+        "is_winner": true
+      },
+      {
+        "team_id": "5248",
+        "name": "Evil Geniuses",
+        "tag": "EG",
+        "maps_won": "1",
+        "is_winner": false
+      }
+    ]
+  },
+  {
+    "match_id": "108040",
+    "scheduled_ts": "1778286000",
+    "event": "VCT 2026: Americas Stage 1",
+    "series": "Group Stage",
+    "subseries": "Week 5",
+    "category": [],
+    "teams": [
+      {
+        "team_id": "2406",
+        "name": "FURIA",
+        "tag": "FUR",
+        "maps_won": "1",
+        "is_winner": false
+      },
+      {
+        "team_id": "120",
+        "name": "100 Thieves",
+        "tag": "100T",
+        "maps_won": "2",
+        "is_winner": true
+      }
+    ]
+  },
+  {
+    "match_id": "108041",
+    "scheduled_ts": "1778360400",
+    "event": "VCT 2026: Americas Stage 1",
+    "series": "Group Stage",
+    "subseries": "Week 5",
+    "category": [],
+    "teams": [
+      {
+        "team_id": "11058",
+        "name": "G2 Esports",
+        "tag": "G2",
+        "maps_won": "2",
+        "is_winner": true
+      },
+      {
+        "team_id": "188",
+        "name": "Cloud9",
+        "tag": "C9",
+        "maps_won": "0",
+        "is_winner": false
+      }
+    ]
+  },
+  {
+    "match_id": "108042",
+    "scheduled_ts": "1778368200",
+    "event": "VCT 2026: Americas Stage 1",
+    "series": "Group Stage",
+    "subseries": "Week 5",
+    "category": [],
+    "teams": [
+      {
+        "team_id": "427",
+        "name": "ENVY",
+        "tag": null,
+        "maps_won": "2",
+        "is_winner": true
+      },
+      {
+        "team_id": "7386",
+        "name": "MIBR",
+        "tag": null,
+        "maps_won": "0",
+        "is_winner": false
+      }
+    ]
+  },
+  {
+    "match_id": "108043",
+    "scheduled_ts": "1778446800",
+    "event": "VCT 2026: Americas Stage 1",
+    "series": "Group Stage",
+    "subseries": "Week 5",
+    "category": [],
+    "teams": [
+      {
+        "team_id": "6961",
+        "name": "LOUD",
+        "tag": "LOUD",
+        "maps_won": "2",
+        "is_winner": true
+      },
+      {
+        "team_id": "2359",
+        "name": "LEVIATÁN",
+        "tag": "LEV",
+        "maps_won": "1",
+        "is_winner": false
+      }
+    ]
+  },
+  {
+    "match_id": "108044",
+    "scheduled_ts": "1778458200",
+    "event": "VCT 2026: Americas Stage 1",
+    "series": "Group Stage",
+    "subseries": "Week 5",
+    "category": [],
+    "teams": [
+      {
+        "team_id": "2",
+        "name": "Sentinels",
+        "tag": "SEN",
+        "maps_won": "1",
+        "is_winner": false
+      },
+      {
+        "team_id": "1034",
+        "name": "NRG",
+        "tag": "NRG",
+        "maps_won": "2",
+        "is_winner": true
+      }
+    ]
+  },
+  {
+    "match_id": "110350",
+    "scheduled_ts": "1778792400",
+    "event": "VCT 2026: Americas Stage 1",
+    "series": "Playoffs",
+    "subseries": "Upper Round 1",
+    "category": [],
+    "teams": [
+      {
+        "team_id": "2406",
+        "name": "FURIA",
+        "tag": "FUR",
+        "maps_won": "0",
+        "is_winner": null
+      },
+      {
+        "team_id": "2359",
+        "name": "LEVIATÁN",
+        "tag": "LEV",
+        "maps_won": "0",
+        "is_winner": null
+      }
+    ]
+  },
+  {
+    "match_id": "110351",
+    "scheduled_ts": "1778803200",
+    "event": "VCT 2026: Americas Stage 1",
+    "series": "Playoffs",
+    "subseries": "Upper Round 1",
+    "category": [],
+    "teams": [
+      {
+        "team_id": "11058",
+        "name": "G2 Esports",
+        "tag": "G2",
+        "maps_won": "0",
+        "is_winner": null
+      },
+      {
+        "team_id": "120",
+        "name": "100 Thieves",
+        "tag": "100T",
+        "maps_won": "0",
+        "is_winner": null
+      }
+    ]
+  },
+  {
+    "match_id": "110356",
+    "scheduled_ts": "1778878800",
+    "event": "VCT 2026: Americas Stage 1",
+    "series": "Playoffs",
+    "subseries": "Lower Round 1",
+    "category": [],
+    "teams": [
+      {
+        "team_id": "0",
+        "name": null,
+        "tag": null,
+        "maps_won": "0",
+        "is_winner": null
+      },
+      {
+        "team_id": "1034",
+        "name": "NRG",
+        "tag": "NRG",
+        "maps_won": "0",
+        "is_winner": null
+      }
+    ]
+  },
+  {
+    "match_id": "110357",
+    "scheduled_ts": "1778889600",
+    "event": "VCT 2026: Americas Stage 1",
+    "series": "Playoffs",
+    "subseries": "Lower Round 1",
+    "category": [],
+    "teams": [
+      {
+        "team_id": "0",
+        "name": null,
+        "tag": null,
+        "maps_won": "0",
+        "is_winner": null
+      },
+      {
+        "team_id": "6961",
+        "name": "LOUD",
+        "tag": "LOUD",
+        "maps_won": "0",
+        "is_winner": null
+      }
+    ]
+  },
+  {
+    "match_id": "110352",
+    "scheduled_ts": "1778965200",
+    "event": "VCT 2026: Americas Stage 1",
+    "series": "Playoffs",
+    "subseries": "Upper Semifinals",
+    "category": [],
+    "teams": [
+      {
+        "team_id": "7386",
+        "name": "MIBR",
+        "tag": null,
+        "maps_won": "0",
+        "is_winner": null
+      },
+      {
+        "team_id": "0",
+        "name": null,
+        "tag": null,
+        "maps_won": "0",
+        "is_winner": null
+      }
+    ]
+  },
+  {
+    "match_id": "110353",
+    "scheduled_ts": "1778976000",
+    "event": "VCT 2026: Americas Stage 1",
+    "series": "Playoffs",
+    "subseries": "Upper Semifinals",
+    "category": [],
+    "teams": [
+      {
+        "team_id": "2355",
+        "name": "KRÜ Esports",
+        "tag": "KRÜ",
+        "maps_won": "0",
+        "is_winner": null
+      },
+      {
+        "team_id": "0",
+        "name": null,
+        "tag": null,
+        "maps_won": "0",
+        "is_winner": null
+      }
+    ]
+  },
+  {
+    "match_id": "110358",
+    "scheduled_ts": "1779051600",
+    "event": "VCT 2026: Americas Stage 1",
+    "series": "Playoffs",
+    "subseries": "Lower Round 2",
+    "category": [],
+    "teams": [
+      {
+        "team_id": "0",
+        "name": null,
+        "tag": null,
+        "maps_won": "0",
+        "is_winner": null
+      },
+      {
+        "team_id": "0",
+        "name": null,
+        "tag": null,
+        "maps_won": "0",
+        "is_winner": null
+      }
+    ]
+  },
+  {
+    "match_id": "110359",
+    "scheduled_ts": "1779062400",
+    "event": "VCT 2026: Americas Stage 1",
+    "series": "Playoffs",
+    "subseries": "Lower Round 2",
+    "category": [],
+    "teams": [
+      {
+        "team_id": "0",
+        "name": null,
+        "tag": null,
+        "maps_won": "0",
+        "is_winner": null
+      },
+      {
+        "team_id": "0",
+        "name": null,
+        "tag": null,
+        "maps_won": "0",
+        "is_winner": null
+      }
+    ]
+  },
+  {
+    "match_id": "110354",
+    "scheduled_ts": "1779483600",
+    "event": "VCT 2026: Americas Stage 1",
+    "series": "Playoffs",
+    "subseries": "Upper Final",
+    "category": [],
+    "teams": [
+      {
+        "team_id": "0",
+        "name": null,
+        "tag": null,
+        "maps_won": "0",
+        "is_winner": null
+      },
+      {
+        "team_id": "0",
+        "name": null,
+        "tag": null,
+        "maps_won": "0",
+        "is_winner": null
+      }
+    ]
+  },
+  {
+    "match_id": "110360",
+    "scheduled_ts": "1779494400",
+    "event": "VCT 2026: Americas Stage 1",
+    "series": "Playoffs",
+    "subseries": "Lower Round 3",
+    "category": [],
+    "teams": [
+      {
+        "team_id": "0",
+        "name": null,
+        "tag": null,
+        "maps_won": "0",
+        "is_winner": null
+      },
+      {
+        "team_id": "0",
+        "name": null,
+        "tag": null,
+        "maps_won": "0",
+        "is_winner": null
+      }
+    ]
+  },
+  {
+    "match_id": "110361",
+    "scheduled_ts": "1779570000",
+    "event": "VCT 2026: Americas Stage 1",
+    "series": "Playoffs",
+    "subseries": "Lower Final",
+    "category": [],
+    "teams": [
+      {
+        "team_id": "0",
+        "name": null,
+        "tag": null,
+        "maps_won": "0",
+        "is_winner": null
+      },
+      {
+        "team_id": "0",
+        "name": null,
+        "tag": null,
+        "maps_won": "0",
+        "is_winner": null
+      }
+    ]
+  },
+  {
+    "match_id": "110355",
+    "scheduled_ts": "1779656400",
+    "event": "VCT 2026: Americas Stage 1",
+    "series": "Playoffs",
+    "subseries": "Grand Final",
+    "category": [],
+    "teams": [
+      {
+        "team_id": "0",
+        "name": null,
+        "tag": null,
+        "maps_won": "0",
+        "is_winner": null
+      },
+      {
+        "team_id": "0",
+        "name": null,
+        "tag": null,
+        "maps_won": "0",
+        "is_winner": null
+      }
+    ]
+  }
+]
