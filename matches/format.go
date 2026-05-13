@@ -46,14 +46,14 @@ const (
 
 #### Map Stats
 
-| **{{(index .Teams 0).Name | Trim }}** | **ACS** | **K** | **D** | **A** |
-|------------------|---------|-------|-------|-------|
+| **{{(index .Teams 0).Name | Trim }}** | **Rating** | **ACS** | **K** | **D** | **A** |
+|------------------|---------|---------|-------|-------|-------|
 {{- range $playerIdx, $player := (index .Teams 0).Players }}
-| [{{ $player.Alias }}](https://vlr.gg/player/{{ $player.PlayerID }}) **{{ $player.Stats.Agent | Title }}** | {{ $player.Stats.ACS }} | {{ $player.Stats.Kills }} | {{ $player.Stats.Deaths }} | {{ $player.Stats.Assists }}|
+| [{{ $player.Alias }}](https://vlr.gg/player/{{ $player.PlayerID }}) **{{ $player.Stats.Agent | Title }}** | {{ $player.Stats.Rating }} | {{ $player.Stats.ACS }} | {{ $player.Stats.Kills }} | {{ $player.Stats.Deaths }} | {{ $player.Stats.Assists }}|
 {{- end }}
-| **{{(index .Teams 1).Name | Trim }}** | **ACS** | **K** | **D** | **A** |
+| **{{(index .Teams 1).Name | Trim }}** | **Rating** | **ACS** | **K** | **D** | **A** |
 {{- range $playerIdx, $player := (index .Teams 1).Players }}
-| [{{ $player.Alias }}](https://vlr.gg/player/{{ $player.PlayerID }}) **{{ $player.Stats.Agent | Title }}** | {{ $player.Stats.ACS }} | {{ $player.Stats.Kills }} | {{ $player.Stats.Deaths }} | {{ $player.Stats.Assists }}|
+| [{{ $player.Alias }}](https://vlr.gg/player/{{ $player.PlayerID }}) **{{ $player.Stats.Agent | Title }}** | {{ $player.Stats.Rating }} | {{ $player.Stats.ACS }} | {{ $player.Stats.Kills }} | {{ $player.Stats.Deaths }} | {{ $player.Stats.Assists }}|
 {{- end }}
 
 [Detailed {{ $map.Name | Title }} Statistics]({{ $map.Link }})
