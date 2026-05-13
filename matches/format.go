@@ -4,13 +4,15 @@ import (
 	"bytes"
 	"html/template"
 	"strings"
+	"fmt"
+	"strconv"
+	"sort"
 )
 
 const (
 	MatchMd = `# [{{(index .Teams 0).Name | Trim }}](https://vlr.gg/team/{{(index .Teams 0).ID}}) {{(index .Teams 0).MapsWon}}-{{(index .Teams 1).MapsWon}} [{{(index .Teams 1).Name | Trim }}](https://vlr.gg/team/{{(index .Teams 1).ID}})
 
 [vlr.gg]({{.Info.Link}})
-
 
 {{ range .Maps }}
 {{ if ne (index .Teams 0).IsWinner (index .Teams 1).IsWinner }}
@@ -49,11 +51,11 @@ const (
 | **{{(index .Teams 0).Name | Trim }}** | **Rating** | **ACS** | **K** | **D** | **A** |
 |------------------|---------|---------|-------|-------|-------|
 {{- range $playerIdx, $player := (index .Teams 0).Players }}
-| [{{ $player.Alias }}](https://vlr.gg/player/{{ $player.PlayerID }}) **{{ $player.Stats.Agent | Title }}** | {{ $player.Stats.Rating }} | {{ $player.Stats.ACS }} | {{ $player.Stats.Kills }} | {{ $player.Stats.Deaths }} | {{ $player.Stats.Assists }}|
+| [{{ $player.Alias }}](https://vlr.gg/player/{{ $player.PlayerID }}) **{{ $player.Stats.Agent | Title }}** | {{ $player.Stats.Rating | Round2 }} | {{ $player.Stats.ACS }} | {{ $player.Stats.Kills }} | {{ $player.Stats.Deaths }} | {{ $player.Stats.Assists }}|
 {{- end }}
 | **{{(index .Teams 1).Name | Trim }}** | **Rating** | **ACS** | **K** | **D** | **A** |
 {{- range $playerIdx, $player := (index .Teams 1).Players }}
-| [{{ $player.Alias }}](https://vlr.gg/player/{{ $player.PlayerID }}) **{{ $player.Stats.Agent | Title }}** | {{ $player.Stats.Rating }} | {{ $player.Stats.ACS }} | {{ $player.Stats.Kills }} | {{ $player.Stats.Deaths }} | {{ $player.Stats.Assists }}|
+| [{{ $player.Alias }}](https://vlr.gg/player/{{ $player.PlayerID }}) **{{ $player.Stats.Agent | Title }}** | {{ $player.Stats.Rating | Round2 }} | {{ $player.Stats.ACS }} | {{ $player.Stats.Kills }} | {{ $player.Stats.Deaths }} | {{ $player.Stats.Assists }}|
 {{- end }}
 
 [Detailed {{ $map.Name | Title }} Statistics]({{ $map.Link }})
@@ -78,12 +80,32 @@ var (
 		"AddOne": func(i int) int {
 			return i + 1
 		},
+		"Round2": func(s string) string {
+			f, err := strconv.ParseFloat(s, 64)
+			if err != nil {
+				return s
+			}
+			return fmt.Sprintf("%.2f", f)
+		},
+
 	}
 	pmtTmpl = template.Must(template.New("pmtTmpl").Funcs(funcMap).Parse(MatchMd))
 )
 
 func (m *Match) ToMarkdown() (string, error) {
 	result := bytes.Buffer{}
+	
+	// sort by rating
+	for i := range m.Maps {
+      	for j := range m.Maps[i].Teams {
+          	sort.Slice(m.Maps[i].Teams[j].Players, func(a, b int) bool {
+				rA, _ := strconv.ParseFloat(m.Maps[i].Teams[j].Players[a].Stats.Rating, 64)
+				rB, _ := strconv.ParseFloat(m.Maps[i].Teams[j].Players[b].Stats.Rating, 64)
+				return rA > rB
+          	})
+      	}
+  	}
+
 	err := pmtTmpl.Execute(&result, m)
 	if err != nil {
 		return "", err
