@@ -122,6 +122,7 @@ type MapTeamStats []struct {
 			FBPR       string `json:"fbpr"`
 			FDPR       string `json:"fdpr"`
 			ACS        string `json:"combat_score"`
+			Rating     string `json:"rating"`
 			EconRating string `json:"econ_rating"`
 			FB         string `json:"first_bloods"`
 			FD         string `json:"first_deaths"`

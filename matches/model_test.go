@@ -2,6 +2,7 @@ package matches
 
 import (
 	"encoding/json"
+	"os"
 	"testing"
 )
 
@@ -41,6 +42,27 @@ const (
 ]
 `
 )
+
+func TestToMarkdown(t *testing.T) {
+	data, err := os.ReadFile("../testdata/example_match.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	m := &Match{}
+	if err := json.Unmarshal(data, m); err != nil {
+		t.Fatal(err)
+	}
+
+	md, err := m.ToMarkdown()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if err := os.WriteFile("../testdata/test_match_output.md", []byte(md), 0644); err != nil {
+		t.Fatal(err)
+	}
+}
 
 func TestUnmarshal(t *testing.T) {
 	matches := make([]Upcoming, 0)
