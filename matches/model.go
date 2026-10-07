@@ -72,6 +72,9 @@ type Match struct {
 		Live        string `json:"live"`
 		Link        string `json:"link"`
 	} `json:"streams"`
+
+	// RibLink is the RIB.gg match page URL. It is resolved from the RIB.gg API, not VLR.gg.
+	RibLink string `json:"-"`
 }
 
 type EventMatch struct {

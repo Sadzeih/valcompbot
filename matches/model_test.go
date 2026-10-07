@@ -3,6 +3,7 @@ package matches
 import (
 	"encoding/json"
 	"os"
+	"strings"
 	"testing"
 )
 
@@ -61,6 +62,34 @@ func TestToMarkdown(t *testing.T) {
 
 	if err := os.WriteFile("../testdata/test_match_output.md", []byte(md), 0644); err != nil {
 		t.Fatal(err)
+	}
+}
+
+func TestToMarkdownWithRibLink(t *testing.T) {
+	data, err := os.ReadFile("../testdata/example_match.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	m := &Match{}
+	if err := json.Unmarshal(data, m); err != nil {
+		t.Fatal(err)
+	}
+
+	m.RibLink = "https://rib.gg/matches/990/paper-rex-vs-team-liquid"
+
+	md, err := m.ToMarkdown()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if err := os.WriteFile("../testdata/test_match_output_rib.md", []byte(md), 0644); err != nil {
+		t.Fatal(err)
+	}
+
+	want := "[vlr.gg](" + m.Info.Link + ") | [RIB.gg](" + m.RibLink + ")"
+	if !strings.Contains(md, want) {
+		t.Errorf("expected markdown to contain %q", want)
 	}
 }
 

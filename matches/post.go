@@ -3,6 +3,7 @@ package matches
 import (
 	"context"
 	"fmt"
+	"log"
 	"strconv"
 
 	"github.com/Sadzeih/valcompbot/config"
@@ -11,7 +12,7 @@ import (
 	"github.com/vartanbeno/go-reddit/v2/reddit"
 )
 
-func PostMatch(ctx context.Context, vm *Match, ent *ent.Client, redditClient *reddit.Client) error {
+func PostMatch(ctx context.Context, vlrMatchID string, vm *Match, ent *ent.Client, redditClient *reddit.Client) error {
 	eID, err := strconv.Atoi(vm.Info.EventID)
 	if err != nil {
 		return err
@@ -26,6 +27,14 @@ func PostMatch(ctx context.Context, vm *Match, ent *ent.Client, redditClient *re
 	}
 
 	title := fmt.Sprintf(titleFmt, vm.Teams[0].Name, vm.Teams[1].Name, e.Name, vm.Info.Series)
+
+	ribMatch, err := GetRibMatch(vlrMatchID)
+	if err != nil {
+		log.Println(err)
+	}
+	if ribMatch != nil {
+		vm.RibLink = ribMatch.Match
+	}
 
 	md, err := vm.ToMarkdown()
 	if err != nil {

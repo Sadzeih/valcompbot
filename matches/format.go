@@ -12,7 +12,7 @@ import (
 const (
 	MatchMd = `# [{{(index .Teams 0).Name | Trim }}](https://vlr.gg/team/{{(index .Teams 0).ID}}) {{(index .Teams 0).MapsWon}}-{{(index .Teams 1).MapsWon}} [{{(index .Teams 1).Name | Trim }}](https://vlr.gg/team/{{(index .Teams 1).ID}})
 
-[vlr.gg]({{.Info.Link}})
+[vlr.gg]({{.Info.Link}}){{ if .RibLink }} | [RIB.gg]({{ .RibLink }}){{ end }}
 
 {{ range .Maps }}
 {{ if ne (index .Teams 0).IsWinner (index .Teams 1).IsWinner }}

@@ -46,7 +46,7 @@ func (s *Scheduler) Start(ctx context.Context) {
 					continue
 				}
 				updateDone := vm.Info.Completed == "1" && m.DoneAt == nil
-				if err := s.postMatch(ctx, m, vm, updateDone); err != nil {
+				if err := s.postMatch(ctx, m.MatchID, m, vm, updateDone); err != nil {
 					log.Println(err)
 				}
 			}
@@ -56,8 +56,8 @@ func (s *Scheduler) Start(ctx context.Context) {
 	wg.Wait()
 }
 
-func (s *Scheduler) postMatch(ctx context.Context, m *ent.ScheduledMatch, vm *Match, updateDone bool) error {
-	if err := PostMatch(ctx, vm, s.ent, s.reddit); err != nil {
+func (s *Scheduler) postMatch(ctx context.Context, vlrMatchID string, m *ent.ScheduledMatch, vm *Match, updateDone bool) error {
+	if err := PostMatch(ctx, vlrMatchID, vm, s.ent, s.reddit); err != nil {
 		return err
 	}
 	update := m.Update()

@@ -145,7 +145,7 @@ func (h *Handler) HandlePostMatch(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := PostMatch(r.Context(), m, h.ent, h.reddit); err != nil {
+	if err := PostMatch(r.Context(), id, m, h.ent, h.reddit); err != nil {
 		log.Println(err)
 		utils.WriteError(w, utils.InternalServerError)
 		return
